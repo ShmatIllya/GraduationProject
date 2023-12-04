@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXMasonryPane?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="stackPane" styleClass="blue-panel" stylesheets="@../../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.Tasks.TaskInfoController">
+   <children>
+      <AnchorPane fx:id="AnchorPane" minHeight="-Infinity" prefHeight="536.0" prefWidth="900.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
+         <children>
+            <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="23.0" maxHeight="1200.0" minHeight="-Infinity" prefHeight="499.0" prefWidth="881.0" styleClass="blue-panel" stylesheets="@../../css/styles.css" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="23.0">
+               <content>
+                  <JFXMasonryPane HSpacing="50.0" VSpacing="50.0" maxHeight="1200.0" minHeight="-Infinity" prefHeight="1030.0" prefWidth="865.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
+                     <children>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="329.0" prefWidth="364.0">
+                           <content>
+                              <Pane prefHeight="434.0" prefWidth="434.0" styleClass="pane">
+                                 <children>
+                                    <Label fx:id="subroleLabel" layoutX="11.0" layoutY="93.0" prefHeight="21.0" prefWidth="118.0" text="Ответственный: ">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="subroleLabel1" layoutX="11.0" layoutY="122.0" prefHeight="21.0" prefWidth="96.0" text="Аудитор:">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="subroleLabel11" layoutX="11.0" layoutY="50.0" prefHeight="21.0" prefWidth="174.0" text="Наименование:">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <JFXComboBox fx:id="checkerComboBox" disable="true" layoutX="127.0" layoutY="120.0" prefHeight="25.0" prefWidth="193.0" promptText="Отсутствует" stylesheets="@../../css/jfxComboBox.css" />
+                                    <TextField fx:id="nameField" editable="false" layoutX="133.0" layoutY="48.0" prefHeight="26.0" prefWidth="205.0" styleClass="tf_box" />
+                                    <Label fx:id="subroleLabel1111" layoutX="11.0" layoutY="177.0" prefHeight="21.0" prefWidth="406.0" text="Дедлайн:">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <JFXComboBox fx:id="responsableComboBox" disable="true" layoutX="127.0" layoutY="91.0" prefHeight="25.0" prefWidth="192.0" promptText="Отсутствует" stylesheets="@../../css/jfxComboBox.css" />
+                                    <MFXDatePicker fx:id="datePicker" disable="true" editable="false" layoutX="129.0" layoutY="169.0" stylesheets="@../../css/mfxDatePicker.css" />
+                                    <Label fx:id="subroleLabel111" layoutX="11.0" layoutY="223.0" prefHeight="21.0" prefWidth="174.0" text="Назначена:">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="creationDateField" editable="false" layoutX="133.0" layoutY="221.0" prefHeight="26.0" prefWidth="205.0" styleClass="tf_box" />
+                                    <Label fx:id="subroleLabel112" layoutX="11.0" layoutY="271.0" prefHeight="21.0" prefWidth="174.0" text="Статус:">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="statusField" editable="false" layoutX="133.0" layoutY="269.0" prefHeight="26.0" prefWidth="205.0" styleClass="tf_box" />
+                                    <Label layoutX="11.0" layoutY="10.0" prefHeight="30.0" prefWidth="393.0" text="Общая Информация" underline="true">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </Pane>
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                           <content>
+                              <Pane prefHeight="295.0" prefWidth="294.0" styleClass="pane">
+                                 <children>
+                                    <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="107.0" text="Описание" underline="true">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <TextArea fx:id="descriptionField" layoutX="12.0" layoutY="62.0" prefHeight="200.0" prefWidth="285.0" style="-fx-border-color: #151928;" stylesheets="@../../css/textarea.css" wrapText="true">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </TextArea>
+                                    <HBox fx:id="obeyButtonsHBox" layoutX="12.0" layoutY="270.0" prefHeight="35.0" prefWidth="286.0" spacing="10.0">
+                                       <children>
+                                          <JFXButton fx:id="completeButton" prefHeight="35.0" prefWidth="112.0" style="-fx-border-color: #66FF00; -fx-border-radius: 5; -fx-border-width: 2;" text="Завершить" textFill="#66ff00">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </JFXButton>
+                                          <JFXButton fx:id="uncompletedButton" prefHeight="35.0" prefWidth="134.0" style="-fx-border-color: red; -fx-border-radius: 5; -fx-border-width: 2;" text="Провалить (KEKW)" textFill="RED">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </JFXButton>
+                                       </children>
+                                    </HBox>
+                                    <HBox fx:id="controlButtonsHBox" layoutX="11.0" layoutY="12.0" prefHeight="35.0" prefWidth="286.0" spacing="10.0" visible="false">
+                                       <children>
+                                          <JFXButton fx:id="checkButton" prefHeight="35.0" prefWidth="112.0" style="-fx-border-color: #151928; -fx-border-radius: 5; -fx-border-width: 2;" text="Завершить" textFill="#121928">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </JFXButton>
+                                          <JFXButton fx:id="uncheckButton" prefHeight="35.0" prefWidth="134.0" style="-fx-border-color: #151928; -fx-border-radius: 5; -fx-border-width: 2;" text="Снять" textFill="#151928">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </JFXButton>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </Pane>
+                           </content>
+                        </ScrollPane>
+                        <AnchorPane stylesheets="@../../css/styles.css">
+                           <children>
+                              <VBox fx:id="businessVBox" prefHeight="44.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
+                                 <children>
+                                    <HBox fx:id="primaryBusinessHBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="336.0" VBox.vgrow="NEVER">
+                                       <children>
+                                          <JFXButton fx:id="addBusinessButton" prefHeight="50.0" prefWidth="98.0" text="Дело">
+                                             <graphic>
+                                                <ImageView fx:id="addBusinessImage" fitHeight="28.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../images/AddIcon/1.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </JFXButton>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="430.0">
+                           <content>
+                              <AnchorPane prefHeight="429.0" prefWidth="429.0" styleClass="pane" stylesheets="@../../css/styles.css">
+                                 <children>
+                                    <ScrollPane fitToWidth="true" layoutX="3.0" layoutY="127.0" prefHeight="330.0" prefWidth="516.0" styleClass="pane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="127.0">
+                                       <content>
+                                          <VBox fx:id="journalVBox1" prefHeight="303.0" prefWidth="515.0" spacing="10.0" styleClass="pane" stylesheets="@../../css/styles.css" />
+                                       </content>
+                                    </ScrollPane>
+                                    <TextField fx:id="journalTextField1" layoutX="14.0" layoutY="72.0" prefHeight="36.0" prefWidth="356.0" promptText="Отправить сообщение" styleClass="tf_box" stylesheets="@../../css/styles.css" />
+                                    <JFXButton ellipsisString="" layoutX="373.0" layoutY="80.0" prefHeight="36.0" prefWidth="42.0">
+                                       <graphic>
+                                          <FontAwesomeIcon fx:id="journalButton1" glyphName="SEND" size="2em" wrappingWidth="21.60003662109375" />
+                                       </graphic>
+                                    </JFXButton>
+                                    <HBox fx:id="sampleHBox1" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="336.0" visible="false" />
+                                    <Label layoutX="14.0" layoutY="14.0" prefHeight="36.0" prefWidth="91.0" text="Журнал:" underline="true">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                        <AnchorPane>
+                           <children>
+                              <Pane prefHeight="281.0" prefWidth="321.0" styleClass="pane" stylesheets="@../../css/styles.css">
+                                 <children>
+                                    <Label layoutX="14.0" layoutY="14.0" text="Дополнительная информация" underline="true">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <Label layoutX="14.0" layoutY="63.0" text="Приоритет:">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                    <JFXComboBox fx:id="priorityComboBox" disable="true" layoutX="140.0" layoutY="63.0" prefHeight="25.0" prefWidth="148.0" promptText="Выберите значение" stylesheets="@../../css/jfxComboBox.css" />
+                                 </children>
+                              </Pane>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </JFXMasonryPane>
+               </content>
+            </ScrollPane>
+         </children>
+         <StackPane.margin>
+            <Insets />
+         </StackPane.margin>
+      </AnchorPane>
+   </children>
+</StackPane>

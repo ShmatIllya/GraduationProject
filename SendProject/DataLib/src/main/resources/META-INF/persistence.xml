@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+  <persistence-unit name="default">
+
+      <class>entity.BusinessEntity</class>
+      <class>entity.ChatMembersEntity</class>
+      <class>entity.ChatsEntity</class>
+      <class>entity.ClientsEntity</class>
+      <class>entity.CommentsEntity</class>
+      <class>entity.ItemsEntity</class>
+      <class>entity.JournalsEntity</class>
+      <class>entity.MessagesEntity</class>
+      <class>entity.PaymentsEntity</class>
+      <class>entity.PersonalEntity</class>
+      <class>entity.ProcessMembersEntity</class>
+      <class>entity.ProcessesEntity</class>
+      <class>entity.ProjectsEntity</class>
+      <class>entity.TasksEntity</class>
+      <class>entity.ProjectMembersEntity</class>
+      <class>entity.MessageStatusEntity</class>
+      <properties>
+          <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/crm"/>
+          <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+          <property name="hibernate.connection.username" value="root"/>
+          <property name="hibernate.connection.password" value="Gfhjkm159357"/>
+      </properties>
+  </persistence-unit>
+</persistence>

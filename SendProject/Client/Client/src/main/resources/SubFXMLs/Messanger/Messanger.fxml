@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.dlsc.gemsfx.EnhancedLabel?>
+<?import com.dlsc.gemsfx.PhotoView?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="AnchorPane" minWidth="-Infinity" prefHeight="536.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.Messages.MessagesController">
+   <children>
+      <StackPane prefHeight="536.0" prefWidth="900.0" style="-fx-background-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane styleClass="blue-panel" stylesheets="@../../css/styles.css">
+               <children>
+                  <AnchorPane layoutX="-1.0" layoutY="-1.0" prefHeight="536.0" prefWidth="307.0" style="-fx-background-color: #151928;" AnchorPane.bottomAnchor="0.20000000000004547" AnchorPane.leftAnchor="-5.684341886080802E-14" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <TextField fx:id="chatSearchField" layoutX="26.0" layoutY="70.0" prefHeight="36.0" prefWidth="210.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../../../../../../../TestProj/src/main/resources/com/example/testproj/css/styles.css" />
+                        <Label layoutX="26.0" layoutY="14.0" text="Чаты" textFill="#2196f3">
+                           <font>
+                              <Font name="System Bold" size="25.0" />
+                           </font>
+                        </Label>
+                        <JFXButton fx:id="chatAddButton" ellipsisString="" layoutX="249.0" layoutY="76.0" onAction="#OnChatAddButton" prefHeight="36.0" prefWidth="21.0">
+                           <graphic>
+                              <FontAwesomeIcon fx:id="editButton" fill="#2196f3" glyphName="EDIT" size="2em" />
+                           </graphic>
+                        </JFXButton>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="127.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="127.0">
+                           <content>
+                              <VBox fx:id="chatsVBox" prefHeight="409.0" prefWidth="307.0" spacing="5.0" style="-fx-background-color: #151928;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="127.0">
+                                 <children>
+                                    <Pane fx:id="sampleChatPane" prefHeight="58.0" prefWidth="200.0" style="-fx-border-color: #2196f3;">
+                                       <children>
+                                          <HBox fx:id="photoViewHBox" layoutX="8.0" layoutY="-4.0" minHeight="-Infinity" prefHeight="50.0" prefWidth="50.0">
+                                             <children>
+                                                <PhotoView fx:id="photoView" editable="false" prefHeight="100.0" prefWidth="110.0" />
+                                             </children>
+                                          </HBox>
+                                          <Label fx:id="chatChatNameLabel" layoutX="68.0" layoutY="7.0" prefHeight="20.0" prefWidth="162.0" text="ChatName" textFill="#2196f3">
+                                             <font>
+                                                <Font name="System Bold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="chatNameSernameLabel" layoutX="70.0" layoutY="30.0" prefHeight="19.0" prefWidth="97.0" text="NameSername" textFill="#2196f3">
+                                             <font>
+                                                <Font size="12.5" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="chatMessageTextLabel" layoutX="183.0" layoutY="30.0" prefHeight="19.0" prefWidth="78.0" text="MessageText" textFill="#2196f3">
+                                             <font>
+                                                <Font name="System Italic" size="12.5" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="chatTimeLabel" layoutX="252.0" layoutY="9.0" text="Time" textFill="#2196f3" />
+                                          <Pane fx:id="unreadMessagesPane" layoutX="278.0" layoutY="27.0" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: red; -fx-background-radius: 30;">
+                                             <children>
+                                                <Label fx:id="unreadMessagesLabel" alignment="CENTER" layoutX="-1.0" layoutY="4.0" prefHeight="17.0" prefWidth="26.0" text="1" textAlignment="CENTER" />
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="308.0" prefHeight="538.0" prefWidth="594.0" style="-fx-background-color: blue; -fx-border-color: #2196f3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="305.6" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="66.0" prefWidth="600.0" style="-fx-background-color: #151928; -fx-border-color: #2196f3;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox layoutX="14.4" layoutY="15.2" prefHeight="39.0" prefWidth="309.0" spacing="10.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="271.0" AnchorPane.topAnchor="15.0">
+                                 <children>
+                                    <Label fx:id="chatNameLabel" text="ChatName" textFill="#2196f3" wrapText="true">
+                                       <font>
+                                          <Font name="System Bold" size="25.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="chatMembersLabel" prefHeight="36.0" prefWidth="161.0" text="ChatMembers" textFill="#2196f3" wrapText="true">
+                                       <font>
+                                          <Font name="System Bold" size="15.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets top="3.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <TextField fx:id="messageSearchField" layoutX="369.0" layoutY="15.0" prefHeight="36.0" prefWidth="210.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../../../../../../../TestProj/src/main/resources/com/example/testproj/css/styles.css" AnchorPane.rightAnchor="14.999999999999972" />
+                           </children>
+                        </AnchorPane>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="66.0" AnchorPane.bottomAnchor="58.80000000000001" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.60000000000002">
+                           <content>
+                              <VBox fx:id="messagesVBox" prefHeight="409.0" prefWidth="598.0" spacing="10.0" style="-fx-background-color: #151928;">
+                                 <children>
+                                    <HBox fx:id="userMessageHBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="59.0" prefWidth="513.0" spacing="10.0">
+                                       <children>
+                                          <HBox minHeight="-Infinity" prefHeight="50.0" prefWidth="50.0">
+                                             <children>
+                                                <PhotoView editable="false" prefHeight="100.0" prefWidth="110.0" />
+                                             </children>
+                                          </HBox>
+                                          <VBox fx:id="messageHBox" prefHeight="59.0" prefWidth="200.0" style="-fx-background-color: #2196f3; -fx-background-radius: 30;">
+                                             <children>
+                                                <HBox fx:id="inMessageHbox" prefHeight="22.0" prefWidth="166.0">
+                                                   <children>
+                                                      <EnhancedLabel fx:id="inMessageNameSername" prefHeight="22.0" prefWidth="98.0" text="NameSername" />
+                                                      <EnhancedLabel fx:id="inMessageTime" text="12:50">
+                                                         <HBox.margin>
+                                                            <Insets left="20.0" top="2.0" />
+                                                         </HBox.margin>
+                                                      </EnhancedLabel>
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets left="15.0" />
+                                                   </VBox.margin>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets left="10.0" />
+                                       </VBox.margin>
+                                    </HBox>
+                                    <HBox fx:id="myMessageHBox" alignment="TOP_RIGHT" prefHeight="59.0" prefWidth="513.0" spacing="10.0">
+                                       <children>
+                                          <HBox minHeight="-Infinity" prefHeight="50.0" prefWidth="50.0">
+                                             <children>
+                                                <PhotoView editable="false" prefHeight="100.0" prefWidth="110.0">
+                                                   <HBox.margin>
+                                                      <Insets right="10.0" />
+                                                   </HBox.margin>
+                                                </PhotoView>
+                                             </children>
+                                          </HBox>
+                                          <VBox fx:id="messageHBox1" prefHeight="59.0" prefWidth="200.0" style="-fx-background-color: #70c945; -fx-background-radius: 30;">
+                                             <children>
+                                                <HBox prefHeight="22.0" prefWidth="166.0">
+                                                   <children>
+                                                      <EnhancedLabel prefHeight="22.0" prefWidth="98.0" text="NameSername" />
+                                                      <EnhancedLabel text="12:50">
+                                                         <HBox.margin>
+                                                            <Insets left="20.0" top="2.0" />
+                                                         </HBox.margin>
+                                                      </EnhancedLabel>
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets left="15.0" />
+                                                   </VBox.margin>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </HBox>
+                                    <HBox fx:id="dateHBox" alignment="CENTER" prefHeight="22.0" prefWidth="591.0" style="-fx-border-color: #2196f3;">
+                                       <children>
+                                          <Label text="14.09.2023" textAlignment="CENTER" textFill="#2196f3" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
+                        <AnchorPane fx:id="messageInputPane" layoutX="1.0" layoutY="476.0" prefHeight="60.0" prefWidth="594.0" style="-fx-background-color: #151928; -fx-border-color: #2196f3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="2.199999999999818">
+                           <children>
+                              <TextField fx:id="messageInputTextField" layoutX="11.199999809265137" layoutY="11.199999809265137" prefHeight="36.0" prefWidth="506.0" promptText="Введите сообщение" styleClass="tf_box" stylesheets="@../../../../../../../../TestProj/src/main/resources/com/example/testproj/css/styles.css" AnchorPane.bottomAnchor="12.800000190734863" AnchorPane.leftAnchor="10.400000000000205" AnchorPane.rightAnchor="72.80000019073498" />
+                              <JFXButton fx:id="sendMessageButton" onAction="#OnSendMessageButton" ellipsisString="" layoutX="546.3999633789062" layoutY="11.199999809265137" prefHeight="36.0" prefWidth="42.0" AnchorPane.bottomAnchor="12.800000190734863" AnchorPane.rightAnchor="1.6000366210938424">
+                                 <graphic>
+                                    <FontAwesomeIcon fx:id="journalButton1" fill="#2196f3" glyphName="SEND" size="2em" wrappingWidth="21.60003662109375" />
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="opacityPane" layoutX="306.3999938964844" style="-fx-background-color: #151928;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="306.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="222.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="232.0" AnchorPane.leftAnchor="222.0" AnchorPane.rightAnchor="221.20000000000005" AnchorPane.topAnchor="153.6">
+                           <image>
+                              <Image url="@../../images/NoChat/no-talking.png" />
+                           </image>
+                        </ImageView>
+                        <Label layoutX="222.0" layoutY="316.0" prefHeight="30.0" prefWidth="150.0" text="Чат не выбран" textFill="#2196f3" wrapText="true" AnchorPane.bottomAnchor="189.6" AnchorPane.leftAnchor="222.39999999999995" AnchorPane.rightAnchor="221.6" AnchorPane.topAnchor="316.0">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

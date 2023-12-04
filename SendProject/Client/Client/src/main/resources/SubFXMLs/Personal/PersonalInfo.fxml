@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXMasonryPane?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.PersonalInfoController">
+   <children>
+      <AnchorPane fx:id="AnchorPane" prefHeight="536.0" prefWidth="900.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
+         <children>
+            <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="23.0" styleClass="blue-panel" stylesheets="@../../css/styles.css" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="23.0">
+               <content>
+                  <JFXMasonryPane HSpacing="50.0" VSpacing="50.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
+                     <children>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="329.0" prefWidth="364.0">
+                           <content>
+                              <Pane prefHeight="434.0" prefWidth="434.0" styleClass="pane">
+                                 <children>
+                                    <ImageView fx:id="avatarImage" fitHeight="248.0" fitWidth="324.0" layoutX="52.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                                       <viewport>
+                                          <Rectangle2D />
+                                       </viewport></ImageView>
+                                    <Pane fx:id="changeAvatarPane" layoutX="52.0" layoutY="14.0" prefHeight="248.0" prefWidth="324.0" style="-fx-background-color: white;" visible="false" />
+                                    <ImageView fx:id="changeAvatarImage" fitHeight="98.0" fitWidth="118.0" layoutX="170.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                                       <image>
+                                          <Image url="@../../images/camera.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="changeAvatarLabel" layoutX="127.0" layoutY="202.0" text="Изменить изображение" visible="false">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                    <Pane fx:id="mouseEventPane" layoutX="52.0" layoutY="14.0" prefHeight="248.0" prefWidth="324.0" />
+                                    <Label fx:id="subroleLabel" layoutX="14.0" layoutY="270.0" prefHeight="32.0" prefWidth="238.0" text="Label">
+                                       <font>
+                                          <Font size="22.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="workperiodLabel" layoutX="265.0" layoutY="270.0" prefHeight="32.0" prefWidth="163.0" text="Работает с">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </Pane>
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                           <content>
+                              <Pane prefHeight="295.0" prefWidth="294.0" styleClass="pane">
+                                 <children>
+                                    <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="107.0" text="Контакты">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <FontAwesomeIcon glyphName="PHONE" layoutX="15.0" layoutY="75.0" size="2em" wrappingWidth="26.228620529174805" />
+                                    <FontAwesomeIcon glyphName="ENVELOPE" layoutX="16.0" layoutY="112.0" size="2em" />
+                                    <TextField fx:id="phoneField" editable="false" layoutX="47.0" layoutY="54.0" prefHeight="25.0" prefWidth="256.0" styleClass="tf_box">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </TextField>
+                                    <TextField fx:id="emailField" editable="false" layoutX="47.0" layoutY="91.0" prefHeight="25.0" prefWidth="256.0" styleClass="tf_box" />
+                                 </children>
+                              </Pane>
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fitToWidth="true">
+                           <content>
+                              <Pane prefHeight="428.0" prefWidth="296.0" styleClass="pane">
+                                 <children>
+                                    <Label layoutX="14.0" layoutY="14.0" text="Дополнительная информация">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <TextArea fx:id="descriptionArea" editable="false" layoutX="19.0" layoutY="45.0" prefHeight="338.0" prefWidth="271.0" stylesheets="@../../css/textarea.css" wrapText="true">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </TextArea>
+                                 </children>
+                              </Pane>
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                           <content>
+                              <Pane maxHeight="429.0" minHeight="428.0" prefHeight="429.0" styleClass="pane">
+                                 <children>
+                                    <JFXComboBox fx:id="reportBox" layoutX="14.0" layoutY="14.0" prefHeight="36.0" prefWidth="151.0" promptText="Выберите отчет" />
+                                    <BarChart fx:id="reportChart" layoutX="-2.0" layoutY="56.0" prefHeight="380.0" prefWidth="420.0">
+                                      <xAxis>
+                                        <CategoryAxis side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <NumberAxis side="LEFT" />
+                                      </yAxis>
+                                    </BarChart>
+                                 </children>
+                              </Pane>
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="102.0" prefWidth="300.0">
+                           <content>
+                              <Pane prefHeight="143.0" prefWidth="294.0" styleClass="pane" />
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fitToWidth="true" prefHeight="100.0" prefWidth="300.0">
+                           <content>
+                              <Pane prefHeight="300.0" prefWidth="600.0" styleClass="pane">
+                                 <children>
+                                    <Button layoutY="300.0" mnemonicParsing="false" text="Button" />
+                                 </children>
+                              </Pane>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </JFXMasonryPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>
