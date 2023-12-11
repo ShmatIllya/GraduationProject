@@ -1,6 +1,0 @@
-.scroll-bar {
-    -fx-skin: "hs.mediasystem.util.javafx.control.MinimalScrollBarSkin";
-}
-.scroll-bar .track {
-    -fx-fill: transparent;
-}
