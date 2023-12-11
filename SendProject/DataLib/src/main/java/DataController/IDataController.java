@@ -45,39 +45,15 @@ public interface IDataController
     public Object AddProject(String[] arrStr);
     public Object GetTeamsList(String[] arrStr);
     public Object DeletePersonal(String[] arrStr);
+    public Object AddBusiness(String[] arrStr);
+    public Object GetBusinessInfo(String[] arrStr);
+    public Object UpdateBusiness(String[] arrStr);
+    public Object DeleteBusiness(String[] arrStr);
+    public Object AddComment(String[] arrStr);
+    public Object DeleteClient(String[] arrStr);
+    public Object ChangePaymentStatus(String[] arrStr);
+    public Object DeletePayment(String[] arrStr);
     //============================================================
     //============================================================
-    public Object AddSeries(String[] arrStr);
-    public Object UpdateSeriesPage(String[] arrStr);
-    public Object UpdateModelPage(String[] arrStr);
-    public Object AddModel(String[] arrStr);
-    public Object AddMalCode(String[] arrStr);
-    public Object UpdateMalCode(String[] arrStr);
-    public Object GetSystems(String[] arrStr);
-    public Object UpdateCodesPage(String[] arrStr);
-    public Object UpdateCausesPage(String[] arrStr);
-    public Object AddCause(String[] arrStr);
-    public Object UpdateCause(String[] arrStr);
-    public Object UpdateStepsPage(String[] arrStr);
-    public Object AddStep(String[] arrStr);
-    public Object SaveActions(String[] arrStr);
-    public Object UpdateStep(String[] arrStr);
-    public Object UpdateSystemsPage(String[] arrStr);
-    public Object AddSystem(String[] arrStr);
-    public Object UpdateSystem(String[] arrStr);
-    public Object DeleteSystem(String[] arrStr);
-    public Object UpdateManifestationsPage(String[] arrStr);
-    public Object AddManifestation(String[] arrStr);
-    public Object UpdateManifestation(String[] arrStr);
-    public Object DeleteManifestation(String[] arrStr);
-    public Object GetSystemOnce(String[] arrStr);
-    public void SetCauseAllocation(String[] arrStr);
-    public Object GetCauseResult(String[] arrStr);
-    public Object DeleteCode(String[] arrStr);
-    public Object DeleteCause(String[] arrStr);
-    public Object DeleteStep(String[] arrStr);
-    public Object DeleteSeries(String[] arrStr);
-    public Object UpdateSeries(String[] arrStr);
-    public Object DeleteModel(String[] arrStr);
-    public Object UpdateModel(String[] arrStr);
+
 }

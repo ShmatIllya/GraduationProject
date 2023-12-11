@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +23,7 @@ import java.util.*;
 import java.util.List;
 
 public class DataControllerSql implements IDataController {
+
     public static Statement sq;
     String s_res;
     Connection db;
@@ -49,6 +51,21 @@ public class DataControllerSql implements IDataController {
 
     public Object Registration(String[] arrStr) {
         transaction.begin();
+        TypedQuery<PersonalEntity> queryInit = entityManager.createQuery("SELECT e FROM PersonalEntity e", PersonalEntity.class);
+        if(queryInit.getResultList().isEmpty()) {
+            PersonalEntity personal = new PersonalEntity();
+            personal.setLogin(arrStr[1]);
+            personal.setPassword(arrStr[2]);
+            personal.setNameSername(arrStr[3]);
+            personal.setContacts(arrStr[4]);
+            personal.setEmail(arrStr[5]);
+            personal.setSubrole("Менеджер");
+            personal.setRole("control");
+            personal.setStatus("Активен");
+            entityManager.persist(personal);
+            s_res = "1/" + "\r";
+            return s_res;
+        }
         TypedQuery<PersonalEntity> query = entityManager.createQuery("SELECT e FROM PersonalEntity e where e.login =:login AND e.nameSername =:name and e.contacts =:contacts and e.email =:email", PersonalEntity.class);
         query.setParameter("login", arrStr[1]);
         query.setParameter("name", arrStr[3]);
@@ -163,7 +180,7 @@ public class DataControllerSql implements IDataController {
                     ">>" + resultPersonal.getContacts() + ">>" + resultPersonal.getEmail() + ">>" + resultPersonal.getRole() +
                     ">>" + resultPersonal.getSubrole() + ">>" + resultPersonal.getStatus() + ">>" + resultPersonal.getDescription() +
                     ">>" + resultPersonal.getRegDate() + "\r";
-            BufferedImage image = ImageIO.read(new File("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\" + resultPersonal.getImageName()));
+            BufferedImage image = ImageIO.read(getClass().getResource("/images/" + resultPersonal.getImageName()));
 
             //BufferedImage image = ImageIO.read(new File("/images/" + resultPersonal.getImageName()));
             s_res = infoS;
@@ -195,11 +212,11 @@ public class DataControllerSql implements IDataController {
             //resultPersonal.setStatus(arrStr[8]);
             resultPersonal.setDescription(arrStr[4]);
             //resultPersonal.setRegDate(Date.valueOf(LocalDate.parse(arrStr[10], formatter)));
-            Path path = Paths.get("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\" + resultPersonal.getImageName());
+            Path path = Paths.get(getClass().getResource("/images/" + resultPersonal.getImageName()).toURI());
             Files.delete(path);
             String newFileName = CreateImageName();
             resultPersonal.setImageName(newFileName);
-            ImageIO.write(image, "PNG", new File("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\" + newFileName));
+            ImageIO.write(image, "PNG", new File(getClass().getResource("/images/" + newFileName).toURI()));
             entityManager.merge(resultPersonal);
             s_res = "success" + "\r";
             //================================Notification==========================
@@ -289,11 +306,12 @@ public class DataControllerSql implements IDataController {
             List<JournalsEntity> journalsEntityList = (List<JournalsEntity>) client.getJournalsByClientsId();
             List<CommentsEntity> commentsEntityList = (List<CommentsEntity>) journalsEntityList.get(0).getCommentsByJournalsId();
             for(TasksEntity task: tasksEntityList) {
-                s_res += task.getName() + "<<";
+                s_res += task.getTasksId() + "^^" + task.getName() + "<<";
             }
             s_res += ">>";
             for(BusinessEntity business: businessEntityList) {
-                s_res += business.getName() + "<<";
+                s_res += business.getBusinessId() + "^^" + business.getName() + " от "
+                        + business.getDate().toString().split("T")[0] + "<<";
             }
             s_res += ">>";
             for(ProcessesEntity process: processesEntityList) {
@@ -308,7 +326,7 @@ public class DataControllerSql implements IDataController {
         }
         catch (Exception e) {
             s_res = "null" + "\r";
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         transaction.commit();
         entityManager.clear();
@@ -335,6 +353,7 @@ public class DataControllerSql implements IDataController {
             client.setPhone(arrStr[3]);
             client.setAdress(arrStr[4]);
             client.setDescription(arrStr[5]);
+            client.setReg_date(Date.valueOf(LocalDate.now()));
             client.setResponsableId(pers.getPersonalId());
             entityManager.persist(client);
 
@@ -551,7 +570,8 @@ public class DataControllerSql implements IDataController {
             query.setParameter("id", arrStr[1]);
             PaymentsEntity payment = query.getSingleResult();
             s_res = payment.getCreationDate() + ">>" + payment.getClientsByPaymenterId().getName() + ">>"
-                    + payment.getClientsByRecieverId().getName() + ">>" + payment.getItemsByItemId().getItemId() + "<<"
+                    + payment.getClientsByRecieverId().getName() + ">>"
+                    + payment.getStatus() + ">>" + payment.getItemsByItemId().getItemId() + "<<"
                     + payment.getItemsByItemId().getName() + "<<" + payment.getItemsByItemId().getMeasurement() + "<<"
                     + payment.getAmount() + "<<" + payment.getItemsByItemId().getPrice() + "<<"
                     + payment.getItemsByItemId().getTaxes() + "<<"
@@ -891,13 +911,13 @@ public class DataControllerSql implements IDataController {
                 }
                 try {
                     //BufferedImage image = ImageIO.read(new File("/resources/images/" + chat.getImageName()));
-                    BufferedImage image = ImageIO.read(new File("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\" + chat.getImageName()));
+                    BufferedImage image = ImageIO.read(getClass().getResource("/images/" + chat.getImageName()));
                     globalImageList.add(image);
                 }
                 catch (Exception e) {
                     System.out.println(e);
                     //BufferedImage image = ImageIO.read(new File("/images/1.png"));
-                    BufferedImage image = ImageIO.read(new File("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\1.png"));
+                    BufferedImage image = ImageIO.read(getClass().getResource("/images/1.png"));
                     globalImageList.add(image);
                 }
 
@@ -937,7 +957,7 @@ public class DataControllerSql implements IDataController {
 
                 String newFileName = CreateImageName();
                 chat.setImageName(newFileName);
-                ImageIO.write(image, "PNG", new File("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\" + newFileName));
+                ImageIO.write(image, "PNG", new File(getClass().getResource("/images/" + newFileName).toURI()));
                 entityManager.persist(chat);
 
                 query = entityManager.createQuery("SELECT e FROM ChatsEntity e where e.name =:name", ChatsEntity.class);
@@ -991,16 +1011,16 @@ public class DataControllerSql implements IDataController {
             for(ChatMembersEntity member: membersList) {
                 try {
                     //BufferedImage image = ImageIO.read(new File("/resources/images/" + chat.getImageName()));
-                    BufferedImage image = ImageIO.read(new File(
-                            "D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\"
+                    BufferedImage image = ImageIO.read(getClass().getResource(
+                            "/images/"
                                     + member.getPersonalByPersonalId().getImageName()));
                     globalImageList.add(image);
                     globalNameSernameList.add(member.getPersonalByPersonalId().getNameSername());
                 } catch (Exception e) {
                     e.printStackTrace();
                     //BufferedImage image = ImageIO.read(new File("/images/1.png"));
-                    BufferedImage image = ImageIO.read(new File(
-                            "D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\1.png"));
+                    BufferedImage image = ImageIO.read(getClass().getResource(
+                            "/images/1.png"));
                     globalImageList.add(image);
                     globalNameSernameList.add(member.getPersonalByPersonalId().getNameSername());
                 }
@@ -1263,783 +1283,203 @@ public class DataControllerSql implements IDataController {
         entityManager.clear();
         return s_res;
     }
-    //==============================================================================================
-    //==============================================================================================
-    //==============================================================================================
-    public Object AddSeries(String[] arrStr) {
-        try {
-            String sq_str_check = "Select * FROM belaz";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            boolean SeriesCheck = true;
 
-            while (res.next()) {
-                if (res.getString("Series").equals(arrStr[1])) {
-                    SeriesCheck = false;
+    public Object AddBusiness(String[] arrStr) {
+        s_res = "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        transaction.begin();
+        try {
+            TypedQuery<PersonalEntity> queryP = entityManager.createQuery("SELECT e FROM PersonalEntity e" +
+                    " WHERE e.nameSername =:nameSername", PersonalEntity.class);
+            queryP.setParameter("nameSername", arrStr[6]);
+            PersonalEntity personal = queryP.getSingleResult();
+            BusinessEntity businessEntity = new BusinessEntity();
+            businessEntity.setName(arrStr[1]);
+            businessEntity.setDate(LocalDateTime.parse(arrStr[2], formatter));
+            businessEntity.setStatus(arrStr[3]);
+            switch (arrStr[4]) {
+                case "Клиент": {
+                    TypedQuery<ClientsEntity> queryC = entityManager.createQuery("SELECT e FROM ClientsEntity e" +
+                            " WHERE e.name =:name", ClientsEntity.class);
+                    queryC.setParameter("name", arrStr[5]);
+                    businessEntity.setClientId(queryC.getSingleResult().getClientsId());
+                    break;
+                }
+                case "Процесс": {
+                    businessEntity.setProcessId(Integer.parseInt(arrStr[5]));
+                    break;
+                }
+                case "Задача": {
+                    TypedQuery<TasksEntity> queryT = entityManager.createQuery("SELECT e FROM TasksEntity e" +
+                            " WHERE e.name =:name", TasksEntity.class);
+                    queryT.setParameter("name", arrStr[5]);
+                    businessEntity.setTaskID(queryT.getSingleResult().getTasksId());
                     break;
                 }
             }
-            if (SeriesCheck) {
-                sq_str_check = "INSERT INTO belaz(Series, Model, imageM) VALUES ('" + arrStr[1] + "', '" + arrStr[2] + "', '" + arrStr[3] + "')";
-                sq.executeUpdate(sq_str_check);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateSeriesPage(String[] arrStr) {
-        try {
-            x = new StringBuffer();
-            String sq_str = "SELECT Series FROM belaz";
-            ResultSet res = sq.executeQuery(sq_str);
-            while (res.next()) {
-                x.append(res.getString("Series") + ">>");
-            }
+            businessEntity.setResponsableId(personal.getPersonalId());
+            entityManager.persist(businessEntity);
+            s_res = "success" + "\r";
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
+            s_res = "null" + "\r";
         }
-        return x.toString() + "\r";
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
     }
 
-    public Object UpdateModelPage(String[] arrStr) {
+    public Object GetBusinessInfo(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
         try {
-            x = new StringBuffer();
-            String sq_str = "SELECT Model, imageM FROM belaz WHERE SERIES = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str);
-            while (res.next()) {
-                x.append(res.getString("Model") + ">>" + res.getString("imageM") + ">>");
-            }
+            BusinessEntity business = entityManager.getReference(BusinessEntity.class, Integer.parseInt(arrStr[1]));
+            String[] dateSplit = business.getDate().toString().split("T");
+            s_res = business.getName() + ">>" + dateSplit[0] + ">>" + dateSplit[1] + ">>" + business.getDescription()
+                    + ">>" + business.getPlace() + ">>" + business.getPersonalByResponsableId().getNameSername() + "\r";
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
+            s_res = "null" + "\r";
         }
-        return x.toString() + "\r";
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
     }
 
-    public Object AddModel(String[] arrStr) {
+    public Object DeleteBusiness(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
         try {
-            String sq_str_check = "Select Model FROM belaz WHERE Series = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            boolean ModelCheck = true;
+            BusinessEntity business = entityManager.getReference(BusinessEntity.class, Integer.parseInt(arrStr[1]));
+            entityManager.remove(business);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
 
-            while (res.next()) {
-                if (res.getString("Model").equals(arrStr[2])) {
-                    ModelCheck = false;
+    public Object UpdateBusiness(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
+        try {
+            BusinessEntity business = entityManager.getReference(BusinessEntity.class, Integer.parseInt(arrStr[1]));
+            business.setDescription(arrStr[2]);
+            business.setPlace(arrStr[3]);
+            entityManager.merge(business);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object AddComment(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
+        try {
+            TypedQuery<JournalsEntity> queryJ;
+            TypedQuery<PersonalEntity> queryP = entityManager.createQuery("SELECT e FROM PersonalEntity e" +
+                    " where e.nameSername =:nameSername", PersonalEntity.class);
+            queryP.setParameter("nameSername", arrStr[1]);
+            int personalId = queryP.getSingleResult().getPersonalId();
+            CommentsEntity comment = new CommentsEntity();
+            switch (arrStr[4]) {
+                case "Клиент": {
+                    TypedQuery<ClientsEntity> queryC = entityManager.createQuery("SELECT e FROM ClientsEntity e" +
+                            " where e.name =:name", ClientsEntity.class);
+                    queryC.setParameter("name", arrStr[3]);
+                    queryJ = entityManager.createQuery("SELECT e FROM JournalsEntity e" +
+                            " where e.clientId =:id", JournalsEntity.class);
+                    queryJ.setParameter("id", queryC.getSingleResult().getClientsId());
+                    comment.setDate(Date.valueOf(LocalDate.now()));
+                    comment.setText(arrStr[2]);
+                    comment.setSenderId(personalId);
+                    comment.setJournalId(queryJ.getSingleResult().getJournalsId());
+                    break;
+                }
+                case "Задача": {
+                    break;
+                }
+                case "Проект": {
+                    break;
+                }
+                case "Процесс": {
                     break;
                 }
             }
-            if (ModelCheck) {
-                sq_str_check = "INSERT INTO belaz(Series, Model, imageM) VALUES ('" + arrStr[1] + "', '" + arrStr[2] + "', '" + arrStr[3] + "')";
-                sq.executeUpdate(sq_str_check);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object AddMalCode(String[] arrStr) {
-        try {
-            String sq_str_check = "Select * FROM malfunction_code inner join belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE belaz.Series = '" + arrStr[4] + "' AND belaz.Model = '" + arrStr[5] + "'";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            boolean CodeCheck = true;
-            while (res.next()) {
-                if (res.getString("code").equals(arrStr[1]) || res.getString("full_code").equals(arrStr[2])) {
-                    CodeCheck = false;
-                    s_res = "null" + "\r";
-                    break;
-                }
-            }
-            if (CodeCheck) {
-                sq_str_check = "Select systems.Text FROM systems INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[4] + "' AND belaz.Model = '" + arrStr[5] + "'";
-                res = sq.executeQuery(sq_str_check);
-                boolean SeriesCheck = false;
-
-                while (res.next()) {
-                    if (res.getString("systems.Text").equals(arrStr[3])) {
-                        SeriesCheck = true;
-                        break;
-                    }
-                }
-                if (!SeriesCheck) {
-                    sq_str_check = "INSERT INTO systems(Text) VALUES ('" + arrStr[3] + "')";
-                    sq.executeUpdate(sq_str_check);
-                }
-                sq_str_check = "SELECT id FROM belaz WHERE Series = '" + arrStr[4] + "' AND Model = '" + arrStr[5] + "'";
-                res = sq.executeQuery(sq_str_check);
-                res.next();
-                String belaz_id = res.getString("id");
-                sq_str_check = "SELECT id FROM systems WHERE Text = '" + arrStr[3] + "'";
-                res = sq.executeQuery(sq_str_check);
-                res.next();
-                String sys_id = res.getString("id");
-                sq_str_check = "SELECT id FROM belaz_systems WHERE systems_id = " + sys_id + " AND belaz_id = " + belaz_id;
-                res = sq.executeQuery(sq_str_check);
-                if (!res.next()) {
-                    sq_str_check = "INSERT INTO belaz_systems(belaz_id, systems_id) VALUES (" + belaz_id + ", " + sys_id + ")";
-                    sq.executeUpdate(sq_str_check);
-                }
-                sq_str_check = "INSERT INTO malfunction_code(systems_id, code, full_code) VALUES (" + sys_id + ", '" + arrStr[1] + "', '" + arrStr[2] + "')";
-                sq.executeUpdate(sq_str_check);
-                sq_str_check = "SELECT id FROM malfunction_code WHERE code = '" + arrStr[1] + "' AND full_code = '" + arrStr[2] + "'";
-                res = sq.executeQuery(sq_str_check);
-                res.next();
-                sq_str_check = "INSERT INTO belaz_malfunction_code(belaz_id, malfunction_code_id) VALUES (" + belaz_id + ", " + res.getString("id") + ")";
-                sq.executeUpdate(sq_str_check);
-                s_res = "1" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateMalCode(String[] arrStr) {
-        try {
-            String sq_str_check = "Select * FROM malfunction_code inner join belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE belaz.Series = '" + arrStr[5] + "' AND belaz.Model = '" + arrStr[6] + "' AND NOT malfunction_code.code = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            boolean CodeCheck = true;
-            while (res.next()) {
-                if (res.getString("code").equals(arrStr[2]) || res.getString("full_code").equals(arrStr[3])) {
-                    CodeCheck = false;
-                    s_res = "null" + "\r";
-                    break;
-                }
-            }
-            if (CodeCheck) {
-                sq_str_check = "Select Text FROM systems";
-                res = sq.executeQuery(sq_str_check);
-                boolean SeriesCheck = false;
-
-                while (res.next()) {
-                    if (res.getString("Text").equals(arrStr[4])) {
-                        SeriesCheck = true;
-                        break;
-                    }
-                }
-                if (!SeriesCheck) {
-                    sq_str_check = "INSERT INTO systems(Text) VALUES ('" + arrStr[4] + "')";
-                    sq.executeUpdate(sq_str_check);
-                }
-                sq_str_check = "SELECT id FROM belaz WHERE Series = '" + arrStr[5] + "' AND Model = '" + arrStr[6] + "'";
-                res = sq.executeQuery(sq_str_check);
-                res.next();
-                String belaz_id = res.getString("id");
-                sq_str_check = "SELECT id FROM systems WHERE Text = '" + arrStr[4] + "'";
-                res = sq.executeQuery(sq_str_check);
-                res.next();
-                String sys_id = res.getString("id");
-                sq_str_check = "SELECT id FROM belaz_systems WHERE systems_id = " + sys_id + " AND belaz_id = " + belaz_id;
-                res = sq.executeQuery(sq_str_check);
-                if (!res.next()) {
-                    sq_str_check = "INSERT INTO belaz_systems(belaz_id, systems_id) VALUES (" + belaz_id + ", " + sys_id + ")";
-                    sq.executeUpdate(sq_str_check);
-                }
-                sq_str_check = "UPDATE malfunction_code SET systems_id = " + sys_id + ", code = '" + arrStr[2] + "', full_code = '" + arrStr[3] + "' WHERE code = " + arrStr[1] + " AND systems_id = " + sys_id;
-                sq.executeUpdate(sq_str_check);
-                s_res = "1" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object GetSystems(String[] arrStr) {
-        try {
-            String sq_str_check = "SELECT systems.Text FROM systems INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "'";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            StringBuffer buf = new StringBuffer();
-            while (res.next()) {
-                buf.append(res.getString("systems.Text") + ">>");
-            }
-            s_res = buf.toString() + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateCodesPage(String[] arrStr) {
-        try {
-            ArrayList<String> strList = new ArrayList<String>();
-            StringBuffer buf = new StringBuffer();
-            String sq_str_check = "SELECT malfunction_code.id, malfunction_code.code, malfunction_code.full_code, systems.Text FROM malfunction_code INNER JOIN systems ON systems.id = malfunction_code.systems_id INNER JOIN belaz_malfunction_code ON malfunction_code.id = belaz_malfunction_code.malfunction_code_id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "'";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            while (res.next()) {
-                strList.add(res.getString("malfunction_code.id"));
-                strList.add(res.getString("malfunction_code.code"));
-                strList.add(res.getString("malfunction_code.full_code"));
-                strList.add(res.getString("systems.Text"));
-            }
-            res.close();
-            for (int i = 0; i < strList.size(); i += 4) {
-                sq_str_check = "SELECT malfunction_cause.text FROM malfunction_cause INNER JOIN malfunction_code_reasons ON malfunction_code_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_code ON malfunction_code.id = malfunction_code_reasons.code_id INNER JOIN belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id INNER JOIN belaz_systems ON belaz_systems.belaz_id = belaz.id INNER JOIN systems ON belaz_systems.systems_id = systems.id WHERE malfunction_code.id = " + strList.get(i) + " AND belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "' AND systems.Text = '" + strList.get(i + 3) + "'";
-                ResultSet res2 = sq.executeQuery(sq_str_check);
-                buf.append(strList.get(i + 1) + ">>" + strList.get(i + 2) + ">>" + strList.get(i + 3) + ">>");
-                while (res2.next()) {
-                    buf.append(res2.getString("malfunction_cause.text") + "<<");
-                }
-                buf.append(">>");
-                res2.close();
-            }
-            s_res = buf.toString() + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateCausesPage(String[] arrStr) {
-        try {
-            if (causeAllocation.equals("0")) {
-                String sq_str_check = "SELECT malfunction_cause.text FROM malfunction_cause INNER JOIN malfunction_code_reasons ON malfunction_code_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_code ON malfunction_code.id = malfunction_code_reasons.code_id INNER JOIN belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE malfunction_code.full_code = '" + arrStr[3] + "' AND belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "'";
-                ResultSet res = sq.executeQuery(sq_str_check);
-                StringBuffer buf = new StringBuffer();
-                while (res.next()) {
-                    buf.append(res.getString("malfunction_cause.text") + ">>");
-                }
-                s_res = buf.toString() + "\r";
-            } else {
-                s_res = UpdateCausesPage2(arrStr);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object AddCause(String[] arrStr) {
-        try {
-            if (causeAllocation.equals("0")) {
-                String sq_str_quary = "SELECT malfunction_cause.text FROM malfunction_cause INNER JOIN malfunction_code_reasons ON malfunction_code_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_code ON malfunction_code.id = malfunction_code_reasons.code_id INNER JOIN belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_code.full_code = '" + arrStr[5] + "' AND belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND malfunction_cause.systems_id = malfunction_code.systems_id";
-                ResultSet res = sq.executeQuery(sq_str_quary);
-                if (!res.next()) {
-                    sq_str_quary = "SELECT malfunction_code.systems_id, malfunction_code.id FROM malfunction_code INNER JOIN belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE malfunction_code.full_code = '" + arrStr[5] + "' AND belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "'";
-                    res = sq.executeQuery(sq_str_quary);
-                    res.next();
-                    String system_id = res.getString("malfunction_code.systems_id");
-                    String code_id = res.getString("malfunction_code.id");
-                    sq_str_quary = "SELECT malfunction_cause.id FROM malfunction_cause INNER JOIN belaz_systems ON belaz_systems.systems_id = malfunction_cause.systems_id INNER JOIN belaz ON belaz_systems.belaz_id = belaz.id WHERE belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_cause.systems_id = '" + system_id + "'";
-                    res = sq.executeQuery(sq_str_quary);
-                    if (!res.next()) {
-                        sq_str_quary = "INSERT INTO malfunction_cause(systems_id, text, result) VALUES (" + system_id + ", '" + arrStr[1] + "', '" + arrStr[2] + "')";
-                        sq.executeUpdate(sq_str_quary);
-                    }
-                    sq_str_quary = "SELECT malfunction_cause.id FROM malfunction_cause WHERE systems_id = " + system_id + " AND text = '" + arrStr[1] + "'";
-                    res = sq.executeQuery(sq_str_quary);
-                    res.next();
-                    String cause_id = res.getString("id");
-                    sq_str_quary = "INSERT INTO malfunction_code_reasons(code_id, cause_id) VALUES (" + code_id + ", " + cause_id + ")";
-                    sq.executeUpdate(sq_str_quary);
-                    s_res = "1" + "\r";
-                } else {
-                    s_res = "null" + "\r";
-                }
-            } else {
-                s_res = AddCause2(arrStr);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateCause(String[] arrStr) {
-        try {
-            if (causeAllocation.equals("0")) {
-                String sq_str_query = "SELECT malfunction_cause.text, malfunction_cause.result FROM malfunction_cause INNER JOIN malfunction_code_reasons ON malfunction_code_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_code ON malfunction_code.id = malfunction_code_reasons.code_id INNER JOIN belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE malfunction_cause.text = '" + arrStr[2] + "' AND malfunction_code.full_code = '" + arrStr[6] + "' AND NOT malfunction_cause.text = '" + arrStr[1] + "' AND belaz.Series = '" + arrStr[4] + "' belaz.Model = '" + arrStr[5] + "'";
-                ResultSet res = sq.executeQuery(sq_str_query);
-                if (!res.next()) {
-                    sq_str_query = "UPDATE malfunction_cause INNER JOIN malfunction_code_reasons ON malfunction_code_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_code ON malfunction_code.id = malfunction_code_reasons.code_id SET malfunction_cause.text = '" + arrStr[2] + "', malfunction_cause.result = '" + arrStr[3] + "' WHERE malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_code.full_code = '" + arrStr[6] + "'";
-                    sq.executeUpdate(sq_str_query);
-                    s_res = "1" + "\r";
-                } else {
-                    s_res = "null" + "\r";
-                }
-            } else {
-                s_res = UpdateCause2(arrStr);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateStepsPage(String[] arrStr) {
-        try {
-            StringBuffer buf = new StringBuffer();
-            String sq_str_query = "SELECT resolve_steps.id, resolve_steps.Title, resolve_steps.Question FROM resolve_steps INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE resolve_steps.step_number = " + arrStr[1] + " AND belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND malfunction_cause.text = '" + arrStr[5] + "' AND malfunction_cause.systems_id = " + arrStr[6];
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (res.next()) {
-                buf.append(res.getString("resolve_steps.Title") + ">>" + res.getString("resolve_steps.Question") + ">>");
-                String id = res.getString("resolve_steps.id");
-                sq_str_query = "SELECT text FROM actions WHERE steps_id = " + id + " ORDER BY action_number";
-                res = sq.executeQuery(sq_str_query);
-                while (res.next()) {
-                    buf.append(res.getString("text") + "<<");
-                }
-                buf.append(">>");
-                s_res = buf.toString() + "\r";
-            } else {
-                s_res = "" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object AddStep(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT resolve_steps.id, resolve_steps.Title, resolve_steps.Question FROM resolve_steps INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[4] + "' AND belaz.Model = '" + arrStr[5] + "' AND malfunction_cause.text = '" + arrStr[7] + "' AND resolve_steps.Title = '" + arrStr[1] + "' AND resolve_steps.Question = '" + arrStr[2] + "' AND malfunction_cause.systems_id = " + arrStr[8];
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "SELECT malfunction_cause.id FROM malfunction_cause INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[4] + "' AND belaz.Model = '" + arrStr[5] + "' AND malfunction_cause.text = '" + arrStr[7] + "' AND malfunction_cause.systems_id = " + arrStr[8];
-                res = sq.executeQuery(sq_str_query);
-                res.next();
-                String id = res.getString("malfunction_cause.id");
-                sq_str_query = "INSERT INTO resolve_steps(cause_id, Title, Question, step_number) VALUES (" + id + ", '" + arrStr[1] + "', '" + arrStr[2] + "', " + arrStr[3] + ")";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object SaveActions(String[] arrStr) {
-        try {
-            String[] actions = arrStr[1].split("<<");
-            int counter = 1;
-            String sq_str_query = "DELETE actions FROM actions INNER JOIN resolve_steps ON actions.steps_id = resolve_steps.id INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE resolve_steps.step_number = " + arrStr[2] + " AND belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND malfunction_cause.text = '" + arrStr[6] + "' AND malfunction_cause.systems_id = '" + arrStr[7] + "'";
-            sq.executeUpdate(sq_str_query);
-            sq_str_query = "SELECT resolve_steps.id FROM resolve_steps INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND resolve_steps.step_number = " + arrStr[2] + " AND malfunction_cause.text = '" + arrStr[6] + "' AND malfunction_cause.systems_id = '" + arrStr[7] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            res.next();
-            String id = res.getString("resolve_steps.id");
-            for (int i = 0; i < actions.length; i++) {
-                sq_str_query = "INSERT INTO actions(steps_id, text, action_number) VALUES (" + id + ", '" + actions[i] + "', " + counter + ")";
-                sq.executeUpdate(sq_str_query);
-                counter++;
-            }
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
+           entityManager.persist(comment);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
             s_res = "null" + "\r";
         }
+        transaction.commit();
+        entityManager.clear();
         return s_res;
     }
 
-    public Object UpdateStep(String[] arrStr) {
+    public Object DeleteClient(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
         try {
-            String sq_str_query = "SELECT resolve_steps.id, resolve_steps.Title, resolve_steps.Question FROM resolve_steps INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[5] + "' AND belaz.Model = '" + arrStr[6] + "' AND malfunction_cause.text = '" + arrStr[8] + "' AND resolve_steps.Title = '" + arrStr[2] + "' AND resolve_steps.Question = '" + arrStr[3] + "' AND NOT resolve_steps.Title = '" + arrStr[1] + "' AND malfunction_cause.systems_id = " + arrStr[9];
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "UPDATE resolve_steps INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id SET resolve_steps.Title = '" + arrStr[2] + "', resolve_steps.Question = '" + arrStr[3] + "' WHERE belaz.Series = '" + arrStr[5] + "' AND belaz.Model = '" + arrStr[6] + "' AND malfunction_cause.text = '" + arrStr[8] + "' AND malfunction_cause.systems_id = " + arrStr[9];
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateSystemsPage(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT systems.Text FROM systems INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            StringBuffer buf = new StringBuffer();
-            while (res.next()) {
-                buf.append(res.getString("systems.Text") + ">>");
-            }
-            s_res = buf.toString() + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object AddSystem(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT systems.id FROM systems INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[2] + "' AND belaz.model = '" + arrStr[3] + "' AND systems.Text = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                //sq_str_query = "SELECT id FROM systems WHERE Text = '" + arrStr[1] + "'";
-                //res = sq.executeQuery(sq_str_query);
-                // if(!res.next()) {
-                sq_str_query = "INSERT INTO systems(Text) VALUES ('" + arrStr[1] + "')";
-                sq.executeUpdate(sq_str_query);
-                //}
-                sq_str_query = "SELECT id FROM systems WHERE Text = '" + arrStr[1] + "'";
-                res = sq.executeQuery(sq_str_query);
-                res.next();
-                String systems_id = res.getString("id");
-                sq_str_query = "SELECT id FROM belaz WHERE Series = '" + arrStr[2] + "' AND Model = '" + arrStr[3] + "'";
-                res = sq.executeQuery(sq_str_query);
-                res.next();
-                String belaz_id = res.getString("id");
-                sq_str_query = "INSERT INTO belaz_systems(systems_id, belaz_id) VALUES (" + systems_id + ", " + belaz_id + ")";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateSystem(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT systems.id FROM systems INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[3] + "' AND belaz.model = '" + arrStr[4] + "' AND systems.Text = '" + arrStr[2] + "' AND NOT sistems.Text = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "UPDATE systems SET Text = '" + arrStr[2] + "' WHERE Text = '" + arrStr[1] + "'";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object DeleteSystem(String[] arrStr) {
-        try {
-            String sq_str_quary = "DELETE FROM systems WHERE Text = '" + arrStr[1] + "'";
-            sq.executeUpdate(sq_str_quary);
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            s_res = "null" + "\r";
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateManifestationsPage(String[] arrStr) {
-        try {
-            StringBuffer buf = new StringBuffer();
-            String sq_str_check = "SELECT malfunction_manifestation.id, malfunction_manifestation.Test, systems.Text FROM malfunction_manifestation INNER JOIN systems ON systems.id = malfunction_manifestation.systems_id INNER JOIN belaz_malfunction_manifestation ON malfunction_manifestation.id = belaz_malfunction_manifestation.malfunction_manifestation_id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "' AND systems.text = '" + arrStr[3] + "'";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            while (res.next()) {
-                buf.append(res.getString("malfunction_manifestation.Test") + ">>");
-            }
-            s_res = buf.toString() + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object AddManifestation(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT malfunction_manifestation.id, malfunction_manifestation.Test, systems.Text FROM malfunction_manifestation INNER JOIN systems ON systems.id = malfunction_manifestation.systems_id INNER JOIN belaz_malfunction_manifestation ON malfunction_manifestation.id = belaz_malfunction_manifestation.malfunction_manifestation_id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND systems.Text = '" + arrStr[4] + "' AND malfunction_manifestation.Test = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "SELECT id FROM belaz WHERE Series = '" + arrStr[2] + "' AND Model = '" + arrStr[3] + "'";
-                res = sq.executeQuery(sq_str_query);
-                res.next();
-                String belaz_id = res.getString("id");
-                sq_str_query = "SELECT systems.id FROM systems INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND systems.Text = '" + arrStr[4] + "'";
-                res = sq.executeQuery(sq_str_query);
-                res.next();
-                sq_str_query = "INSERT INTO malfunction_manifestation(systems_id, Test) VALUES (" + res.getString("systems.id") + ", '" + arrStr[1] + "')";
-                sq.executeUpdate(sq_str_query);
-                sq_str_query = "SELECT malfunction_manifestation.id FROM malfunction_manifestation INNER JOIN systems ON systems.id = malfunction_manifestation.systems_id INNER JOIN belaz_systems ON systems.id = belaz_systems.systems_id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND systems.Text = '" + arrStr[4] + "' AND malfunction_manifestation.Test = '" + arrStr[1] + "'";
-                res = sq.executeQuery(sq_str_query);
-                res.next();
-                sq_str_query = "INSERT INTO belaz_malfunction_manifestation(belaz_id, malfunction_manifestation_id) VALUES (" + belaz_id + ", " + res.getString("malfunction_manifestation.id") + ")";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object UpdateManifestation(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT malfunction_manifestation.id, malfunction_manifestation.Test, systems.Text FROM malfunction_manifestation INNER JOIN systems ON systems.id = malfunction_manifestation.systems_id INNER JOIN belaz_malfunction_manifestation ON malfunction_manifestation.id = belaz_malfunction_manifestation.malfunction_manifestation_id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND systems.Text = '" + arrStr[5] + "' AND malfunction_manifestation.Test = '" + arrStr[2] + "' AND NOT malfunction_manifestation.Test = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "UPDATE malfunction_manifestation INNER JOIN systems ON systems.id = malfunction_manifestation.systems_id INNER JOIN belaz_malfunction_manifestation ON malfunction_manifestation.id = belaz_malfunction_manifestation.malfunction_manifestation_id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id SET malfunction_manifestation.Test = '" + arrStr[2] + "' WHERE belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND systems.Text = '" + arrStr[5] + "' AND malfunction_manifestation.Test = '" + arrStr[1] + "'";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object DeleteManifestation(String[] arrStr) {
-        try {
-            String sq_str_query = "DELETE malfunction_manifestation FROM malfunction_manifestation INNER JOIN systems ON systems.id = malfunction_manifestation.systems_id INNER JOIN belaz_malfunction_manifestation ON malfunction_manifestation.id = belaz_malfunction_manifestation.malfunction_manifestation_id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND systems.Text = '" + arrStr[4] + "' AND malfunction_manifestation.Test = '" + arrStr[1] + "'";
-            sq.executeUpdate(sq_str_query);
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            s_res = "null" + "\r";
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object GetSystemOnce(String[] arrStr) {
-        try {
-            if (causeAllocation.equals("0")) {
-                String sq_str_check = "SELECT systems.id FROM systems INNER JOIN malfunction_code ON malfunction_code.systems_id = systems.id INNER JOIN belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "' AND malfunction_code.full_code = '" + arrStr[3] + "'";
-                ResultSet res = sq.executeQuery(sq_str_check);
-                res.next();
-                s_res = res.getString("systems.id") + "\r";
-            } else {
-                s_res = GetSystemOnce2(arrStr);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public void SetCauseAllocation(String[] arrStr) {
-        causeAllocation = arrStr[1];
-    }
-
-    //===================================================================================
-    //===================================================================================
-    public String UpdateCausesPage2(String[] arrStr) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!");
-        String s_res = "";
-        try {
-            String sq_str_check = "SELECT malfunction_cause.text FROM malfunction_cause INNER JOIN malfunction_manifestation_reasons ON malfunction_manifestation_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_manifestation ON malfunction_manifestation.id = malfunction_manifestation_reasons.manifestation_id INNER JOIN belaz_malfunction_manifestation ON belaz_malfunction_manifestation.malfunction_manifestation_id = malfunction_manifestation.id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE malfunction_manifestation.Test = '" + arrStr[3] + "' AND belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "' AND malfunction_manifestation.systems_id = malfunction_cause.systems_id";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            StringBuffer buf = new StringBuffer();
-            while (res.next()) {
-                buf.append(res.getString("malfunction_cause.text") + ">>");
-            }
-            s_res = buf.toString() + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public String AddCause2(String[] arrStr) {
-        String s_res = "";
-        try {
-            String sq_str_quary = "SELECT malfunction_cause.text FROM malfunction_cause INNER JOIN malfunction_manifestation_reasons ON malfunction_manifestation_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_manifestation ON malfunction_manifestation.id = malfunction_manifestation_reasons.manifestation_id INNER JOIN belaz_malfunction_manifestation ON belaz_malfunction_manifestation.malfunction_manifestation_id = malfunction_manifestation.id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_manifestation.Test = '" + arrStr[5] + "' AND belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND malfunction_cause.systems_id = malfunction_manifestation.systems_id";
-            ResultSet res = sq.executeQuery(sq_str_quary);
-            if (!res.next()) {
-                sq_str_quary = "SELECT malfunction_manifestation.systems_id, malfunction_manifestation.id FROM malfunction_manifestation INNER JOIN belaz_malfunction_manifestation ON belaz_malfunction_manifestation.malfunction_manifestation_id = malfunction_manifestation.id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE malfunction_manifestation.Test = '" + arrStr[5] + "' AND belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "'";
-                res = sq.executeQuery(sq_str_quary);
-                res.next();
-                String system_id = res.getString("malfunction_manifestation.systems_id");
-                String code_id = res.getString("malfunction_manifestation.id");
-                sq_str_quary = "SELECT malfunction_cause.id FROM malfunction_cause INNER JOIN belaz_systems ON belaz_systems.systems_id = malfunction_cause.systems_id INNER JOIN belaz ON belaz_systems.belaz_id = belaz.id WHERE belaz.Series = '" + arrStr[3] + "' AND belaz.Model = '" + arrStr[4] + "' AND malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_cause.systems_id = '" + system_id + "'";
-                res = sq.executeQuery(sq_str_quary);
-                if (!res.next()) {
-                    sq_str_quary = "INSERT INTO malfunction_cause(systems_id, text, result) VALUES (" + system_id + ", '" + arrStr[1] + "', '" + arrStr[2] + "')";
-                    sq.executeUpdate(sq_str_quary);
-                }
-                sq_str_quary = "SELECT malfunction_cause.id FROM malfunction_cause WHERE systems_id = " + system_id + " AND text = '" + arrStr[1] + "'";
-                res = sq.executeQuery(sq_str_quary);
-                res.next();
-                String cause_id = res.getString("id");
-                sq_str_quary = "INSERT INTO malfunction_manifestation_reasons(manifestation_id, cause_id) VALUES (" + code_id + ", " + cause_id + ")";
-                sq.executeUpdate(sq_str_quary);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public String UpdateCause2(String[] arrStr) {
-        String s_res = "";
-        try {
-            String sq_str_query = "SELECT malfunction_cause.text, malfunction_cause.result FROM malfunction_cause INNER JOIN malfunction_manifestation_reasons ON malfunction_manifestation_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_manifestation ON malfunction_manifestation.id = malfunction_manifestation_reasons.manifestation_id INNER JOIN belaz_malfunction_manifestation ON belaz_malfunction_manifestation.malfunction_manifestation_id = malfunction_manifestation.id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE malfunction_cause.text = '" + arrStr[2] + "' AND malfunction_manifestation.Test = '" + arrStr[6] + "' AND NOT malfunction_cause.text = '" + arrStr[1] + "' AND belaz.Series = '" + arrStr[4] + "' belaz.Model = '" + arrStr[5] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "UPDATE malfunction_cause INNER JOIN malfunction_manifestation_reasons ON malfunction_manifestation_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_manifestation ON malfunction_manifestation.id = malfunction_manifestation_reasons.manifestation_id SET malfunction_cause.text = '" + arrStr[2] + "', malfunction_cause.result = '" + arrStr[3] + "' WHERE malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_manifestation.Test = '" + arrStr[6] + "'";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public String GetSystemOnce2(String[] arrStr) {
-        String s_res = "";
-        try {
-            String sq_str_check = "SELECT systems.id FROM systems INNER JOIN malfunction_manifestation ON malfunction_manifestation.systems_id = systems.id INNER JOIN belaz_malfunction_manifestation ON belaz_malfunction_manifestation.malfunction_manifestation_id = malfunction_manifestation.id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "' AND malfunction_manifestation.Test = '" + arrStr[3] + "'";
-            ResultSet res = sq.executeQuery(sq_str_check);
-            res.next();
-            s_res = res.getString("systems.id") + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    //=======================================================================
-    //=======================================================================
-    public Object GetCauseResult(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT resolve_steps.id, malfunction_cause.result FROM resolve_steps INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[1] + "' AND belaz.Model = '" + arrStr[2] + "' AND malfunction_cause.text = '" + arrStr[4] + "' AND malfunction_cause.systems_id = " + arrStr[5];
-            ResultSet res = sq.executeQuery(sq_str_query);
-            res.next();
-            s_res = res.getString("malfunction_cause.result") + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return s_res;
-    }
-
-    public Object DeleteCode(String[] arrStr) {
-        try {
-            String sq_str_query = "DELETE malfunction_code FROM malfunction_code inner join belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND malfunction_code.full_code = '" + arrStr[1] + "'";
-            sq.executeUpdate(sq_str_query);
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
+            ClientsEntity client = entityManager.getReference(ClientsEntity.class, Integer.parseInt(arrStr[1]));
+            entityManager.remove(client);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
             s_res = "null" + "\r";
         }
+        transaction.commit();
+        entityManager.clear();
         return s_res;
     }
 
-    public Object DeleteCause(String[] arrStr) {
-        if (causeAllocation.equals("0")) {
-            try {
-                String sq_str_query = "DELETE malfunction_cause FROM malfunction_cause INNER JOIN malfunction_code_reasons ON malfunction_code_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_code ON malfunction_code.id = malfunction_code_reasons.code_id INNER JOIN belaz_malfunction_code ON belaz_malfunction_code.malfunction_code_id = malfunction_code.id INNER JOIN belaz ON belaz.id = belaz_malfunction_code.belaz_id WHERE malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_code.full_code = '" + arrStr[4] + "' AND belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND malfunction_cause.systems_id = malfunction_code.systems_id";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } catch (SQLException e) {
-                System.out.println(e);
-                s_res = "null" + "\r";
-            }
-        } else {
-            s_res = DeleteCause2(arrStr);
-        }
-        return s_res;
-    }
-
-    public String DeleteCause2(String[] arrStr) {
-        String s_res;
+    public Object ChangePaymentStatus(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
         try {
-            String sq_str_query = "DELETE malfunction_cause FROM malfunction_cause INNER JOIN malfunction_manifestation_reasons ON malfunction_manifestation_reasons.cause_id = malfunction_cause.id INNER JOIN malfunction_manifestation ON malfunction_manifestation.id = malfunction_manifestation_reasons.manifestation_id INNER JOIN belaz_malfunction_manifestation ON belaz_malfunction_manifestation.malfunction_manifestation_id = malfunction_manifestation.id INNER JOIN belaz ON belaz.id = belaz_malfunction_manifestation.belaz_id WHERE malfunction_cause.text = '" + arrStr[1] + "' AND malfunction_manifestation.Test = '" + arrStr[4] + "' AND belaz.Series = '" + arrStr[2] + "' AND belaz.Model = '" + arrStr[3] + "' AND malfunction_cause.systems_id = malfunction_manifestation.systems_id";
-            sq.executeUpdate(sq_str_query);
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
+            PaymentsEntity payment = entityManager.getReference(PaymentsEntity.class, Integer.parseInt(arrStr[1]));
+            payment.setStatus(arrStr[2]);
+            entityManager.merge(payment);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
             s_res = "null" + "\r";
         }
+        transaction.commit();
+        entityManager.clear();
         return s_res;
     }
 
-    public Object DeleteStep(String[] arrStr) {
+    public Object DeletePayment(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
         try {
-            String sq_str_query = "DELETE resolve_steps FROM resolve_steps INNER JOIN malfunction_cause ON malfunction_cause.id = resolve_steps.cause_id INNER JOIN systems ON systems.id = malfunction_cause.systems_id INNER JOIN belaz_systems ON belaz_systems.systems_id = systems.id INNER JOIN belaz ON belaz.id = belaz_systems.belaz_id WHERE belaz.Series = '" + arrStr[4] + "' AND belaz.Model = '" + arrStr[5] + "' AND malfunction_cause.text = '" + arrStr[7] + "' AND resolve_steps.Title = '" + arrStr[1] + "' AND resolve_steps.Question = '" + arrStr[2] + "' AND malfunction_cause.systems_id = " + arrStr[8];
-            sq.executeUpdate(sq_str_query);
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
+            PaymentsEntity payment = entityManager.getReference(PaymentsEntity.class, Integer.parseInt(arrStr[1]));
+            entityManager.remove(payment);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
             s_res = "null" + "\r";
         }
+        transaction.commit();
+        entityManager.clear();
         return s_res;
     }
+    //==============================================================================================
+    //==============================================================================================
+    //==============================================================================================
 
-    public Object DeleteSeries(String[] arrStr) {
-        try {
-            String sq_str_query = "DELETE FROM belaz WHERE Series = '" + arrStr[1] + "'";
-            sq.executeUpdate(sq_str_query);
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-            s_res = "null" + "\r";
-        }
-        return s_res;
-    }
-
-    @Override
-    public Object UpdateSeries(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT * FROM belaz WHERE Series = '" + arrStr[2] + "' AND NOT Series = '" + arrStr[1] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "UPDATE belaz SET Series = '" + arrStr[2] + "' WHERE Series = '" + arrStr[1] + "'";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-            s_res = "null" + "\r";
-        }
-        return s_res;
-    }
-
-    @Override
-    public Object DeleteModel(String[] arrStr) {
-        try {
-            String sq_str_query = "DELETE FROM belaz WHERE Series = '" + arrStr[2] + "' AND Model = '" + arrStr[1] + "'";
-            sq.executeUpdate(sq_str_query);
-            s_res = "1" + "\r";
-        } catch (SQLException e) {
-            System.out.println(e);
-            s_res = "null" + "\r";
-        }
-        return s_res;
-    }
-
-    @Override
-    public Object UpdateModel(String[] arrStr) {
-        try {
-            String sq_str_query = "SELECT * FROM belaz WHERE Series = '" + arrStr[4] + "' AND NOT Model = '" + arrStr[1] + "' AND Model = '" + arrStr[2] + "'";
-            ResultSet res = sq.executeQuery(sq_str_query);
-            if (!res.next()) {
-                sq_str_query = "UPDATE belaz SET Model = '" + arrStr[2] + "', imageM = '" + arrStr[3] + "' WHERE Series = '" + arrStr[4] + "' AND Model = '" + arrStr[1] + "'";
-                sq.executeUpdate(sq_str_query);
-                s_res = "1" + "\r";
-            } else {
-                s_res = "null" + "\r";
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-            s_res = "null" + "\r";
-        }
-        return s_res;
-    }
-
-    public String CreateImageName() throws IOException {
-        File dir = new File("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images");
+    public String CreateImageName() throws IOException, URISyntaxException {
+        File dir = new File(getClass().getResource("/images").toURI());
         Random rand = new Random();
         String fileName = String.valueOf(rand.nextInt(100000000)) + ".png";
         for (final File f : dir.listFiles()) {

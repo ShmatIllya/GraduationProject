@@ -3,6 +3,7 @@ package entity;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "business", schema = "crm", catalog = "")
@@ -22,7 +23,7 @@ public class BusinessEntity {
     private Integer clientId;
     @Basic
     @Column(name = "date")
-    private Date date;
+    private LocalDateTime date;
     @Basic
     @Column(name = "place")
     private String place;
@@ -83,11 +84,11 @@ public class BusinessEntity {
         this.clientId = clientId;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.Business.BusinessInfoController">
+   <children>
+      <VBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="560.0" spacing="5.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
+         <children>
+            <Label fx:id="nameLabel" text="Название дела" textFill="#2196f3">
+               <font>
+                  <Font size="20.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <TextFlow maxHeight="20.0" minHeight="0.0" minWidth="130.0" prefHeight="0.0" prefWidth="79.0">
+                     <children>
+                        <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="Дата" wrappingWidth="64.53668975830078">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextFlow>
+                  <TextField fx:id="dateField" editable="false" prefHeight="26.0" prefWidth="356.0" styleClass="tf_box" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" top="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <TextFlow maxHeight="20.0" minHeight="0.0" minWidth="130.0" prefHeight="0.0" prefWidth="79.0">
+                     <children>
+                        <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="Время" wrappingWidth="64.53668975830078">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextFlow>
+                  <TextField fx:id="timeField" editable="false" styleClass="tf_box" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="descriptionHBox" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <TextFlow maxHeight="20.0" minHeight="0.0" minWidth="130.0" prefHeight="0.0" prefWidth="79.0">
+                     <children>
+                        <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="Описание" wrappingWidth="64.53668975830078">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextFlow>
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <TextFlow maxHeight="20.0" minHeight="0.0" minWidth="130.0" prefHeight="0.0" prefWidth="79.0">
+                     <children>
+                        <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="Место" wrappingWidth="100.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextFlow>
+                  <TextField fx:id="placeField" prefHeight="26.0" prefWidth="200.0" styleClass="tf_box" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <TextFlow maxHeight="20.0" minHeight="0.0" minWidth="130.0" prefHeight="0.0" prefWidth="79.0">
+                     <children>
+                        <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="Организатор" wrappingWidth="64.53668975830078">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextFlow>
+                  <TextField fx:id="creatorField" editable="false" prefHeight="26.0" prefWidth="458.0" styleClass="tf_box" />
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="PlaceChipViewHere" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <TextFlow maxHeight="20.0" minHeight="0.0" minWidth="130.0" prefHeight="0.0" prefWidth="79.0">
+                     <children>
+                        <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="Участник" wrappingWidth="64.53668975830078">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </TextFlow>
+                  <TextField fx:id="memberField" editable="false" prefHeight="26.0" prefWidth="542.0" styleClass="tf_box" />
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+            </HBox>
+            <Label fx:id="ErrorLabel" text="Пароли не совпадают" textFill="RED" visible="false">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="190.0" />
+               </VBox.margin>
+            </Label>
+            <HBox spacing="10.0">
+               <VBox.margin>
+                  <Insets bottom="15.0" left="10.0" />
+               </VBox.margin>
+               <children>
+                  <JFXButton fx:id="completeButton" onAction="#OnCompleteButton" prefHeight="39.0" prefWidth="127.0" style="-fx-text-fill: #2196f3; -fx-border-color: #2196f3; -fx-border-radius: 5;" text="Завершить дело">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton fx:id="redactButton" onAction="#OnRedactButton" prefHeight="39.0" prefWidth="127.0" style="-fx-text-fill: #2196f3; -fx-border-color: #2196f3; -fx-border-radius: 5;" text="Редактировать">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton fx:id="cancelButton" onAction="#OnClose" prefHeight="38.0" prefWidth="130.0" style="-fx-border-color: white; -fx-border-radius: 5;" text="Назад" textFill="WHITE">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </JFXButton>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</StackPane>
