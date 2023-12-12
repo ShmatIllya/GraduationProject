@@ -44,17 +44,11 @@ public class Singleton {
     //===============================================================================
     //===============================OldValues=======================================
     //===============================================================================
-    private String[] CodeUpdateData = new String[3];
-    private String CauseUpdateData;
-    private String[] StepUpdateData = new String[2];
+
     private ArrayList<String> Path = new ArrayList<String>();
-    private String needColor = "";
-    private String SystemUpdateData = "";
-    private String ManifestationUpdateData = "";
+
     private String System;
-    private String SeriesUpdateData = "";
-    private String ModelUpdateData = "";
-    private ImageView ModelUpdateImage;
+
 
     public static Singleton getInstance() {
         if (instance == null) {
@@ -125,42 +119,7 @@ public class Singleton {
     public void setPath(String element) {
         Path.add(element);
     }
-    public void removePath(int index) { Path.remove(index); }
-    public String[] getCodeUpdateData()
-    {
-        return CodeUpdateData;
-    }
-    public void setCodeUpdateData(String[] UpdateData)
-    {
-        CodeUpdateData = UpdateData;
-    }
-    public void nulifyCodeUpdateData()
-    {
-        CodeUpdateData = new String[3];
-    }
-    public String getCauseUpdateData()
-    {
-        return CauseUpdateData;
-    }
-    public void setCauseUpdateData(String value)
-    {
-        CauseUpdateData = value;
-    }
-    public void nulifyCauseUpdateData()
-    {
-        CauseUpdateData = new String();
-    }
-    public String[] getStepUpdateData() { return StepUpdateData; }
-    public void setStepUpdateData(String[] StepUpdateData) { this.StepUpdateData = StepUpdateData; }
-    public String getNeedColor() { return needColor; }
-    public void setNeedColor(String value) { needColor = value; }
-    public String getSystemUpdateData() {
-        return SystemUpdateData;
-    }
 
-    public void setSystemUpdateData(String systemUpdateData) {
-        SystemUpdateData = systemUpdateData;
-    }
 
     public static boolean isNumeric(String str) {
         try {
@@ -170,13 +129,7 @@ public class Singleton {
             return false;
         }
     }
-    public String getManifestationUpdateData() {
-        return ManifestationUpdateData;
-    }
 
-    public void setManifestationUpdateData(String manifestationUpdateData) {
-        ManifestationUpdateData = manifestationUpdateData;
-    }
 
     public String getSystem() {
         return System;
@@ -186,29 +139,6 @@ public class Singleton {
         System = system;
     }
 
-    public String getSeriesUpdateData() {
-        return SeriesUpdateData;
-    }
-
-    public void setSeriesUpdateData(String seriesUpdateData) {
-        SeriesUpdateData = seriesUpdateData;
-    }
-
-    public String getModelUpdateData() {
-        return ModelUpdateData;
-    }
-
-    public void setModelUpdateData(String modelUpdateData) {
-        ModelUpdateData = modelUpdateData;
-    }
-
-    public ImageView getModelUpdateImage() {
-        return ModelUpdateImage;
-    }
-
-    public void setModelUpdateImage(ImageView modelUpdateImage) {
-        ModelUpdateImage = modelUpdateImage;
-    }
 
     public static boolean YesNoMessageBox(String text) {
         AtomicBoolean result = new AtomicBoolean(false);
@@ -326,6 +256,7 @@ public class Singleton {
         JFXDialog messageBox = new JFXDialog(pane, layout, JFXDialog.DialogTransition.CENTER);
 
         JFXButton btn = new JFXButton("Ясненько");
+        btn.setStyle("-fx-text-fill: #2196f3");
         btn.setOnAction(event -> {
             messageBox.close();
         });

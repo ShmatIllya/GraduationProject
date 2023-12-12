@@ -210,6 +210,11 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
+    public Object CompleteBusiness(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
     public Object DeleteBusiness(String[] arrStr) {
         return SendData(arrStr, true);
     }
@@ -231,6 +236,16 @@ public class DataControllerHttp implements IDataController {
 
     @Override
     public Object DeletePayment(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object ChangeTaskStatus(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object DeleteTask(String[] arrStr) {
         return SendData(arrStr, true);
     }
 

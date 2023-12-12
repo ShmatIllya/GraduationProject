@@ -48,6 +48,10 @@ public class PaymentInfoController implements Initializable {
     public JFXButton sendButtonSample;
     public HBox ChoiceHBoxSample;
     public Label idLabel;
+    public JFXButton redactButton;
+    public JFXButton copyButton;
+    public JFXButton deleteButton;
+    Boolean responsableValue = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -60,6 +64,10 @@ public class PaymentInfoController implements Initializable {
         taxesColumn.setCellValueFactory(new PropertyValueFactory<PaymentInfoItems, Integer>("taxes"));
         finalPriceColumn.setCellValueFactory(new PropertyValueFactory<PaymentInfoItems, Integer>("finalPrice"));
         OnReload();
+    }
+
+    public void InitFromClient() {
+        responsableValue = true;
     }
 
     public void OnReload() {
@@ -94,6 +102,13 @@ public class PaymentInfoController implements Initializable {
         }
         else if(resultSet[3].equals("Оплачен") || resultSet[3].equals("Отменен")) {
             sendButton.setVisible(false);
+            ChoiceHBoxSample.setVisible(false);
+        }
+        if(Singleton.getInstance().getFinal_Role().equals("obey") && responsableValue != true) {
+            sendButton.setVisible(false);
+            redactButton.setVisible(false);
+            copyButton.setVisible(false);
+            deleteButton.setVisible(false);
             ChoiceHBoxSample.setVisible(false);
         }
     }

@@ -1,5 +1,6 @@
 package practise.controllers2.Payment;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -39,6 +40,7 @@ import java.util.ResourceBundle;
 
 public class PaymentController implements Initializable {
     public JFXTreeTableView<PaymentItems> tableView;
+    public JFXButton addButton;
     JFXTreeTableColumn<PaymentItems, Integer> idColumn;
     JFXTreeTableColumn<PaymentItems, String> dateColumn;
     JFXTreeTableColumn<PaymentItems, Integer> moneyColumn;
@@ -47,6 +49,9 @@ public class PaymentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        if(Singleton.getInstance().getFinal_Role().equals("obey")) {
+            addButton.setVisible(false);
+        }
         idColumn = new JFXTreeTableColumn<>("ИД");
         idColumn.setPrefWidth(150);
         idColumn.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PaymentItems, Integer>, ObservableValue<Integer>>() {

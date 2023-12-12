@@ -2,22 +2,33 @@ package practise.controllers2.Tasks;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.utils.others.dates.DateStringConverter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import practise.HelloApplication;
+import practise.controllers2.Business.BusinessController;
+import practise.controllers2.Business.BusinessInfoController;
 import practise.controllers2.DashboardController;
 import practise.singleton.Singleton;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,6 +57,7 @@ public class TaskInfoController implements Initializable {
     public JFXComboBox<String> priorityComboBox;
     public HBox primaryBusinessHBox;
     public VBox businessVBox;
+    public JFXButton journalButton1;
     boolean onChange = false;
     String old_name;
     String old_responsable;
@@ -180,6 +192,10 @@ public class TaskInfoController implements Initializable {
             else if (Singleton.getInstance().getFinal_Role().equals("obey") &&
                     !Singleton.getInstance().getFinal_NameSername().equals(responsableComboBox.getSelectionModel().getSelectedItem())) {
                 obeyButtonsHBox.setVisible(false);
+                journalButton1.setDisable(true);
+            }
+            if(Singleton.getInstance().getFinal_Role().equals("obey")) {
+                addBusinessButton.setDisable(true);
             }
             if(!statusField.getText().equals("Назначена")) {
                 System.out.println("'" + statusField.getText() + "'");
@@ -197,6 +213,8 @@ public class TaskInfoController implements Initializable {
 
     public void OnReload() throws IOException {
         journalVBox1.getChildren().clear();
+        businessVBox.getChildren().clear();
+        businessVBox.getChildren().add(primaryBusinessHBox);
         String[] arrStr = {"GetTaskInfo", Singleton.getInstance().getTaskInfoValues()[0],
                 Singleton.getInstance().getTaskInfoValues()[1]};
         //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
@@ -223,24 +241,51 @@ public class TaskInfoController implements Initializable {
                         break;
                     }
                     case 1: {
-                        if (!i.equals("")) {
+                        if(!i.equals("")) {
                             for (String business : subResSet) {
-                                HBox businessBox = primaryBusinessHBox;
-                                MFXButton button = new MFXButton(business);
-                                button.setStyle("-fx-text-fill: #151928; -fx-background-color: #2196f3");
+                                String[] businessSplit = business.split("\\^\\^");
+                                HBox businessBox = new HBox();
+                                businessBox.setStyle("-fx-background-color: #2196f3");
+                                //primaryBusinessHBox;
+                                MFXButton button = new MFXButton(businessSplit[1]);
+                                button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
+                                if(businessSplit[2].equals("Завершено")) {
+                                    businessBox.setStyle("-fx-background-color: green");
+                                }
                                 button.setAlignment(Pos.CENTER_LEFT);
                                 button.setOnMouseEntered(event -> {
                                     button.setText("Перейти к делу");
                                     button.setStyle("-fx-text-fill: #2196f3; -fx-background-color: #151928");
                                 });
                                 button.setOnMouseExited(event -> {
-                                    button.setText(business);
-                                    button.setStyle("-fx-text-fill: #151928; -fx-background-color: #2196f3");
+                                    button.setText(businessSplit[1]);
+                                    button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
                                 });
                                 button.setOnMouseClicked(event -> {
-
+                                    FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/SubFXMLs/Business/BusinessInfo.fxml"));
+                                    StackPane page = null;
+                                    try {
+                                        page = fxmlLoader.load();
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                    Singleton.getInstance().PerformFadeTransition(page, 0.0, 1.0, 1.5);
+                                    Scene scene = new Scene(page);
+                                    scene.setFill(Color.TRANSPARENT);
+                                    Stage stage = new Stage();
+                                    stage.setScene(scene);
+                                    stage.initStyle(StageStyle.TRANSPARENT);
+                                    BusinessInfoController controller = fxmlLoader.getController();
+                                    controller.InitController(businessSplit[0], responsableComboBox.getSelectionModel().getSelectedItem());
+                                    stage.showAndWait();
+                                    try {
+                                        OnReload();
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 });
-                                businessVBox.getChildren().add(button);
+                                businessBox.getChildren().add(button);
+                                businessVBox.getChildren().add(businessBox);
                             }
                         }
                         break;
@@ -262,6 +307,109 @@ public class TaskInfoController implements Initializable {
             catch (Exception e) {
                 System.out.println(e);
             }
+        }
+    }
+
+    public void OnAddBusinessButton() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/SubFXMLs/Business/Business.fxml"));
+        StackPane page = fxmlLoader.load();
+        Singleton.getInstance().PerformFadeTransition(page, 0.0, 1.0, 1.5);
+        Scene scene = new Scene(page);
+        scene.setFill(Color.TRANSPARENT);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.setX(MouseInfo.getPointerInfo().getLocation().x);
+        stage.setY(MouseInfo.getPointerInfo().getLocation().y);
+        BusinessController controller = fxmlLoader.getController();
+        controller.InitController("Задача", nameField.getText());
+        stage.showAndWait();
+        OnReload();
+    }
+
+    public void OnAddCommentButton() throws IOException {
+        if(!journalTextField1.getText().isEmpty()) {
+            String[] arrStr = {"AddComment", Singleton.getInstance().getFinal_NameSername(), journalTextField1.getText(),
+                    nameField.getText(), "Задача"};
+            String tempString = (String) Singleton.getInstance().getDataController().AddComment(arrStr);
+            tempString = tempString.replaceAll("\r", "");
+            Label MessageLabel = new Label();
+            if (tempString.equals("null")) {
+                MessageLabel.setText("Ошибка добавления");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+            }
+            OnReload();
+        }
+    }
+
+    public void OnCompleteButton(ActionEvent event) throws IOException {
+        String[] arrStr = {"ChangeTaskStatus", Singleton.getInstance().getTaskInfoValues()[0],
+                Singleton.getInstance().getTaskInfoValues()[1], "Завершена"};
+        String tempString = (String) Singleton.getInstance().getDataController().ChangeTaskStatus(arrStr);
+        tempString = tempString.replaceAll("\r", "");
+        //String[] resultSet = tempString.split("<<");
+        Label MessageLabel = new Label();
+        if(tempString.equals("null")) {
+            MessageLabel.setText("Ошибка изменения статуса");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+        }
+        else {
+            MessageLabel.setText("Статус успешно изменен");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+            OnReload();
+        }
+    }
+
+    public void OnFailButton(ActionEvent event) throws IOException {
+        String[] arrStr = {"ChangeTaskStatus", Singleton.getInstance().getTaskInfoValues()[0],
+                Singleton.getInstance().getTaskInfoValues()[1], "Провалена"};
+        String tempString = (String) Singleton.getInstance().getDataController().ChangeTaskStatus(arrStr);
+        tempString = tempString.replaceAll("\r", "");
+        //String[] resultSet = tempString.split("<<");
+        Label MessageLabel = new Label();
+        if(tempString.equals("null")) {
+            MessageLabel.setText("Ошибка изменения статуса");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+        }
+        else {
+            MessageLabel.setText("Статус успешно изменен");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+            OnReload();
+        }
+    }
+
+    public void OnCheckButton(ActionEvent event) throws IOException {
+        String[] arrStr = {"ChangeTaskStatus", Singleton.getInstance().getTaskInfoValues()[0],
+                Singleton.getInstance().getTaskInfoValues()[1], "Завершена"};
+        String tempString = (String) Singleton.getInstance().getDataController().ChangeTaskStatus(arrStr);
+        tempString = tempString.replaceAll("\r", "");
+        //String[] resultSet = tempString.split("<<");
+        Label MessageLabel = new Label();
+        if(tempString.equals("null")) {
+            MessageLabel.setText("Ошибка изменения статуса");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+        }
+        else {
+            MessageLabel.setText("Статус успешно изменен");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+            OnReload();
+        }
+    }
+
+    public void OnUncheckButton(ActionEvent event) {
+        String[] arrStr = {"DeleteTask", Singleton.getInstance().getTaskInfoValues()[0],
+                Singleton.getInstance().getTaskInfoValues()[1]};
+        String tempString = (String) Singleton.getInstance().getDataController().DeleteTask(arrStr);
+        tempString = tempString.replaceAll("\r", "");
+        //String[] resultSet = tempString.split("<<");
+        Label MessageLabel = new Label();
+        if(tempString.equals("null")) {
+            MessageLabel.setText("Ошибка снятия задачи");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+        }
+        else {
+            MessageLabel.setText("Задача успешно снята");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel, (Stage) addBusinessButton.getScene().getWindow());
         }
     }
 }

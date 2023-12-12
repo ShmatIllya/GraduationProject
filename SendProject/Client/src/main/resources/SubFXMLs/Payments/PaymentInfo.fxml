@@ -84,17 +84,17 @@
                         </TextField>
                      </children>
                   </Pane>
-                  <JFXButton layoutX="424.0" layoutY="469.0" onAction="#OnRedactButton" prefHeight="30.0" prefWidth="137.0" style="-fx-background-color: transparent; -fx-text-fill: #2196f3; -fx-border-color: #2196f3; -fx-border-radius: 5;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Редактировать">
+                  <JFXButton fx:id="redactButton" layoutX="424.0" layoutY="469.0" onAction="#OnRedactButton" prefHeight="30.0" prefWidth="137.0" style="-fx-background-color: transparent; -fx-text-fill: #2196f3; -fx-border-color: #2196f3; -fx-border-radius: 5;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Редактировать">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton layoutX="578.0" layoutY="469.0" onAction="#OnCopyButton" prefHeight="30.0" prefWidth="137.0" style="-fx-background-color: transparent; -fx-text-fill: #2196f3; -fx-border-color: #2196f3; -fx-border-radius: 5;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Копировать">
+                  <JFXButton fx:id="copyButton" layoutX="578.0" layoutY="469.0" onAction="#OnCopyButton" prefHeight="30.0" prefWidth="137.0" style="-fx-background-color: transparent; -fx-text-fill: #2196f3; -fx-border-color: #2196f3; -fx-border-radius: 5;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Копировать">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </JFXButton>
-                  <JFXButton layoutX="727.0" layoutY="470.0" onAction="#OnDeleteButton" prefHeight="30.0" prefWidth="137.0" style="-fx-background-color: transparent; -fx-text-fill: red; -fx-border-color: red; -fx-border-radius: 5;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Удалить">
+                  <JFXButton fx:id="deleteButton" layoutX="727.0" layoutY="470.0" onAction="#OnDeleteButton" prefHeight="30.0" prefWidth="137.0" style="-fx-background-color: transparent; -fx-text-fill: red; -fx-border-color: red; -fx-border-radius: 5;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Удалить">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>

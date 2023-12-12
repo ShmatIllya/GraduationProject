@@ -66,7 +66,6 @@ public class BusinessController {
 
 
         promptChips.getChips().addListener(new WeakListChangeListener<>(change -> {
-            System.out.println("tttttttttttttttttttttttttttttt");
             switch (promptChips.getChips().size()) {
                 case 0: {
                     promptChips.getSuggestions().clear();

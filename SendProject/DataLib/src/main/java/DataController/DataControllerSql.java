@@ -306,12 +306,12 @@ public class DataControllerSql implements IDataController {
             List<JournalsEntity> journalsEntityList = (List<JournalsEntity>) client.getJournalsByClientsId();
             List<CommentsEntity> commentsEntityList = (List<CommentsEntity>) journalsEntityList.get(0).getCommentsByJournalsId();
             for(TasksEntity task: tasksEntityList) {
-                s_res += task.getTasksId() + "^^" + task.getName() + "<<";
+                s_res += task.getTasksId() + "^^" + task.getName() + "^^" + task.getStatus() + "<<";
             }
             s_res += ">>";
             for(BusinessEntity business: businessEntityList) {
                 s_res += business.getBusinessId() + "^^" + business.getName() + " от "
-                        + business.getDate().toString().split("T")[0] + "<<";
+                        + business.getDate().toString().split("T")[0] + "^^" + business.getStatus() + "<<";
             }
             s_res += ">>";
             for(ProcessesEntity process: processesEntityList) {
@@ -814,7 +814,8 @@ public class DataControllerSql implements IDataController {
             List<CommentsEntity> commentsEntityList = (List<CommentsEntity>) journalsEntityList.get(0).getCommentsByJournalsId();
 
             for(BusinessEntity business: businessEntityList) {
-                s_res += business.getName() + "<<";
+                s_res += business.getBusinessId() + "^^" + business.getName() + " от "
+                        + business.getDate().toString().split("T")[0] + "^^" + business.getStatus() + "<<";
             }
             s_res += ">>";
             for(CommentsEntity comment: commentsEntityList) {
@@ -1337,7 +1338,25 @@ public class DataControllerSql implements IDataController {
             BusinessEntity business = entityManager.getReference(BusinessEntity.class, Integer.parseInt(arrStr[1]));
             String[] dateSplit = business.getDate().toString().split("T");
             s_res = business.getName() + ">>" + dateSplit[0] + ">>" + dateSplit[1] + ">>" + business.getDescription()
-                    + ">>" + business.getPlace() + ">>" + business.getPersonalByResponsableId().getNameSername() + "\r";
+                    + ">>" + business.getPlace() + ">>" + business.getPersonalByResponsableId().getNameSername()
+                    + ">>" + business.getStatus() + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object CompleteBusiness(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
+        try {
+            BusinessEntity business = entityManager.getReference(BusinessEntity.class, Integer.parseInt(arrStr[1]));
+            business.setStatus("Завершено");
+            entityManager.merge(business);
+            s_res = "success" + "\r";
         } catch (Exception e) {
             e.printStackTrace();
             s_res = "null" + "\r";
@@ -1406,6 +1425,16 @@ public class DataControllerSql implements IDataController {
                     break;
                 }
                 case "Задача": {
+                    TypedQuery<TasksEntity> queryT = entityManager.createQuery("SELECT e FROM TasksEntity e" +
+                            " where e.name =:name", TasksEntity.class);
+                    queryT.setParameter("name", arrStr[3]);
+                    queryJ = entityManager.createQuery("SELECT e FROM JournalsEntity e" +
+                            " where e.taskId =:id", JournalsEntity.class);
+                    queryJ.setParameter("id", queryT.getSingleResult().getTasksId());
+                    comment.setDate(Date.valueOf(LocalDate.now()));
+                    comment.setText(arrStr[2]);
+                    comment.setSenderId(personalId);
+                    comment.setJournalId(queryJ.getSingleResult().getJournalsId());
                     break;
                 }
                 case "Проект": {
@@ -1465,6 +1494,47 @@ public class DataControllerSql implements IDataController {
         try {
             PaymentsEntity payment = entityManager.getReference(PaymentsEntity.class, Integer.parseInt(arrStr[1]));
             entityManager.remove(payment);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object ChangeTaskStatus(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
+        try {
+            TypedQuery<TasksEntity> queryT = entityManager.createQuery("SELECT e FROM TasksEntity e" +
+                    " WHERE e.name =:name AND e.personalByResponsableId.nameSername =:nameSername", TasksEntity.class);
+            queryT.setParameter("name", arrStr[1]);
+            queryT.setParameter("nameSername", arrStr[2]);
+            TasksEntity task = queryT.getSingleResult();
+            task.setStatus(arrStr[3]);
+            entityManager.merge(task);
+            s_res = "success" + "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object DeleteTask(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
+        try {
+            TypedQuery<TasksEntity> queryT = entityManager.createQuery("SELECT e FROM TasksEntity e" +
+                    " WHERE e.name =:name AND e.personalByResponsableId.nameSername =:nameSername", TasksEntity.class);
+            queryT.setParameter("name", arrStr[1]);
+            queryT.setParameter("nameSername", arrStr[2]);
+            TasksEntity task = queryT.getSingleResult();
+            entityManager.remove(task);
             s_res = "success" + "\r";
         } catch (Exception e) {
             e.printStackTrace();

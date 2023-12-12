@@ -1,8 +1,6 @@
 package practise;
 
 import DataController.DataControllerSql;
-import Network.HttpRestClient;
-import Subs.PersonalInfoClass;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -10,7 +8,6 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class WebHandl {
     private DataControllerSql DataController = new DataControllerSql();
@@ -337,6 +334,12 @@ public class WebHandl {
                 out.flush();
                 break;
             }
+            case "CompleteBusiness": {
+                String res = CompleteBusiness(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
             case "DeleteBusiness": {
                 String res = DeleteBusiness(arrStr).toString();
                 out.write(res);
@@ -363,6 +366,18 @@ public class WebHandl {
             }
             case "DeletePayment": {
                 String res = DeletePayment(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "ChangeTaskStatus": {
+                String res = ChangeTaskStatus(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "DeleteTask": {
+                String res = DeleteTask(arrStr).toString();
                 out.write(res);
                 out.flush();
                 break;
@@ -500,6 +515,10 @@ public class WebHandl {
         return DataController.UpdateBusiness(arrStr);
     }
 
+    public Object CompleteBusiness(String[] arrStr) {
+        return DataController.CompleteBusiness(arrStr);
+    }
+
     public Object DeleteBusiness(String[] arrStr) {
         return DataController.DeleteBusiness(arrStr);
     }
@@ -518,6 +537,14 @@ public class WebHandl {
 
     public Object DeletePayment(String[] arrStr) {
         return DataController.DeletePayment(arrStr);
+    }
+
+    public Object ChangeTaskStatus(String[] arrStr) {
+        return DataController.ChangeTaskStatus(arrStr);
+    }
+
+    public Object DeleteTask(String[] arrStr) {
+        return DataController.DeleteTask(arrStr);
     }
     //==============================================================================================
     //==============================================================================================

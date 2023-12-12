@@ -1,7 +1,5 @@
 package DataController;
 
-import Subs.PersonalInfoClass;
-
 import java.awt.image.BufferedImage;
 
 public interface IDataController
@@ -48,11 +46,14 @@ public interface IDataController
     public Object AddBusiness(String[] arrStr);
     public Object GetBusinessInfo(String[] arrStr);
     public Object UpdateBusiness(String[] arrStr);
+    public Object CompleteBusiness(String[] arrStr);
     public Object DeleteBusiness(String[] arrStr);
     public Object AddComment(String[] arrStr);
     public Object DeleteClient(String[] arrStr);
     public Object ChangePaymentStatus(String[] arrStr);
     public Object DeletePayment(String[] arrStr);
+    public Object ChangeTaskStatus(String[] arrStr);
+    public Object DeleteTask(String[] arrStr);
     //============================================================
     //============================================================
 

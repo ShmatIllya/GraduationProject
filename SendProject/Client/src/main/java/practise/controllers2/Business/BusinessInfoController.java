@@ -31,6 +31,7 @@ public class BusinessInfoController {
     public TextField memberField;
     public JFXButton completeButton;
     public JFXButton redactButton;
+    public JFXButton deleteButton;
     String businessId;
     String memberName;
     CustomTextArea textArea = new CustomTextArea();
@@ -45,6 +46,17 @@ public class BusinessInfoController {
         descriptionHBox.getChildren().add(textArea);
 
         OnReload();
+        if(!Singleton.getInstance().getFinal_Role().equals("control")) {
+            redactButton.setVisible(false);
+            deleteButton.setVisible(false);
+        }
+        if(!Singleton.getInstance().getFinal_NameSername().equals(creatorField.getText())
+                && !Singleton.getInstance().getFinal_NameSername().equals(memberField.getText())
+                && !Singleton.getInstance().getFinal_Role().equals("control")) {
+            completeButton.setVisible(false);
+            redactButton.setVisible(false);
+            deleteButton.setVisible(false);
+        }
     }
 
     public void OnReload() {
@@ -52,18 +64,25 @@ public class BusinessInfoController {
         String tempString = (String) Singleton.getInstance().getDataController().GetBusinessInfo(arrStr);
         tempString = tempString.replaceAll("\r", "");
         String[] resultSet = tempString.split(">>");
-        nameLabel.setText(resultSet[0]);
+        if (!resultSet[6].equals("Активно")) {
+            completeButton.setVisible(false);
+            redactButton.setVisible(false);
+        }
+        nameLabel.setText(resultSet[0] + " (" + resultSet[6] + ")");
         dateField.setText(resultSet[1]);
         timeField.setText(resultSet[2]);
         textArea.setText(resultSet[3]);
         placeField.setText(resultSet[4]);
         creatorField.setText(resultSet[5]);
         memberField.setText(memberName);
+        if(resultSet[6].equals("Завершено")) {
+
+        }
     }
 
     public void OnCompleteButton(ActionEvent event) {
-        String[] arrStr = {"DeleteBusiness", businessId};
-        String tempString = (String) Singleton.getInstance().getDataController().DeleteBusiness(arrStr);
+        String[] arrStr = {"CompleteBusiness", businessId};
+        String tempString = (String) Singleton.getInstance().getDataController().CompleteBusiness(arrStr);
         tempString = tempString.replaceAll("\r", "");
         //String[] resultSet = tempString.split("<<");
         Label MessageLabel = new Label();
@@ -99,5 +118,21 @@ public class BusinessInfoController {
             Stage st = (Stage) completeButton.getScene().getWindow();
             st.close();
         });
+    }
+
+    public void OnDeleteButton(ActionEvent event) {
+        String[] arrStr = {"DeleteBusiness", businessId};
+        String tempString = (String) Singleton.getInstance().getDataController().DeleteBusiness(arrStr);
+        tempString = tempString.replaceAll("\r", "");
+        //String[] resultSet = tempString.split("<<");
+        Label MessageLabel = new Label();
+        if(tempString.equals("null")) {
+            MessageLabel.setText("Ошибка удаления");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+        }
+        else {
+            MessageLabel.setText("Успешно удалено");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel, (Stage) completeButton.getScene().getWindow());
+        }
     }
 }

@@ -250,7 +250,10 @@ public class ClientInfoController implements Initializable {
                             HBox taskBox = new HBox();
                             taskBox.setStyle("-fx-background-color: #2196f3");
                             MFXButton button = new MFXButton(taskSplit[1]);
-                            button.setStyle("-fx-text-fill: #151928; -fx-background-color: #2196f3");
+                            button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
+                            if(taskSplit[2].equals("Завершена")) {
+                                taskBox.setStyle("-fx-background-color: green");
+                            }
                             button.setAlignment(Pos.CENTER_LEFT);
                             button.setOnMouseEntered(event -> {
                                 button.setText("Перейти к задаче");
@@ -258,7 +261,7 @@ public class ClientInfoController implements Initializable {
                             });
                             button.setOnMouseExited(event -> {
                                 button.setText(taskSplit[1]);
-                                button.setStyle("-fx-text-fill: #151928; -fx-background-color: #2196f3");
+                                button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
                             });
                             button.setOnMouseClicked(event -> {
                                 Singleton.getInstance().setTaskInfoValues(new String[]{taskSplit[1],
@@ -289,7 +292,10 @@ public class ClientInfoController implements Initializable {
                             businessBox.setStyle("-fx-background-color: #2196f3");
                             //primaryBusinessHBox;
                             MFXButton button = new MFXButton(businessSplit[1]);
-                            button.setStyle("-fx-text-fill: #151928; -fx-background-color: #2196f3");
+                            button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
+                            if(businessSplit[2].equals("Завершено")) {
+                                businessBox.setStyle("-fx-background-color: green");
+                            }
                             button.setAlignment(Pos.CENTER_LEFT);
                             button.setOnMouseEntered(event -> {
                                 button.setText("Перейти к делу");
@@ -297,7 +303,7 @@ public class ClientInfoController implements Initializable {
                             });
                             button.setOnMouseExited(event -> {
                                 button.setText(businessSplit[1]);
-                                button.setStyle("-fx-text-fill: #151928; -fx-background-color: #2196f3");
+                                button.setStyle("-fx-text-fill: #2196f3; -fx-background-color: transparent");
                             });
                             button.setOnMouseClicked(event -> {
                                 FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/SubFXMLs/Business/BusinessInfo.fxml"));
