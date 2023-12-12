@@ -60,9 +60,11 @@ public class MiniServer extends Thread {
                 t.printStackTrace();
             } finally {
                 try {
+                    System.out.println("Client logged out");
                     inp.close();
                     out.close();
                     socket.close();
+                    return;
                 } catch (IOException e) {
 
                 }

@@ -10,6 +10,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -40,6 +41,7 @@ public class TasksController implements Initializable {
     public TextField searchField;
     public JFXButton redactButton;
     public Label windowTypeLabel;
+    public JFXButton deleteButton;
 
     //=========================Columns====================================
     JFXTreeTableColumn<TasksItems, String> name;
@@ -232,5 +234,12 @@ public class TasksController implements Initializable {
 
     public void OnRedactTask() {
 
+    }
+
+    public void OnDeleteButton(ActionEvent event) {
+        String[] arrStr = {"DeleteTask", treeTable.getSelectionModel().getSelectedItem().getValue().name.getValue(),
+                treeTable.getSelectionModel().getSelectedItem().getValue().responsable.getValue()};
+        String tempString = (String) Singleton.getInstance().getDataController().DeleteTask(arrStr);
+        tempString = tempString.replaceAll("\r", "");
     }
 }

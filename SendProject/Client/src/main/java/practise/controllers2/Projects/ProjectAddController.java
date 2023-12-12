@@ -72,7 +72,7 @@ public class ProjectAddController implements Initializable {
 
         personal = new ArrayList<>();
         String[] arrStr2 = {"GetPersonalControlList"};
-        tempString = (String) Singleton.getInstance().getDataController().GetPersonalControlList(arrStr);
+        tempString = (String) Singleton.getInstance().getDataController().GetPersonalControlList(arrStr2);
         tempString = tempString.replaceAll("\r", "");
         resultSet = tempString.split("<<");
         for (String i : resultSet) {
@@ -90,7 +90,7 @@ public class ProjectAddController implements Initializable {
 
         ObservableList<String> values = FXCollections.observableArrayList();
         String[] arrStr3 = {"GetTeamsList"};
-        tempString = (String) Singleton.getInstance().getDataController().GetTeamsList(arrStr);
+        tempString = (String) Singleton.getInstance().getDataController().GetTeamsList(arrStr3);
         tempString  = tempString.replaceAll("\r", "");
         resultSet = tempString.split(">>");
         for(String i: resultSet) {
@@ -132,7 +132,7 @@ public class ProjectAddController implements Initializable {
             protected boolean computeValue() {
                 return (nameField.getText().isEmpty()
                         || ((responsableChips.getChips().isEmpty() || teamNameField.getText().isEmpty())
-                        || (teamsComboBox.getSelectionModel().getSelectedItem().equals("Не выбрано")))
+                        && (teamsComboBox.getSelectionModel().getSelectedItem().equals("Не выбрано")))
                         || datePicker.getText().isEmpty()
                         || checkerChips.getChips().isEmpty());
             }

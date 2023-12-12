@@ -1219,7 +1219,9 @@ public class DataControllerSql implements IDataController {
                 queryPM.setParameter("teamName", arrStr[6]);
                 List<ProjectMembersEntity> mem = queryPM.getResultList();
                 for(ProjectMembersEntity me: mem) {
-                    ProjectMembersEntity m = me;
+                    ProjectMembersEntity m = new ProjectMembersEntity();
+                    m.setTeamName(me.getTeamName());
+                    m.setPersonalId(me.getPersonalId());
                     m.setProjectId(queryT.getSingleResult().getProjectsId());
                     entityManager.persist(m);
                 }
@@ -1251,9 +1253,7 @@ public class DataControllerSql implements IDataController {
         try {
             List<String> list = Collections.singletonList(q.getResultList().toString());
             for (String i : list) {
-                i.replace("\\[", "");
-                i.replace("]", "");
-                System.out.println(i + " ooooooooooooooooooooo");
+                i = i.replaceAll("[{}\\[\\]]", "");
                 s_res += i + ">>";
             }
             s_res += "\r";

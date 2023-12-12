@@ -84,7 +84,7 @@ public class TaskAddController implements Initializable {
 
             ObservableList<String> values = FXCollections.observableArrayList();
             String[] arrStr3 = {"GetProjectList"};
-            tempString = (String) Singleton.getInstance().getDataController().GetProjectList(arrStr);
+            tempString = (String) Singleton.getInstance().getDataController().GetProjectList(arrStr3);
             tempString = tempString.replaceAll("\r", "");
             resultSet = tempString.split("<<");
             for (String i : resultSet) {
@@ -101,7 +101,7 @@ public class TaskAddController implements Initializable {
 
             values = FXCollections.observableArrayList();
             String[] arrStr4 = {"GetProcessList"};
-            tempString = (String) Singleton.getInstance().getDataController().GetProcessList(arrStr);
+            tempString = (String) Singleton.getInstance().getDataController().GetProcessList(arrStr4);
             tempString = tempString.replaceAll("\r", "");
             resultSet = tempString.split("<<");
             for (String i : resultSet) {

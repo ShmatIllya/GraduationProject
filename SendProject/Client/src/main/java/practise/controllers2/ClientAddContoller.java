@@ -40,6 +40,7 @@ public class ClientAddContoller implements Initializable  {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         List<String> personal = new ArrayList<>();
+        chipView.getStylesheets().add("/css/jfxChipsView.css");
         String[] arrStr = {"GetPersonalList"};
         String tempString = (String) Singleton.getInstance().getDataController().GetPersonalList(arrStr);
         tempString = tempString.replaceAll("\r", "");

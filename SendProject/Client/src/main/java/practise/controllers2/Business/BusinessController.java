@@ -42,6 +42,7 @@ public class BusinessController {
         promptChips.getStylesheets().add("/css/jfxChipsView.css");
         layoutHBox.getChildren().add(promptChips);
         promptChips.setPrefWidth(302.4);
+        promptChips.setMinWidth(302.4);
 
         String[] businessType = {"Дело", "Личное", "Звонок", "Встреча", "Совещание", "Праздник", "Спорт"};
         String[] businessDate = {"Завтра", "Послезавтра", "Через неделю", "Через месяц"};
