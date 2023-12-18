@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeTableView?>
@@ -26,6 +27,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </JFXButton>
+                  <JFXComboBox fx:id="searchComboBox" layoutX="278.0" layoutY="33.0" prefHeight="26.0" prefWidth="130.0" stylesheets="@../../css/jfxComboBox.css" />
                </children>
             </AnchorPane>
          </children>

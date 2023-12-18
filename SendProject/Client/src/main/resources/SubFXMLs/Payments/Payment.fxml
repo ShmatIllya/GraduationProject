@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeTableView?>
@@ -15,6 +16,7 @@
                <children>
                   <TextField fx:id="searchField" layoutX="72.0" layoutY="32.0" prefHeight="26.0" prefWidth="195.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../css/styles.css" />
                   <JFXButton fx:id="addButton" layoutX="688.0" layoutY="32.0" onAction="#OnAddButton" prefHeight="26.0" prefWidth="140.0" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Добавить счет" AnchorPane.rightAnchor="72.0" />
+                  <JFXComboBox fx:id="searchComboBox" layoutX="282.0" layoutY="33.0" prefHeight="26.0" prefWidth="114.0" stylesheets="@../../css/jfxComboBox.css" />
                </children>
             </AnchorPane>
          </children>

@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXMasonryPane?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
 <?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
@@ -19,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="stackPane" styleClass="blue-panel" stylesheets="@../../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.ClientInfoController">
+<StackPane fx:id="stackPane" styleClass="blue-panel" stylesheets="@../../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.Projects.ProjectInfoController">
    <children>
       <AnchorPane fx:id="AnchorPane" minHeight="-Infinity" prefHeight="536.0" prefWidth="900.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
          <children>
@@ -41,7 +42,7 @@
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <Label fx:id="subroleLabel1" layoutX="11.0" layoutY="129.0" prefHeight="21.0" prefWidth="110.0" text="Аудитор:">
+                                    <Label layoutX="11.0" layoutY="129.0" prefHeight="21.0" prefWidth="110.0" text="Аудитор:">
                                        <font>
                                           <Font size="15.0" />
                                        </font>
@@ -90,7 +91,7 @@
                                     </Label>
                                     <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="11.0" layoutY="117.0" prefHeight="141.0" prefWidth="287.0" style="-fx-border-color: #151638;" styleClass="pane">
                                        <content>
-                                          <VBox fx:id="membersVBox" prefHeight="142.0" prefWidth="282.0" styleClass="pane" stylesheets="@../../css/styles.css" />
+                                          <JFXListView fx:id="membersListView" styleClass="pane" />
                                        </content>
                                     </ScrollPane>
                                  </children>
@@ -185,7 +186,7 @@
                                        </font>
                                     </Label>
                                     <MFXDatePicker fx:id="datePicker" closePopupOnChange="true" editable="false" floatMode="INLINE" layoutX="141.0" layoutY="188.0" minHeight="-Infinity" prefHeight="40.0" prefWidth="160.0" stylesheets="@../../css/mfxDatePicker.css" />
-                                    <Label fx:id="subroleLabel1" layoutX="14.0" layoutY="68.0" prefHeight="21.0" prefWidth="115.0" text="Дата создания: ">
+                                    <Label layoutX="14.0" layoutY="68.0" prefHeight="21.0" prefWidth="115.0" text="Дата создания: ">
                                        <font>
                                           <Font size="15.0" />
                                        </font>

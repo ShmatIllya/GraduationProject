@@ -162,10 +162,11 @@ public class ProjectAddController implements Initializable {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String responsableList = "";
         String[] arrStr;
-        if(teamsComboBox.isDisable()) {
+        if(teamsComboBox.getSelectionModel().getSelectedItem().equals("Не выбрано")) {
             for (String i : responsableChips.getChips()) {
                 responsableList += i + ">>";
             }
+            System.out.println("llllllllllllllll");
             arrStr = new String[]{"AddProject", nameField.getText(), responsableList, descriptionField.getText(),
                     checkerChips.getChips().get(0), datePicker.getText(), teamNameField.getText()
             };

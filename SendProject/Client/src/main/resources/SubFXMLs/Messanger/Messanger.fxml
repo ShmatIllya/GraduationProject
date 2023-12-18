@@ -25,7 +25,7 @@
                <children>
                   <AnchorPane layoutX="-1.0" layoutY="-1.0" prefHeight="536.0" prefWidth="307.0" style="-fx-background-color: #151928;" AnchorPane.bottomAnchor="0.20000000000004547" AnchorPane.leftAnchor="-5.684341886080802E-14" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TextField fx:id="chatSearchField" layoutX="26.0" layoutY="70.0" prefHeight="36.0" prefWidth="210.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../../../../../../../TestProj/src/main/resources/com/example/testproj/css/styles.css" />
+                        <TextField fx:id="chatSearchField" layoutX="26.0" layoutY="70.0" prefHeight="36.0" prefWidth="210.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../css/styles.css" />
                         <Label layoutX="26.0" layoutY="14.0" text="Чаты" textFill="#2196f3">
                            <font>
                               <Font name="System Bold" size="25.0" />
@@ -97,7 +97,7 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <TextField fx:id="messageSearchField" layoutX="369.0" layoutY="15.0" prefHeight="36.0" prefWidth="210.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../../../../../../../TestProj/src/main/resources/com/example/testproj/css/styles.css" AnchorPane.rightAnchor="14.999999999999972" />
+                              <TextField fx:id="messageSearchField" layoutX="369.0" layoutY="15.0" prefHeight="36.0" prefWidth="210.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../css/styles.css" AnchorPane.rightAnchor="14.999999999999972" />
                            </children>
                         </AnchorPane>
                         <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="66.0" AnchorPane.bottomAnchor="58.80000000000001" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.60000000000002">
@@ -177,7 +177,7 @@
                         </ScrollPane>
                         <AnchorPane fx:id="messageInputPane" layoutX="1.0" layoutY="476.0" prefHeight="60.0" prefWidth="594.0" style="-fx-background-color: #151928; -fx-border-color: #2196f3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="2.199999999999818">
                            <children>
-                              <TextField fx:id="messageInputTextField" layoutX="11.199999809265137" layoutY="11.199999809265137" prefHeight="36.0" prefWidth="506.0" promptText="Введите сообщение" styleClass="tf_box" stylesheets="@../../../../../../../../TestProj/src/main/resources/com/example/testproj/css/styles.css" AnchorPane.bottomAnchor="12.800000190734863" AnchorPane.leftAnchor="10.400000000000205" AnchorPane.rightAnchor="72.80000019073498" />
+                              <TextField fx:id="messageInputTextField" layoutX="11.199999809265137" layoutY="11.199999809265137" prefHeight="36.0" prefWidth="506.0" promptText="Введите сообщение" styleClass="tf_box" stylesheets="@../../css/styles.css" AnchorPane.bottomAnchor="12.800000190734863" AnchorPane.leftAnchor="10.400000000000205" AnchorPane.rightAnchor="72.80000019073498" />
                               <JFXButton fx:id="sendMessageButton" onAction="#OnSendMessageButton" ellipsisString="" layoutX="546.3999633789062" layoutY="11.199999809265137" prefHeight="36.0" prefWidth="42.0" AnchorPane.bottomAnchor="12.800000190734863" AnchorPane.rightAnchor="1.6000366210938424">
                                  <graphic>
                                     <FontAwesomeIcon fx:id="journalButton1" fill="#2196f3" glyphName="SEND" size="2em" wrappingWidth="21.60003662109375" />

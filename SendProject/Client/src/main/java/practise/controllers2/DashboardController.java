@@ -36,6 +36,7 @@ public class DashboardController implements Initializable {
     public ImageView taskImage;
     public ImageView messengerImage;
     public ImageView projectImage;
+    public ImageView statImage;
 
     @FXML
     private AnchorPane opacityPane, drawerPane;
@@ -130,6 +131,16 @@ public class DashboardController implements Initializable {
 
             }
         });
+
+        statImage.setOnMouseClicked(event -> {
+            try {
+                //paymentImage.setImage(new Image("@images/PaymentIcons/Payment1.png"));
+                SwitchMainPane("/SubFXMLs/Stats/Stat.fxml");
+            } catch (Exception e) {
+
+            }
+        });
+
 
         opacityPane.setOnMouseClicked(event -> {
 

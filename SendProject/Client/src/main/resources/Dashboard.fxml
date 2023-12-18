@@ -51,6 +51,11 @@
                   <Image url="@images/ProjectIcons/Project1.png" />
                </image>
             </ImageView>
+            <ImageView fx:id="statImage" fitHeight="38.0" fitWidth="74.0" layoutX="401.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/StatICon/1.png" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
       <AnchorPane fx:id="mainPane" layoutY="64.0" styleClass="blue-panel" stylesheets="@css/styles.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="64.0" />

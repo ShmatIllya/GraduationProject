@@ -11,16 +11,18 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
+
 <AnchorPane fx:id="AnchorPane" prefHeight="536.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.Payment.PaymentInfoController">
    <children>
       <StackPane fx:id="stackPane" prefHeight="536.0" prefWidth="900.0" style="-fx-background-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <AnchorPane styleClass="blue-panel" stylesheets="@../../css/styles.css">
+            <AnchorPane fx:id="AnchorPane2" styleClass="blue-panel" stylesheets="@../../css/styles.css">
                <children>
                   <JFXButton fx:id="sendButton" layoutX="39.0" layoutY="465.0" onAction="#OnSendButton" prefHeight="39.0" prefWidth="168.0" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Передать в оплату" AnchorPane.rightAnchor="693.0">
                      <font>
                         <Font name="System Bold" size="15.0" />
-                     </font></JFXButton>
+                     </font>
+                  </JFXButton>
                   <Label fx:id="idLabel" layoutX="39.0" layoutY="24.0" prefHeight="42.0" prefWidth="826.0" text="Счет " textFill="#2196f3" AnchorPane.bottomAnchor="473.0" AnchorPane.leftAnchor="39.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="24.0">
                      <font>
                         <Font name="Arial Bold" size="35.0" />
@@ -112,6 +114,20 @@
                            </font>
                         </JFXButton>
                         <JFXButton fx:id="rejectButtonSample1" onAction="#OnRejectButton" prefHeight="39.0" prefWidth="168.0" style="-fx-background-color: red;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Отказ">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="PDFHBox" layoutX="107.0" layoutY="43.0" prefHeight="42.0" prefWidth="324.0" spacing="20.0" visible="false">
+                     <children>
+                        <JFXButton fx:id="printButton" onAction="#OnPrintButton" prefHeight="39.0" prefWidth="168.0" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Распечатать">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </JFXButton>
+                        <JFXButton fx:id="showButton" onAction="#OnShowButton" prefHeight="39.0" prefWidth="168.0" style="-fx-background-color: ;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Просмотр">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>

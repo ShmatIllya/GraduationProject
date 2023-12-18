@@ -41,6 +41,7 @@ public class MiniServer extends Thread {
         }
         while (true) {
             try {
+
                 boolean flag = true;
                 while (flag == true) {
                     byte[] readmessage = new byte[1000000];

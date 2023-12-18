@@ -1,9 +1,6 @@
 package practise.controllers2.Tasks;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTreeTableColumn;
-import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
@@ -26,6 +23,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import practise.HelloApplication;
 import practise.controllers2.DashboardController;
+import practise.items.PaymentItems;
 import practise.items.PersonalItems;
 import practise.items.TasksItems;
 import practise.singleton.Singleton;
@@ -42,6 +40,7 @@ public class TasksController implements Initializable {
     public JFXButton redactButton;
     public Label windowTypeLabel;
     public JFXButton deleteButton;
+    public JFXComboBox<String> searchComboBox;
 
     //=========================Columns====================================
     JFXTreeTableColumn<TasksItems, String> name;
@@ -55,6 +54,10 @@ public class TasksController implements Initializable {
     //=========================Columns====================================
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.addAll("Наименование", "Счетчик дел", "Дата создания", "Дедлайн", "Ответственный", "Аудитор", "Статус");
+        searchComboBox.setItems(list);
+        searchComboBox.getSelectionModel().select("Наименование");
         name = new JFXTreeTableColumn<>("Наименование");
         name.setPrefWidth(150);
         name.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<TasksItems, String>, ObservableValue<String>>() {
@@ -130,6 +133,7 @@ public class TasksController implements Initializable {
         //========================================================================================
         //===============================AddingElements===========================================
         //========================================================================================
+
         OnReload();
         //==========================================================================================
         //====================================DoubleClick===========================================
@@ -147,6 +151,8 @@ public class TasksController implements Initializable {
                         d.SwitchMainPane("/SubFXMLs/Tasks/TaskInfo.fxml");
                     }
                     else {
+                        Singleton.getInstance().setProjectInfoValue(treeTable.getSelectionModel().getSelectedItem().
+                                getValue().name.getValue());
                         d.SwitchMainPane("/SubFXMLs/Projects/ProjectInfo.fxml");
                     }
                 }
@@ -164,8 +170,38 @@ public class TasksController implements Initializable {
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                 treeTable.setPredicate(new Predicate<TreeItem<TasksItems>>() {
                     @Override
-                    public boolean test(TreeItem<TasksItems> tasksItemsTreeItem) {
-                        Boolean flag = tasksItemsTreeItem.getValue().name.getValue().contains(t1);
+                    public boolean test(TreeItem<TasksItems> personalItemsTreeItem) {
+                        Boolean flag = false;
+                        switch (searchComboBox.getSelectionModel().getSelectedItem()) {
+                            case "Наименование": {
+                                flag = personalItemsTreeItem.getValue().name.getValue().contains(t1);
+                                break;
+                            }
+                            case "Счетчик дел": {
+                                flag = personalItemsTreeItem.getValue().businesses.getValue().contains(t1);
+                                break;
+                            }
+                            case "Дата создания": {
+                                flag = personalItemsTreeItem.getValue().creationDate.getValue().contains(t1);
+                                break;
+                            }
+                            case "Дедлайн": {
+                                flag = personalItemsTreeItem.getValue().deadline.getValue().contains(t1);
+                                break;
+                            }
+                            case "Ответственный": {
+                                flag = personalItemsTreeItem.getValue().responsable.getValue().contains(t1);
+                                break;
+                            }
+                            case "Аудитор": {
+                                flag = personalItemsTreeItem.getValue().checker.getValue().contains(t1);
+                                break;
+                            }
+                            case "Статус": {
+                                flag = personalItemsTreeItem.getValue().status.getValue().contains(t1);
+                                break;
+                            }
+                        }
                         return flag;
                     }
                 });

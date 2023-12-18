@@ -97,21 +97,6 @@ public class ClientInfoController implements Initializable {
 //            }
 //        });
 
-        ObservableList<String> comboList = FXCollections.observableArrayList();
-        String[] arrStr = {"GetPersonalObeyList"};
-        String tempString = (String) Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        String[] resultSet = tempString.split("<<");
-        for(String i : resultSet) {
-            String[] resultSubSet = i.split(">>");
-            try {
-                comboList.add(resultSubSet[0]);
-            }
-            catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-        responsableComboBox.setItems(comboList);
         //================================DashBoard buttons================================
         JFXButton SaveButton = new JFXButton();
         JFXButton ChangeButton = new JFXButton();
@@ -219,6 +204,24 @@ public class ClientInfoController implements Initializable {
         taskVBox.getChildren().clear();
         businessVBox.getChildren().add(primaryBusinessHBox);
         taskVBox.getChildren().add(primaryTaskHBox);
+
+        ObservableList<String> comboList = FXCollections.observableArrayList();
+        String[] arrStrPersonal = {"GetPersonalObeyList"};
+        String tempStringPersonal = (String) Singleton.getInstance().getDataController().GetPersonalObeyList(arrStrPersonal);
+        tempStringPersonal = tempStringPersonal.replaceAll("\r", "");
+        String[] resultSetPersonal = tempStringPersonal.split("<<");
+        for(String i : resultSetPersonal) {
+            String[] resultSubSet = i.split(">>");
+            try {
+                comboList.add(resultSubSet[0]);
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        responsableComboBox.setItems(comboList);
+
+
         String[] arrStr = {"GetClientInfo", String.valueOf(Singleton.getInstance().getClientsID())};
         //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
         String tempString = (String) Singleton.getInstance().getDataController().GetClientInfo(arrStr);

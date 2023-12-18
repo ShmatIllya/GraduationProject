@@ -39,6 +39,9 @@ public class BusinessEntity {
     @Basic
     @Column(name = "task_id")
     private Integer taskID;
+    @Basic
+    @Column(name = "project_id")
+    private Integer projectID;
     @ManyToOne
     @JoinColumn(name = "client_id", referencedColumnName = "clients_id", insertable = false, updatable = false)
     private ClientsEntity clientsByClientId;
@@ -51,6 +54,9 @@ public class BusinessEntity {
     @ManyToOne
     @JoinColumn(name = "task_id", referencedColumnName = "tasks_id", insertable = false, updatable = false)
     private TasksEntity tasksByTaskId;
+    @ManyToOne
+    @JoinColumn(name = "project_id", referencedColumnName = "projects_id", insertable = false, updatable = false)
+    private ProjectsEntity projectsByProjectId;
 
     public int getBusinessId() {
         return businessId;
@@ -132,6 +138,14 @@ public class BusinessEntity {
         this.taskID = taskID;
     }
 
+    public Integer getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(Integer projectID) {
+        this.projectID = projectID;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -199,5 +213,13 @@ public class BusinessEntity {
 
     public void setTasksByTaskId(TasksEntity tasksByTaskId) {
         this.tasksByTaskId = tasksByTaskId;
+    }
+
+    public ProjectsEntity getProjectsByProjectId() {
+        return projectsByProjectId;
+    }
+
+    public void setProjectsByProjectId(ProjectsEntity projectsByProjectId) {
+        this.projectsByProjectId = projectsByProjectId;
     }
 }

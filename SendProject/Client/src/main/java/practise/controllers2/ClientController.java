@@ -24,6 +24,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import practise.HelloApplication;
 import practise.items.ClientsItems;
+import practise.items.PersonalItems;
 import practise.singleton.Singleton;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class ClientController implements Initializable {
     public JFXButton redactButton;
     public JFXButton deleteButton;
     public JFXButton addButton;
+    public JFXComboBox<String> searchComboBox;
 
     //=========================Columns====================================
     JFXTreeTableColumn<ClientsItems, String> name;
@@ -49,6 +51,10 @@ public class ClientController implements Initializable {
     //=========================Columns====================================
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.addAll("Название", "Тип клиента", "Ответственный");
+        searchComboBox.setItems(list);
+        searchComboBox.getSelectionModel().select("Название");
         if(Singleton.getInstance().getFinal_Role().equals("obey")) {
             addButton.setVisible(false);
             deleteButton.setVisible(false);
@@ -119,14 +125,28 @@ public class ClientController implements Initializable {
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                 treeTable.setPredicate(new Predicate<TreeItem<ClientsItems>>() {
                     @Override
-                    public boolean test(TreeItem<ClientsItems> clientsItemsTreeItem) {
-                        Boolean flag = clientsItemsTreeItem.getValue().name.getValue().contains(t1);
+                    public boolean test(TreeItem<ClientsItems> personalItemsTreeItem) {
+                        Boolean flag = false;
+                        switch (searchComboBox.getSelectionModel().getSelectedItem()) {
+                            case "Название": {
+                                flag = personalItemsTreeItem.getValue().name.getValue().contains(t1);
+                                break;
+                            }
+                            case "Тип клиента": {
+                                flag = personalItemsTreeItem.getValue().type.getValue().contains(t1);
+                                break;
+                            }
+                            case "Ответственный": {
+                                flag = personalItemsTreeItem.getValue().responsable.getValue().contains(t1);
+                                break;
+                            }
+
+                        }
                         return flag;
                     }
                 });
             }
         });
-        System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiiiii");
         OnReload();
     }
 

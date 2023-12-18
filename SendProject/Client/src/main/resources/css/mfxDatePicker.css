@@ -80,6 +80,92 @@
 #datePicker .date-picker-popup .mfx-date-cell:extra {
     -fx-text-fill: red;
 }
+
+/********************************************************************
+                            Dublicate DatePicker
+ *********************************************************************/
+#datePicker2 .text-field:disabled {
+    -fx-opacity: 1.0;
+}
+#datePicker2 {
+    -fx-prompt-text-fill: #2196f3;
+    -fx-background-color: #151928;
+    -fx-text-fill: #2196f3;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+    -fx-font-family: "Open Sans SemiBold";
+}
+
+#datePicker2 .floating-text {
+    -fx-background-color: transparent;
+    -fx-font-family: "Open Sans SemiBold";
+    -fx-text-fill: #2196f3;
+}
+
+
+#datePicker2 .mfx-icon-wrapper .mfx-font-icon {
+    -mfx-color: #2196f3;
+}
+
+#datePicker2 .date-picker-popup .content {
+    -fx-background-color: #151928;
+}
+
+#datePicker2 .date-picker-popup .right-arrow,
+#datePicker2 .date-picker-popup .left-arrow {
+    -fx-fill: #2196f3;
+
+}
+
+#datePicker2 .date-picker-popup .years-combo,
+#datePicker2 .date-picker-popup .months-combo,
+#datePicker2 .date-picker-popup .years-combo:selected,
+#datePicker2 .date-picker-popup .months-combo:selected {
+    -fx-text-fill: #2196f3;
+    -fx-background-color: #151928;
+    -fx-border-color: #2196f3;
+}
+
+#datePicker2 .date-picker-popup .months-combo .virtual-flow .mfx-combo-box-cell:selected .label,
+#datePicker2 .date-picker-popup .years-combo .virtual-flow .mfx-combo-box-cell:selected .label,
+#datePicker2 .date-picker-popup .months-combo .virtual-flow .mfx-combo-box-cell:selected,
+#datePicker2 .date-picker-popup .years-combo .virtual-flow .mfx-combo-box-cell:selected {
+    -fx-text-fill: #151928;
+    -fx-background-color: #2196f3;
+}
+
+#datePicker2 .date-picker-popup .week-day,
+#datePicker2 .date-picker-popup .mfx-date-cell {
+    -fx-text-fill: #2196f3;
+    -fx-background-color: #151928;
+}
+
+#datePicker2 .date-picker-popup .mfx-date-cell:hover {
+    -fx-background-color: #2196f3;
+    -fx-text-fill: #151928;
+}
+
+#datePicker2 .date-picker-popup .years-combo .mfx-list-cell:selected {
+    -fx-background-color: #2196f3;
+    -fx-text-fill: #151928;
+}
+
+#datePicker2 .date-picker-popup .months-combo .virtual-flow,
+#datePicker2 .date-picker-popup .years-combo .virtual-flow {
+    mfx-color: #151928;
+    -fx-background-color: #151928;
+    -fx-fill: #151928;
+    -fx-border-color: #2196f3;
+}
+
+#datePicker2 .date-picker-popup .months-combo .virtual-flow .mfx-combo-box-cell .label,
+#datePicker2 .date-picker-popup .years-combo .virtual-flow .mfx-combo-box-cell .label {
+    -fx-text-fill: #2196f3;
+}
+
+#datePicker2 .date-picker-popup .mfx-date-cell:extra {
+    -fx-text-fill: red;
+}
 /******************************************************************8
                            Custom Date Picker
 ********************************************************************/

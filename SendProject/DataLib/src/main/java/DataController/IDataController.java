@@ -54,6 +54,14 @@ public interface IDataController
     public Object DeletePayment(String[] arrStr);
     public Object ChangeTaskStatus(String[] arrStr);
     public Object DeleteTask(String[] arrStr);
+    public Object GetProjectInfo(String[] arrStr);
+    public Object GetTeamMembersList(String[] arrStr);
+    public Object GetPersonalGeneralInfo(String[] arrStr);
+    public Object GetClientGeneralInfo(String[] arrStr);
+    public Object GetPaymentGeneralInfo(String[] arrStr);
+    public Object GetTaskGeneralInfo(String[] arrStr);
+    public Object GetProjectGeneralInfo(String[] arrStr);
+    public Object GetBusinessGeneralInfo(String[] arrStr);
     //============================================================
     //============================================================
 

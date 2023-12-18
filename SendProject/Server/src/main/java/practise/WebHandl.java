@@ -382,6 +382,54 @@ public class WebHandl {
                 out.flush();
                 break;
             }
+            case "GetProjectInfo": {
+                String res = GetProjectInfo(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "GetTeamMembersList": {
+                String res = GetTeamMembersList(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "GetPersonalGeneralInfo": {
+                String res = GetPersonalGeneralInfo(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "GetClientGeneralInfo": {
+                String res = GetClientGeneralInfo(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "GetPaymentGeneralInfo": {
+                String res = GetPaymentGeneralInfo(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "GetTaskGeneralInfo": {
+                String res = GetTaskGeneralInfo(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "GetProjectGeneralInfo": {
+                String res = GetProjectGeneralInfo(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
+            case "GetBusinessGeneralInfo": {
+                String res = GetBusinessGeneralInfo(arrStr).toString();
+                out.write(res);
+                out.flush();
+                break;
+            }
             //========================================================================
             //========================================================================
             //========================================================================
@@ -545,6 +593,38 @@ public class WebHandl {
 
     public Object DeleteTask(String[] arrStr) {
         return DataController.DeleteTask(arrStr);
+    }
+
+    public Object GetProjectInfo(String[] arrStr) {
+        return DataController.GetProjectInfo(arrStr);
+    }
+
+    public Object GetTeamMembersList(String[] arrStr) {
+        return DataController.GetTeamMembersList(arrStr);
+    }
+
+    public Object GetPersonalGeneralInfo(String[] arrStr) {
+        return DataController.GetPersonalGeneralInfo(arrStr);
+    }
+
+    public Object GetClientGeneralInfo(String[] arrStr) {
+        return DataController.GetClientGeneralInfo(arrStr);
+    }
+
+    public Object GetPaymentGeneralInfo(String[] arrStr) {
+        return DataController.GetPaymentGeneralInfo(arrStr);
+    }
+
+    public Object GetTaskGeneralInfo(String[] arrStr) {
+        return DataController.GetTaskGeneralInfo(arrStr);
+    }
+
+    public Object GetProjectGeneralInfo(String[] arrStr) {
+        return DataController.GetProjectGeneralInfo(arrStr);
+    }
+
+    public Object GetBusinessGeneralInfo(String[] arrStr) {
+        return DataController.GetBusinessGeneralInfo(arrStr);
     }
     //==============================================================================================
     //==============================================================================================

@@ -249,6 +249,46 @@ public class DataControllerHttp implements IDataController {
         return SendData(arrStr, true);
     }
 
+    @Override
+    public Object GetProjectInfo(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object GetTeamMembersList(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object GetPersonalGeneralInfo(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object GetClientGeneralInfo(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object GetPaymentGeneralInfo(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object GetTaskGeneralInfo(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object GetProjectGeneralInfo(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
+    @Override
+    public Object GetBusinessGeneralInfo(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
     //=============================================================================
     //=============================================================================
 

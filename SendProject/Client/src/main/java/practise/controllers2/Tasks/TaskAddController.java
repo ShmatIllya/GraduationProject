@@ -20,7 +20,6 @@ import javafx.stage.Stage;
 import practise.singleton.Singleton;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class TaskAddController implements Initializable {
     public HBox processProjectHBox;
     JFXChipView<String> responsableChips;
     JFXChipView<String> checkerChips;
-    String Client = "Не выбран";
+    String OuterValue = "Не выбран";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -155,7 +154,10 @@ public class TaskAddController implements Initializable {
 
     public void InitClientTask(String Client) {
         processProjectHBox.setVisible(false);
-        this.Client = Client;
+        this.OuterValue = Client;
+    }
+    public void IntiProjectTask(String Project) {
+        projectComboBox.getSelectionModel().select(Project);
     }
     public void OnClose(ActionEvent event) {
         FadeTransition ft = Singleton.getInstance().PerformFadeTransition(stackPane, 1, 0, 0.5);
@@ -171,7 +173,7 @@ public class TaskAddController implements Initializable {
         String[] arrStr = {"AddTask", nameField.getText(), responsableChips.getChips().get(0), descriptionField.getText(),
                 checkerChips.getChips().get(0), datePicker.getText(),
                 projectComboBox.getSelectionModel().getSelectedItem().toString(),
-                splitProcess[1], Client, formatter.format(LocalDateTime.now())
+                splitProcess[1], OuterValue, formatter.format(LocalDateTime.now())
         };
         String tempString = (String) Singleton.getInstance().getDataController().AddTask(arrStr);
         tempString = tempString.replaceAll("\r", "");

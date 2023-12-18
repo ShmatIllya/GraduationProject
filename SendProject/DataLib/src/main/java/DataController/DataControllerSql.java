@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -43,6 +44,7 @@ public class DataControllerSql implements IDataController {
         entityManager = managerFactory.createEntityManager();
         transaction = entityManager.getTransaction();
         x = new StringBuffer();
+
     }
 
     public Object GetSomething() {
@@ -180,14 +182,14 @@ public class DataControllerSql implements IDataController {
                     ">>" + resultPersonal.getContacts() + ">>" + resultPersonal.getEmail() + ">>" + resultPersonal.getRole() +
                     ">>" + resultPersonal.getSubrole() + ">>" + resultPersonal.getStatus() + ">>" + resultPersonal.getDescription() +
                     ">>" + resultPersonal.getRegDate() + "\r";
+            System.out.println(getClass().getResource("/META-INF/MANIFEST.MF"));
             BufferedImage image = ImageIO.read(getClass().getResource("/images/" + resultPersonal.getImageName()));
 
-            //BufferedImage image = ImageIO.read(new File("/images/" + resultPersonal.getImageName()));
             s_res = infoS;
             globalImage = image;
         }
         catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         transaction.commit();
         entityManager.clear();
@@ -213,16 +215,20 @@ public class DataControllerSql implements IDataController {
             resultPersonal.setDescription(arrStr[4]);
             //resultPersonal.setRegDate(Date.valueOf(LocalDate.parse(arrStr[10], formatter)));
             Path path = Paths.get(getClass().getResource("/images/" + resultPersonal.getImageName()).toURI());
-            Files.delete(path);
+            if(!resultPersonal.getImageName().equals("1.png")) {
+                Files.delete(path);
+            }
             String newFileName = CreateImageName();
             resultPersonal.setImageName(newFileName);
-            ImageIO.write(image, "PNG", new File(getClass().getResource("/images/" + newFileName).toURI()));
+            String s = getClass().getResource("/images/") + newFileName;
+            s.replace("\\", File.separator);
+            ImageIO.write(image, "PNG", new File(s));
             entityManager.merge(resultPersonal);
             s_res = "success" + "\r";
             //================================Notification==========================
         }
         catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             s_res = "null" + "\r";
         }
         transaction.commit();
@@ -907,7 +913,7 @@ public class DataControllerSql implements IDataController {
                     sendText = lastMessage.getText();
                 }
                 catch (Exception e) {
-                    System.out.println(e);
+                    e.printStackTrace();
                     senderName = " ";
                 }
                 try {
@@ -916,7 +922,7 @@ public class DataControllerSql implements IDataController {
                     globalImageList.add(image);
                 }
                 catch (Exception e) {
-                    System.out.println(e);
+                    e.printStackTrace();
                     //BufferedImage image = ImageIO.read(new File("/images/1.png"));
                     BufferedImage image = ImageIO.read(getClass().getResource("/images/1.png"));
                     globalImageList.add(image);
@@ -932,6 +938,7 @@ public class DataControllerSql implements IDataController {
                 s_res += chat.getName() + "<<" + senderName + "<<" + sendText + "<<" + sendTime
                         + "<<" + query2.getSingleResult();
                 s_res += ">>";
+
             }
             s_res += "\r";
         } catch (Exception e) {
@@ -958,7 +965,9 @@ public class DataControllerSql implements IDataController {
 
                 String newFileName = CreateImageName();
                 chat.setImageName(newFileName);
-                ImageIO.write(image, "PNG", new File(getClass().getResource("/images/" + newFileName).toURI()));
+                String s = getClass().getResource("/images/") + newFileName;
+                s.replace("\\", File.separator);
+                ImageIO.write(image, "PNG", new File(s));
                 entityManager.persist(chat);
 
                 query = entityManager.createQuery("SELECT e FROM ChatsEntity e where e.name =:name", ChatsEntity.class);
@@ -1252,8 +1261,9 @@ public class DataControllerSql implements IDataController {
                 ProjectMembersEntity.class);
         try {
             List<String> list = Collections.singletonList(q.getResultList().toString());
-            for (String i : list) {
-                i = i.replaceAll("[{}\\[\\]]", "");
+            String distValue = list.get(0).replaceAll("[{}\\[\\]]", "");
+            String[] finalList = distValue.split(", ");
+            for (String i : finalList) {
                 s_res += i + ">>";
             }
             s_res += "\r";
@@ -1309,6 +1319,13 @@ public class DataControllerSql implements IDataController {
                 }
                 case "Процесс": {
                     businessEntity.setProcessId(Integer.parseInt(arrStr[5]));
+                    break;
+                }
+                case "Проект": {
+                    TypedQuery<ProjectsEntity> queryProj = entityManager.createQuery("SELECT e FROM ProjectsEntity e" +
+                            " WHERE e.name =:name", ProjectsEntity.class);
+                    queryProj.setParameter("name", arrStr[5]);
+                    businessEntity.setProjectID(queryProj.getSingleResult().getProjectsId());
                     break;
                 }
                 case "Задача": {
@@ -1539,6 +1556,207 @@ public class DataControllerSql implements IDataController {
         } catch (Exception e) {
             e.printStackTrace();
             s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object GetProjectInfo(String[] arrStr) {
+        try {
+            transaction.begin();
+            TypedQuery<ProjectsEntity> query = entityManager.createQuery("SELECT e FROM ProjectsEntity e WHERE e.name =:name", ProjectsEntity.class);
+            query.setParameter("name", arrStr[1]);
+            ProjectsEntity project;
+            project = query.getSingleResult();
+            TypedQuery<ProjectMembersEntity> queryPM = entityManager.createQuery("SELECT e FROM ProjectMembersEntity e" +
+                    " WHERE e.projectsByProjectId.name =:name", ProjectMembersEntity.class);
+            queryPM.setParameter("name", arrStr[1]);
+            List<ProjectMembersEntity> projectMembers = queryPM.setMaxResults(1).getResultList();
+            s_res = project.getName() + "<<" + project.getDescription() + "<<" + project.getDeadline() +
+                    "<<" + project.getStatus() + "<<" + project.getCreationDate() + "<<" + project.getTrudozatraty() +
+                    "<<" + project.getStartControl() + "<<" + project.getEnd_control() + "<<"
+                    + project.getPersonalByCheckerId().getNameSername() + "<<" + project.getPlan_control() +
+                    "<<" + project.getIzm() + "<<" + projectMembers.get(0).getTeamName() + ">>";
+            List<TasksEntity> tasksEntityList = (List<TasksEntity>) project.getTasksByProjectsId();
+            List<BusinessEntity> businessEntityList = (List<BusinessEntity>) project.getBusinessByProjectsId();
+            List<JournalsEntity> journalsEntityList = (List<JournalsEntity>) project.getJournalsByProjectsId();
+            List<CommentsEntity> commentsEntityList = (List<CommentsEntity>) journalsEntityList.get(0).getCommentsByJournalsId();
+            for(TasksEntity task: tasksEntityList) {
+                s_res += task.getTasksId() + "^^" + task.getName() + "^^" + task.getStatus() + "<<";
+            }
+            s_res += ">>";
+            for(BusinessEntity business: businessEntityList) {
+                s_res += business.getBusinessId() + "^^" + business.getName() + " от "
+                        + business.getDate().toString().split("T")[0] + "^^" + business.getStatus() + "<<";
+            }
+            s_res += ">>";
+            for(CommentsEntity comment: commentsEntityList) {
+                s_res += comment.getText() + "^^" + comment.getPersonalBySenderId().getNameSername() + "^^" + comment.getDate() + "^^" + comment.getPersonalBySenderId().getLogin() + "<<";
+            }
+            s_res += ">>";
+            s_res += "\r";
+        }
+        catch (Exception e) {
+            s_res = "null" + "\r";
+            e.printStackTrace();
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object GetTeamMembersList(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
+        try {
+            TypedQuery<ProjectMembersEntity> query = entityManager.createQuery("SELECT distinct" +
+                    " e.personalByPersonalId.nameSername FROM ProjectMembersEntity e" +
+                    " WHERE e.teamName =:name", ProjectMembersEntity.class);
+            query.setParameter("name", arrStr[1]);
+            List<String> list = Collections.singletonList(query.getResultList().toString());
+            String distValue = list.get(0).replaceAll("[{}\\[\\]]", "");
+            String[] finalList = distValue.split(", ");
+            for (String i : finalList) {
+                s_res += i + ">>";
+            }
+            s_res += "\r";
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object GetPersonalGeneralInfo(String[] arrStr) {
+        try {
+            s_res = "";
+            transaction.begin();
+            TypedQuery<PersonalEntity> query = entityManager.createQuery("SELECT e FROM PersonalEntity e", PersonalEntity.class);
+            List<PersonalEntity> personalList;
+            personalList = query.getResultList();
+            for (PersonalEntity personal : personalList) {
+                s_res += personal.getNameSername() + "<<" + personal.getRole() + "<<" + personal.getSubrole() +
+                        "<<" + personal.getStatus() +
+                        "<<" + personal.getBusinessesByPersonalId().size() + "<<" + personal.getClientsByPersonalId().size() +
+                        "<<" + personal.getProjectsByPersonalId().size() + "<<" + personal.getTasksByPersonalId().size();
+                s_res += ">>";
+            }
+            s_res += "\r";
+        } catch (Exception e) {
+            s_res = "null" + "\r";
+            throw new RuntimeException(e);
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object GetClientGeneralInfo(String[] arrStr) {
+        try {
+            s_res = "";
+            transaction.begin();
+            TypedQuery<ClientsEntity> query = entityManager.createQuery("SELECT e FROM ClientsEntity e", ClientsEntity.class);
+            List<ClientsEntity> clientList;
+            clientList = query.getResultList();
+            for (ClientsEntity client : clientList) {
+                s_res += client.getName() + "<<" + client.getType() + "<<" + client.getWork_type() +
+                        "<<" + client.getBusinessesByClientsId().size() +
+                        "<<" + client.getPaymentsByClientsId().size() + "<<" + client.getTasksByClientsId().size();
+                s_res += ">>";
+            }
+            s_res += "\r";
+        } catch (Exception e) {
+            s_res = "null" + "\r";
+            throw new RuntimeException(e);
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+    public Object GetPaymentGeneralInfo(String[] arrStr) {
+        try {
+            s_res = "";
+            transaction.begin();
+            TypedQuery<PaymentsEntity> query = entityManager.createQuery("SELECT e FROM PaymentsEntity e", PaymentsEntity.class);
+            List<PaymentsEntity> paymentList;
+            paymentList = query.getResultList();
+            for (PaymentsEntity payment : paymentList) {
+                s_res += payment.getPaymentId() + "<<" + payment.getFinalPrice() + "<<" + payment.getStatus() +
+                        "<<" + payment.getItemsByItemId().getName();
+                s_res += ">>";
+            }
+            s_res += "\r";
+        } catch (Exception e) {
+            s_res = "null" + "\r";
+            throw new RuntimeException(e);
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+    public Object GetTaskGeneralInfo(String[] arrStr) {
+        try {
+            s_res = "";
+            transaction.begin();
+            TypedQuery<TasksEntity> query = entityManager.createQuery("SELECT e FROM TasksEntity e", TasksEntity.class);
+            List<TasksEntity> taskList;
+            taskList = query.getResultList();
+            for (TasksEntity task : taskList) {
+                s_res += task.getName() + "<<" + task.getStatus() +
+                        "<<" + task.getPriority();
+                s_res += ">>";
+            }
+            s_res += "\r";
+        } catch (Exception e) {
+            s_res = "null" + "\r";
+            throw new RuntimeException(e);
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+    public Object GetProjectGeneralInfo(String[] arrStr) {
+
+
+        try {
+            s_res = "";
+            transaction.begin();
+            TypedQuery<ProjectsEntity> query = entityManager.createQuery("SELECT e FROM ProjectsEntity e", ProjectsEntity.class);
+            List<ProjectsEntity> projectList;
+            projectList = query.getResultList();
+            for (ProjectsEntity project : projectList) {
+                s_res += project.getName() + "<<" + project.getStatus() +
+                        "<<" + project.getTrudozatraty() +
+                        "<<" + project.getProjectMembersByProjectsId().size() + "<<" + project.getTasksByProjectsId().size();
+                s_res += ">>";
+            }
+            s_res += "\r";
+        } catch (Exception e) {
+            s_res = "null" + "\r";
+            throw new RuntimeException(e);
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+    public Object GetBusinessGeneralInfo(String[] arrStr) {
+        try {
+            s_res = "";
+            transaction.begin();
+            TypedQuery<BusinessEntity> query = entityManager.createQuery("SELECT e FROM BusinessEntity e", BusinessEntity.class);
+            List<BusinessEntity> businessList;
+            businessList = query.getResultList();
+            for (BusinessEntity business : businessList) {
+                s_res += business.getName() + "<<" + business.getStatus();
+                s_res += ">>";
+            }
+            s_res += "\r";
+        } catch (Exception e) {
+            s_res = "null" + "\r";
+            throw new RuntimeException(e);
         }
         transaction.commit();
         entityManager.clear();

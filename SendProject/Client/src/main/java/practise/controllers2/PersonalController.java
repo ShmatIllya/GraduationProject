@@ -1,9 +1,6 @@
 package practise.controllers2;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTreeTableColumn;
-import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
@@ -34,6 +31,7 @@ import practise.singleton.Singleton;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
@@ -46,6 +44,7 @@ public class PersonalController implements Initializable {
     public JFXButton redactButton;
     public JFXButton deleteButton;
     public JFXButton addButton;
+    public JFXComboBox<String> searchComboBox;
 
     //=========================Columns====================================
     JFXTreeTableColumn<PersonalItems, String> nameSername;
@@ -57,6 +56,10 @@ public class PersonalController implements Initializable {
     //=========================Columns====================================
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.addAll("ФИО", "Телефон", "Email", "Должность", "Статус");
+        searchComboBox.setItems(list);
+        searchComboBox.getSelectionModel().select("ФИО");
         if(Singleton.getInstance().getFinal_Role().equals("obey"))
         {
             addButton.setVisible(false);
@@ -154,7 +157,30 @@ public class PersonalController implements Initializable {
                 treeTable.setPredicate(new Predicate<TreeItem<PersonalItems>>() {
                     @Override
                     public boolean test(TreeItem<PersonalItems> personalItemsTreeItem) {
-                        Boolean flag = personalItemsTreeItem.getValue().nameSername.getValue().contains(t1);
+                        Boolean flag = false;
+                        switch (searchComboBox.getSelectionModel().getSelectedItem()) {
+                            case "ФИО": {
+                                flag = personalItemsTreeItem.getValue().nameSername.getValue().contains(t1);
+                                break;
+                            }
+                            case "Телефон": {
+                                flag = personalItemsTreeItem.getValue().contacts.getValue().contains(t1);
+                                break;
+                            }
+                            case "Email": {
+                                flag = personalItemsTreeItem.getValue().email.getValue().contains(t1);
+                                break;
+                            }
+                            case "Должность": {
+                                flag = personalItemsTreeItem.getValue().subrole.getValue().contains(t1);
+                                break;
+                            }
+                            case "Статус": {
+                                flag = personalItemsTreeItem.getValue().status.getValue().contains(t1);
+                                break;
+                            }
+
+                        }
                         return flag;
                     }
                 });
@@ -254,4 +280,31 @@ public class PersonalController implements Initializable {
         tempString = tempString.replaceAll("\r", "");
         OnReload();
     }
+
+    /*public void fillDashbordPanel() {
+
+        ChangeButton.setText("Изменить информацию");
+        ChangeButton.setStyle("-fx-pref-width: 458; -fx-pref-height: 38; -fx-text-fill: white; -fx-font-size: 16px");
+        ChangeButton.setOnMouseClicked(mouseEvent -> {
+            onChange = true;
+            phoneField.setEditable(true);
+            emailField.setEditable(true);
+            descriptionArea.setEditable(true);
+            SaveButton.setDisable(false);
+            ChangeButton.setDisable(true);
+        });
+        ArrayList<JFXButton> buttons = new ArrayList<>();
+        buttons.add(ChangeButton);
+        buttons.add(SaveButton);
+
+        try {
+            String nameSername = OnReload();
+            if(Singleton.getInstance().getFinal_NameSername().equals(nameSername)) {
+                DashboardController temp = new DashboardController();
+                temp.SetVBoxButtons(buttons);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
 }

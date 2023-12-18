@@ -1,9 +1,6 @@
 package practise.controllers2.Payment;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTreeTableColumn;
-import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
@@ -11,6 +8,7 @@ import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.IntegerFilter;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.animation.FadeTransition;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -19,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.layout.StackPane;
@@ -37,10 +36,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 public class PaymentController implements Initializable {
     public JFXTreeTableView<PaymentItems> tableView;
     public JFXButton addButton;
+    public JFXComboBox<String> searchComboBox;
+    public TextField searchField;
     JFXTreeTableColumn<PaymentItems, Integer> idColumn;
     JFXTreeTableColumn<PaymentItems, String> dateColumn;
     JFXTreeTableColumn<PaymentItems, Integer> moneyColumn;
@@ -49,6 +51,10 @@ public class PaymentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.addAll("ИД", "Дата создания", "Сумма", "Плательщик", "Статус");
+        searchComboBox.setItems(list);
+        searchComboBox.getSelectionModel().select("ИД");
         if(Singleton.getInstance().getFinal_Role().equals("obey")) {
             addButton.setVisible(false);
         }
@@ -109,7 +115,40 @@ public class PaymentController implements Initializable {
                 }
             }
         });
-
+        searchField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                tableView.setPredicate(new Predicate<TreeItem<PaymentItems>>() {
+                    @Override
+                    public boolean test(TreeItem<PaymentItems> personalItemsTreeItem) {
+                        Boolean flag = false;
+                        switch (searchComboBox.getSelectionModel().getSelectedItem()) {
+                            case "ИД": {
+                                flag = personalItemsTreeItem.getValue().id.getValue().toString().contains(t1);
+                                break;
+                            }
+                            case "Дата создания": {
+                                flag = personalItemsTreeItem.getValue().date.getValue().contains(t1);
+                                break;
+                            }
+                            case "Сумма": {
+                                flag = personalItemsTreeItem.getValue().money.getValue().toString().contains(t1);
+                                break;
+                            }
+                            case "Плательщик": {
+                                flag = personalItemsTreeItem.getValue().paymenter.getValue().contains(t1);
+                                break;
+                            }
+                            case "Статус": {
+                                flag = personalItemsTreeItem.getValue().status.getValue().contains(t1);
+                                break;
+                            }
+                        }
+                        return flag;
+                    }
+                });
+            }
+        });
         OnReload();
     }
 

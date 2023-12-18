@@ -40,6 +40,12 @@ public class ProjectsEntity {
     @Column(name = "end_control")
     private String end_control;
     @Basic
+    @Column(name = "plan_control")
+    private String plan_control;
+    @Basic
+    @Column(name = "izm")
+    private String izm;
+    @Basic
     @Column(name = "checker_id")
     private Integer checkerId;
     @OneToMany(mappedBy = "projectsByProjectId")
@@ -56,6 +62,8 @@ public class ProjectsEntity {
     private PersonalEntity personalByCheckerId;
     @OneToMany(mappedBy = "projectsByProjectId")
     private Collection<TasksEntity> tasksByProjectsId;
+    @OneToMany(mappedBy = "projectsByProjectId")
+    private Collection<BusinessEntity> businessByProjectsId;
 
     public int getProjectsId() {
         return projectsId;
@@ -145,6 +153,22 @@ public class ProjectsEntity {
         this.checkerId = checkerId;
     }
 
+    public String getPlan_control() {
+        return plan_control;
+    }
+
+    public void setPlan_control(String plan_control) {
+        this.plan_control = plan_control;
+    }
+
+    public String getIzm() {
+        return izm;
+    }
+
+    public void setIzm(String izm) {
+        this.izm = izm;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -163,6 +187,8 @@ public class ProjectsEntity {
         if (trudozatraty != null ? !trudozatraty.equals(that.trudozatraty) : that.trudozatraty != null) return false;
         if (startControl != null ? !startControl.equals(that.startControl) : that.startControl != null) return false;
         if (end_control != null ? !end_control.equals(that.end_control) : that.end_control != null) return false;
+        if (plan_control != null ? !plan_control.equals(that.plan_control) : that.plan_control != null) return false;
+        if (izm != null ? !izm.equals(that.izm) : that.izm != null) return false;
 
         return true;
     }
@@ -179,6 +205,8 @@ public class ProjectsEntity {
         result = 31 * result + (trudozatraty != null ? trudozatraty.hashCode() : 0);
         result = 31 * result + (startControl != null ? startControl.hashCode() : 0);
         result = 31 * result + (end_control != null ? end_control.hashCode() : 0);
+        result = 31 * result + (plan_control != null ? plan_control.hashCode() : 0);
+        result = 31 * result + (izm != null ? izm.hashCode() : 0);
         return result;
     }
 
@@ -228,5 +256,13 @@ public class ProjectsEntity {
 
     public void setTasksByProjectsId(Collection<TasksEntity> tasksByProjectsId) {
         this.tasksByProjectsId = tasksByProjectsId;
+    }
+
+    public Collection<BusinessEntity> getBusinessByProjectsId() {
+        return businessByProjectsId;
+    }
+
+    public void setBusinessByProjectsId(Collection<BusinessEntity> businessByProjectsId) {
+        this.businessByProjectsId = businessByProjectsId;
     }
 }

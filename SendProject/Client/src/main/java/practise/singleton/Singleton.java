@@ -41,6 +41,7 @@ public class Singleton {
     private VBox dashboardVBox;
     private int ClientsID;
     private String[] TaskInfoValues;
+    private String ProjectInfoValue;
     //===============================================================================
     //===============================OldValues=======================================
     //===============================================================================
@@ -301,4 +302,11 @@ public class Singleton {
         return resHBox;
     }
 
+    public String getProjectInfoValue() {
+        return ProjectInfoValue;
+    }
+
+    public void setProjectInfoValue(String projectInfoValue) {
+        ProjectInfoValue = projectInfoValue;
+    }
 }
