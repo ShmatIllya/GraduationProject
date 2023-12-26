@@ -430,6 +430,45 @@ public class WebHandl {
                 out.flush();
                 break;
             }
+            case "CompletePayment": {
+                try {
+                    byte[] sizeAr = new byte[4];
+                    MiniServer.socket.getInputStream().read(sizeAr);
+                    int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
+                    byte[] imageAr = new byte[size];
+                    DataInputStream in = new DataInputStream(MiniServer.socket.getInputStream());
+                    in.readFully(imageAr);
+                    //Singleton.getInstance().getIs().read(imageAr);
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+                    String res = CompletePayment(arrStr, image).toString();
+                    out.write(res);
+                    out.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            }
+            case "GetPaymentCheck": {
+                String res_str = GetPaymentCheck(arrStr).toString();
+                BufferedImage image = (BufferedImage) GetPersonalImage();
+                out.write(res_str);
+                out.flush();
+                try {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    ImageIO.write(image, "png", byteArrayOutputStream);
+
+                    byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+                    MiniServer.socket.getOutputStream().write(size);
+                    MiniServer.socket.getOutputStream().write(byteArrayOutputStream.toByteArray());
+                    MiniServer.socket.getOutputStream().flush();
+                }
+                catch (Exception e) {
+                    System.out.println(e);
+                    throw new RuntimeException(e);
+                }
+
+                break;
+            }
             //========================================================================
             //========================================================================
             //========================================================================
@@ -625,6 +664,14 @@ public class WebHandl {
 
     public Object GetBusinessGeneralInfo(String[] arrStr) {
         return DataController.GetBusinessGeneralInfo(arrStr);
+    }
+
+    public Object CompletePayment(String[] arrStr, BufferedImage image) {
+        return DataController.CompletePayment(arrStr, image);
+    }
+
+    public Object GetPaymentCheck(String[] arrStr) {
+        return DataController.GetPaymentCheck(arrStr);
     }
     //==============================================================================================
     //==============================================================================================

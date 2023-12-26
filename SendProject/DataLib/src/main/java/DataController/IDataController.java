@@ -62,6 +62,8 @@ public interface IDataController
     public Object GetTaskGeneralInfo(String[] arrStr);
     public Object GetProjectGeneralInfo(String[] arrStr);
     public Object GetBusinessGeneralInfo(String[] arrStr);
+    Object CompletePayment(String[] arrStr, BufferedImage image);
+    Object GetPaymentCheck(String[] arrStr);
     //============================================================
     //============================================================
 

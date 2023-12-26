@@ -94,7 +94,7 @@ public class PersonalInfoController implements Initializable {
             BufferedImage sendImage = null;
             sendImage = SwingFXUtils.fromFXImage(avatarImage.getImage(), null);
             //========================================================
-            String[] arrStr = {"UpdatePersonalInfo" + ">>" + Singleton.getInstance().getLocalLogin() + ">>" + phoneField.getText() + ">>" + emailField.getText() + ">>" + descriptionArea.getText()};
+            String[] arrStr = {"UpdatePersonalInfo",Singleton.getInstance().getLocalLogin(), phoneField.getText(), emailField.getText(), descriptionArea.getText()};
             String tempString = (String) Singleton.getInstance().getDataController().UpdatePersonalInfo(arrStr, sendImage);
             tempString = tempString.replaceAll("\r", "");
             Label messageBox = new Label();
@@ -149,7 +149,7 @@ public class PersonalInfoController implements Initializable {
     }
 
     public String OnReload() throws IOException {
-        String[] arrStr = {"GetPersonalInfo" + ">>" + Singleton.getInstance().getLocalLogin()};
+        String[] arrStr = {"GetPersonalInfo", Singleton.getInstance().getLocalLogin()};
         //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
         String tempString = (String) Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
         System.out.println(tempString);

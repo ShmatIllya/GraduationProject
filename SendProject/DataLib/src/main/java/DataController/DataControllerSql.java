@@ -64,6 +64,7 @@ public class DataControllerSql implements IDataController {
             personal.setSubrole("Менеджер");
             personal.setRole("control");
             personal.setStatus("Активен");
+            personal.setImageName("1.png");
             entityManager.persist(personal);
             s_res = "1/" + "\r";
             return s_res;
@@ -220,8 +221,7 @@ public class DataControllerSql implements IDataController {
             }
             String newFileName = CreateImageName();
             resultPersonal.setImageName(newFileName);
-            String s = getClass().getResource("/images/") + newFileName;
-            s.replace("\\", File.separator);
+            String s = "target/classes/images/" + newFileName;
             ImageIO.write(image, "PNG", new File(s));
             entityManager.merge(resultPersonal);
             s_res = "success" + "\r";
@@ -965,8 +965,7 @@ public class DataControllerSql implements IDataController {
 
                 String newFileName = CreateImageName();
                 chat.setImageName(newFileName);
-                String s = getClass().getResource("/images/") + newFileName;
-                s.replace("\\", File.separator);
+                String s = "target/classes/images/" + newFileName;
                 ImageIO.write(image, "PNG", new File(s));
                 entityManager.persist(chat);
 
@@ -1510,6 +1509,9 @@ public class DataControllerSql implements IDataController {
         transaction.begin();
         try {
             PaymentsEntity payment = entityManager.getReference(PaymentsEntity.class, Integer.parseInt(arrStr[1]));
+            if(!payment.getPaymentImageName().isEmpty()) {
+                Files.delete(Paths.get("target/classes/images/checks/" + payment.getPaymentImageName()));
+            }
             entityManager.remove(payment);
             s_res = "success" + "\r";
         } catch (Exception e) {
@@ -1757,6 +1759,46 @@ public class DataControllerSql implements IDataController {
         } catch (Exception e) {
             s_res = "null" + "\r";
             throw new RuntimeException(e);
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object CompletePayment(String[] arrStr, BufferedImage image) {
+        s_res = "";
+        transaction.begin();
+        try {
+            PaymentsEntity payment = entityManager.getReference(PaymentsEntity.class, Integer.parseInt(arrStr[1]));
+            payment.setStatus("Оплачен");
+            String newFileName = "Payment_" + payment.getPaymentId() + "_Check.png";
+            String s = "target/classes/images/checks/" + newFileName;
+            ImageIO.write(image, "PNG", new File(s));
+            payment.setPaymentImageName(newFileName);
+            entityManager.merge(payment);
+            s_res = "success" + "\r";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
+        }
+        transaction.commit();
+        entityManager.clear();
+        return s_res;
+    }
+
+    public Object GetPaymentCheck(String[] arrStr) {
+        s_res = "";
+        transaction.begin();
+        try {
+            PaymentsEntity payment = entityManager.getReference(PaymentsEntity.class, Integer.parseInt(arrStr[1]));
+            BufferedImage image = ImageIO.read(getClass().getResource("/images/checks/" + payment.getPaymentImageName()));
+            globalImage = image;
+            s_res = "success" + "\r";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            s_res = "null" + "\r";
         }
         transaction.commit();
         entityManager.clear();

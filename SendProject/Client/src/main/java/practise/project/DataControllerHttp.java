@@ -289,6 +289,16 @@ public class DataControllerHttp implements IDataController {
         return SendData(arrStr, true);
     }
 
+    @Override
+    public Object CompletePayment(String[] arrStr, BufferedImage image) {
+        return SendDataWithImage(arrStr, true, image);
+    }
+
+    @Override
+    public Object GetPaymentCheck(String[] arrStr) {
+        return SendData(arrStr, true);
+    }
+
     //=============================================================================
     //=============================================================================
 

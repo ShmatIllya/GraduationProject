@@ -38,6 +38,9 @@ public class PaymentsEntity {
     @Basic
     @Column(name = "status")
     private String status;
+    @Basic
+    @Column(name = "payment_image_name")
+    private String paymentImageName;
     @ManyToOne
     @JoinColumn(name = "paymenter_id", referencedColumnName = "clients_id", insertable = false, updatable = false)
     private ClientsEntity clientsByPaymenterId;
@@ -128,6 +131,14 @@ public class PaymentsEntity {
         this.status = status;
     }
 
+    public String getPaymentImageName() {
+        return paymentImageName;
+    }
+
+    public void setPaymentImageName(String paymentImageName) {
+        this.paymentImageName = paymentImageName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -145,6 +156,7 @@ public class PaymentsEntity {
         if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
         if (finalPrice != null ? !finalPrice.equals(that.finalPrice) : that.finalPrice != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        if (paymentImageName != null ? !paymentImageName.equals(that.status) : that.paymentImageName != null) return false;
 
         return true;
     }
@@ -161,6 +173,7 @@ public class PaymentsEntity {
         result = 31 * result + (amount != null ? amount.hashCode() : 0);
         result = 31 * result + (finalPrice != null ? finalPrice.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (paymentImageName != null ? paymentImageName.hashCode() : 0);
         return result;
     }
 

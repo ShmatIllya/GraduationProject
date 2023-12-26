@@ -32,6 +32,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.transform.Scale;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import practise.HelloApplication;
@@ -41,13 +42,12 @@ import practise.items.PaymentInfoItems;
 import practise.singleton.Singleton;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -267,8 +267,12 @@ public class PaymentInfoController implements Initializable {
     }
 
     public void OnConfirmButton(ActionEvent event) throws URISyntaxException, IOException {
-        String[] arrStr = {"ChangePaymentStatus", String.valueOf(Singleton.getInstance().getClientsID()), "Оплачен"};
-        String tempString = (String) Singleton.getInstance().getDataController().ChangePaymentStatus(arrStr);
+        FileChooser chooser = new FileChooser();
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg"));
+        File file = chooser.showOpenDialog(null);
+        BufferedImage image = SwingFXUtils.fromFXImage(new javafx.scene.image.Image(file.getPath()), null);
+        String[] arrStr = {"CompletePayment", String.valueOf(Singleton.getInstance().getClientsID())};
+        String tempString = (String) Singleton.getInstance().getDataController().CompletePayment(arrStr, image);
         tempString = tempString.replaceAll("\r", "");
         Label messageBox = new Label();
         if(tempString.equals("null")) {
@@ -343,7 +347,7 @@ public class PaymentInfoController implements Initializable {
     }
 
     public void OnShowButton(ActionEvent event) throws DocumentException, IOException, URISyntaxException, InterruptedException {
-        redactButton.setVisible(false);
+        /*redactButton.setVisible(false);
         copyButton.setVisible(false);
         deleteButton.setVisible(false);
         PDFHBox.setVisible(false);
@@ -358,6 +362,28 @@ public class PaymentInfoController implements Initializable {
         copyButton.setVisible(true);
         deleteButton.setVisible(true);
         PDFHBox.setVisible(true);
-        AnchorPane2.setStyle("-fx-background-color: #151928");
+        AnchorPane2.setStyle("-fx-background-color: #151928");*/
+        String[] arrStr = {"GetPaymentCheck", String.valueOf(Singleton.getInstance().getClientsID())};
+        String tempString = (String) Singleton.getInstance().getDataController().GetPaymentCheck(arrStr);
+
+        byte[] sizeAr = new byte[4];
+        Singleton.getInstance().getIs().read(sizeAr);
+        int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
+        byte[] imageAr = new byte[size];
+        DataInputStream in = new DataInputStream(Singleton.getInstance().getIs());
+        in.readFully(imageAr);
+        //Singleton.getInstance().getIs().read(imageAr);
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+
+        String s = "src/main/resources/images/" + "tempCheck.png";
+        ImageIO.write(image, "PNG", new File(s));
+
+        HelloApplication h = new HelloApplication();
+        HostServices hostServices = h.getHostServices();
+        hostServices.showDocument(getClass().getResource("/images/tempCheck.png").toString());
+        //Files.delete(Paths.get("src/main/resources/images/" + "tempCheck.png"));
+
+        tempString = tempString.replaceAll("\r", "");
+        String[] resultSet = tempString.split(">>");
     }
 }
