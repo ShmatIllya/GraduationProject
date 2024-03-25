@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.DashboardController">
+   <children>
+      <AnchorPane prefHeight="63.0" prefWidth="900.0" style="-fx-background-color: #2196f3;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <ImageView fx:id="exit" fitHeight="32.0" fitWidth="56.0" layoutX="854.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="14.0">
+               <image>
+                  <Image url="@images/exit.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="menuImage" fitHeight="46.0" fitWidth="32.0" layoutX="12.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/burger.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="personalImage" fitHeight="46.0" fitWidth="32.0" layoutX="67.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/PersonalIcon/Personal1.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="clientImage" fitHeight="38.0" fitWidth="74.0" layoutX="120.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/ClientIcon/1.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="paymentImage" fitHeight="38.0" fitWidth="74.0" layoutX="176.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/PaymentIcons/Payment1.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="taskImage" fitHeight="38.0" fitWidth="74.0" layoutX="236.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/TaskIcon/Task1.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="messengerImage" fitHeight="38.0" fitWidth="74.0" layoutX="345.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/MessagngetIcon/Messanger1.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="projectImage" fitHeight="38.0" fitWidth="54.0" layoutX="291.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/ProjectIcons/Project1.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="statImage" fitHeight="38.0" fitWidth="74.0" layoutX="401.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/StatICon/1.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="mainPane" layoutY="64.0" styleClass="blue-panel" stylesheets="@css/styles.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="64.0" />
+      <AnchorPane fx:id="opacityPane" prefHeight="200.0" prefWidth="900.0" style="-fx-background-color: #000;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <AnchorPane fx:id="drawerPane" prefHeight="536.0" prefWidth="218.0" style="-fx-background-color: White;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="64.0">
+         <children>
+            <AnchorPane prefHeight="536.0" prefWidth="44.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <VBox fx:id="buttonVBox" layoutY="-8.0" prefHeight="536.0" prefWidth="218.0" spacing="5.0" style="-fx-background-color: #2196f3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <JFXButton fx:id="dashboard" alignment="BASELINE_LEFT" buttonType="RAISED" prefHeight="38.0" prefWidth="236.0" text="Dashboard" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton alignment="BASELINE_LEFT" buttonType="RAISED" layoutX="10.0" layoutY="10.0" prefHeight="38.0" prefWidth="239.0" text="Add New" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton alignment="BASELINE_LEFT" buttonType="RAISED" layoutX="10.0" layoutY="58.0" prefHeight="38.0" prefWidth="274.0" text="Data" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton alignment="BASELINE_LEFT" buttonType="RAISED" layoutX="10.0" layoutY="106.0" prefHeight="38.0" prefWidth="344.0" text="User" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton alignment="BASELINE_LEFT" buttonType="RAISED" layoutX="10.0" layoutY="154.0" prefHeight="38.0" prefWidth="334.0" text="Setting" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton alignment="BASELINE_LEFT" buttonType="RAISED" layoutX="10.0" layoutY="202.0" prefHeight="38.0" prefWidth="456.0" text="BackUp" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </JFXButton>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="globalOpacityPane" layoutX="10.0" layoutY="10.0" prefHeight="600.0" prefWidth="910.0" style="-fx-background-color: #000;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </children>
+</AnchorPane>

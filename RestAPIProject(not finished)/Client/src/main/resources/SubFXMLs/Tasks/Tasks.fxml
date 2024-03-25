@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="AnchorPane" prefHeight="536.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.Tasks.TasksController">
+   <children>
+      <StackPane prefHeight="536.0" prefWidth="900.0" style="-fx-background-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane styleClass="blue-panel" stylesheets="@../../css/styles.css">
+               <children>
+                  <JFXTreeTableView fx:id="treeTable" layoutX="72.0" layoutY="68.0" prefHeight="400.0" prefWidth="756.0" stylesheets="@../../css/treeTableView.css" AnchorPane.bottomAnchor="68.0" AnchorPane.leftAnchor="72.0" AnchorPane.rightAnchor="72.0" AnchorPane.topAnchor="68.0">
+                     <columnResizePolicy>
+                        <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </JFXTreeTableView>
+                  <TextField fx:id="searchField" layoutX="72.0" layoutY="32.0" prefHeight="26.0" prefWidth="195.0" promptText="Поиск" styleClass="tf_box" stylesheets="@../../css/styles.css" />
+                  <JFXButton layoutX="688.0" layoutY="32.0" onAction="#OnAddTask" prefHeight="26.0" prefWidth="140.0" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Добавить задачи" AnchorPane.rightAnchor="72.0" />
+                  <JFXButton fx:id="redactButton" disable="true" layoutX="530.0" layoutY="32.0" onAction="#OnRedactTask" prefHeight="26.0" prefWidth="140.0" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Редактировать задачи" AnchorPane.rightAnchor="230.0" />
+                  <Label fx:id="windowTypeLabel" layoutX="14.0" layoutY="494.0" text="Task" visible="false" />
+                  <JFXButton fx:id="deleteButton" disable="true" layoutX="690.0" layoutY="479.0" onAction="#OnDeleteButton" prefHeight="30.0" prefWidth="137.0" style="-fx-background-color: transparent; -fx-text-fill: red; -fx-border-color: red; -fx-border-radius: 5;" styleClass="blue-btn" stylesheets="@../../css/styles.css" text="Удалить" AnchorPane.bottomAnchor="26.6" AnchorPane.rightAnchor="72.4">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXComboBox fx:id="searchComboBox" layoutX="277.0" layoutY="33.0" prefHeight="26.0" prefWidth="140.0" stylesheets="@../../css/jfxComboBox.css" />
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>
