@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.dlsc.gemsfx.EmailField?>
+<?import com.dlsc.gemsfx.PhoneNumberField?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXRadioButton?>
@@ -17,7 +19,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
-<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.PersonalUpdateController">
+<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.PersonalUpdateController">
    <children>
       <VBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="579.0" prefWidth="560.0" spacing="5.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
          <children>
@@ -115,11 +117,7 @@
                         <Insets />
                      </HBox.margin>
                   </TextFlow>
-                  <TextField fx:id="emailField" styleClass="tf_box" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </TextField>
+                  <EmailField fx:id="emailField" prefHeight="40.0" prefWidth="689.0" promptText="" styleClass="email-field" stylesheets="@../../css/emailField.css" />
                </children>
                <VBox.margin>
                   <Insets left="15.0" right="15.0" />
@@ -139,11 +137,7 @@
                         <Insets />
                      </HBox.margin>
                   </TextFlow>
-                  <TextField fx:id="phoneField" styleClass="tf_box" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </TextField>
+                  <PhoneNumberField fx:id="phoneField" prefHeight="40.0" prefWidth="615.0" strictMode="true" styleClass="phone-field" stylesheets="@../../css/phoneField.css" />
                </children>
                <VBox.margin>
                   <Insets left="15.0" right="15.0" />

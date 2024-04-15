@@ -1,5 +1,6 @@
 package practise.controllers2.Messages;
 
+import DTO.ChatDTO;
 import com.dlsc.gemsfx.PhotoView;
 import com.jfoenix.controls.JFXChipView;
 import javafx.animation.FadeTransition;
@@ -82,26 +83,30 @@ public class ChatAddController implements Initializable {
         submitButton.disableProperty().bind(submitButtonBinding);
     }
 
-    public void OnSubmitButton(ActionEvent event) {
+    public void OnSubmitButton(ActionEvent event) throws JSONException {
         java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
-        List<String> arrStr = new ArrayList<>();
-        arrStr.add("AddChat");
-        arrStr.add(nameField.getText());
-        arrStr.add(descriptionField.getText());
-        for(String i: chatMembersChips.getChips()) {
-            arrStr.add(i);
+        ChatDTO arrStr = new ChatDTO();
+        try {
+            arrStr.setName(nameField.getText());
+            arrStr.setDescription(descriptionField.getText());
+            for (String i : chatMembersChips.getChips()) {
+                arrStr.getMembersList().add(i);
+            }
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            throw new RuntimeException(e);
         }
         //========================================================
         BufferedImage sendImage = null;
         sendImage = SwingFXUtils.fromFXImage(photoView.getPhoto(), null);
         //========================================================
-        String[] arrStrS = arrStr.toArray(new String[0]);
-        String tempString = (String) Singleton.getInstance().getDataController().AddChat(arrStrS,
+        JSONObject tempString = Singleton.getInstance().getDataController().AddChat(arrStr,
                 sendImage);
-        tempString = tempString.replaceAll("\r", "");
         //String[] resultSet = tempString.split("<<");
         Label MessageLabel = new Label();
-        if(tempString.equals("null")) {
+        if(tempString.getString("response").equals("null")) {
             MessageLabel.setText("Ошибка добавления");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
         }

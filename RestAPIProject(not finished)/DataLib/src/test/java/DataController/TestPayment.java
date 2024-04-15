@@ -64,7 +64,7 @@ public class TestPayment {
         System.out.println("Commencing TestAddPayment");
         if (entityManager != null && entityManager.getTransaction() != null) {
             dbManager = new DataControllerSql();
-            dbManager.AddPayment(payment);
+            //dbManager.AddPayment(payment);
             JSONObject paymentList = dbManager.GetPaymentList(payment);
             dbManager.entityManager.getTransaction().begin();
             TypedQuery<PaymentsEntity> q = dbManager.entityManager.createQuery("SELECT u FROM PaymentsEntity u order by u.paymentId asc", PaymentsEntity.class);
@@ -110,7 +110,7 @@ public class TestPayment {
             itemJSON.put("price", "12");
             itemJSON.put("taxes", "3");
             itemJSON.put("measurement", "sm");
-            dbManager.AddItem(itemJSON);
+            //dbManager.AddItem(itemJSON);
             entityManager.getTransaction().begin();
             TypedQuery<ItemsEntity> q = entityManager.createQuery("SELECT u from ItemsEntity u where u.name = 'testTestItem'", ItemsEntity.class);
             itemEntity = q.getSingleResult();

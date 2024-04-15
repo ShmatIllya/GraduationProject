@@ -1,5 +1,8 @@
 package practise.controllers2;
 
+import DTO.PersonalDTO;
+import com.dlsc.gemsfx.EmailField;
+import com.dlsc.gemsfx.PhoneNumberField;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -27,8 +30,8 @@ public class PersonalAddController implements Initializable {
     public TextField sernameField;
     public TextField nameField;
     public TextField otchestvoField;
-    public TextField emailField;
-    public TextField phoneField;
+    public EmailField emailField;
+    public PhoneNumberField phoneField;
     public TextField subroleField;
     public TextField loginField;
     public PasswordField passwordField;
@@ -44,7 +47,8 @@ public class PersonalAddController implements Initializable {
             {
                 super.bind(nameField.textProperty(),
                         sernameField.textProperty(),
-                        emailField.textProperty(),
+                        emailField.emailAddressProperty(),
+                        subroleField.textProperty(),
                         loginField.textProperty(),
                         passwordField.textProperty(),
                         password2Field.textProperty());
@@ -54,12 +58,15 @@ public class PersonalAddController implements Initializable {
             protected boolean computeValue() {
                 return (nameField.getText().isEmpty()
                         || sernameField.getText().isEmpty()
-                        || emailField.getText().isEmpty()
+                        || emailField.getEmailAddress().isEmpty()
+                        || !emailField.isValid()
+                        || subroleField.getText().isEmpty()
                         || loginField.getText().isEmpty()
                         || passwordField.getText().isEmpty()
                         || password2Field.getText().isEmpty());
             }
         };
+        emailField.setEmailAddress("");
         submitButton.disableProperty().bind(submitButtonBinding);
     }
 
@@ -87,17 +94,28 @@ public class PersonalAddController implements Initializable {
                 }
             }
             java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
-            JSONObject arrStr = new JSONObject();
-            arrStr.put("operationID", "AddPersonal");
-            arrStr.put("login", loginField.getText());
-            arrStr.put("password", passwordField.getText());
-            arrStr.put("nameSername", nameField.getText() + " " + sernameField.getText() + " " + otchestvoField.getText());
-            arrStr.put("contacts", phoneField.getText());
-            arrStr.put("email", emailField.getText());
-            arrStr.put("role", roleS);
-            arrStr.put("subrole", subroleField.getText());
-            arrStr.put("status", "Активен");
-            arrStr.put("date", sqlDate.toString());
+            PersonalDTO arrStr = new PersonalDTO();
+            try {
+                arrStr.setLogin(loginField.getText());
+                arrStr.setPassword(passwordField.getText());
+                arrStr.setNameSername(nameField.getText() + " " + sernameField.getText() + " " + otchestvoField.getText());
+                if(phoneField.getPhoneNumber() == null) {
+                    arrStr.setContacts("");
+                }
+                else {
+                    arrStr.setContacts(phoneField.getPhoneNumber());
+                }
+                arrStr.setEmail(emailField.getEmailAddress());
+                arrStr.setRole(roleS);
+                arrStr.setSubrole(subroleField.getText());
+                arrStr.setStatus("Активен");
+                arrStr.setRegDate(sqlDate);
+            }
+            catch (Exception e) {
+                Label messageBox = new Label("Ошибка ввода данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
 //            String[] arrStr = {loginField.getText(), passwordField.getText(), nameField.getText()
 //                    + " " + sernameField.getText() + " " + otchestvoField.getText(), phoneField.getText(),
 //                    emailField.getText(), roleS, subroleField.getText(), "Активен", "", sqlDate.toString(), ""};

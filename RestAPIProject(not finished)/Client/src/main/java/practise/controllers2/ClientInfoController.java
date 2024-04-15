@@ -1,5 +1,9 @@
 package practise.controllers2;
 
+import DTO.ClientDTO;
+import DTO.CommentDTO;
+import com.dlsc.gemsfx.EmailField;
+import com.dlsc.gemsfx.PhoneNumberField;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -51,18 +55,22 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class ClientInfoController implements Initializable {
+
     public StackPane stackPane;
     public JFXComboBox<String> clientTypeComboBox;
     public TextField clientNameField;
     public JFXButton responsableButton;
     public TextArea descriptionArea;
-    public TextField phoneField;
-    public TextField emailField;
+    public PhoneNumberField phoneField;
+    public EmailField emailField;
     public TextField adressField;
     public JFXComboBox<String> responsableComboBox;
     public VBox taskVBox;
@@ -99,37 +107,58 @@ public class ClientInfoController implements Initializable {
 //                }
 //            }
 //        });
-
         //================================DashBoard buttons================================
         JFXButton SaveButton = new JFXButton();
         JFXButton ChangeButton = new JFXButton();
         SaveButton.setDisable(true);
-
         SaveButton.setText("Сохранить изменения");
         SaveButton.setStyle("-fx-pref-width: 458; -fx-pref-height: 38; -fx-text-fill: white; -fx-font-size: 16px");
         SaveButton.setOnMouseClicked(mouseEvent -> {
             try {
-                JSONObject arrStrUpdate = new JSONObject();
-                arrStrUpdate.put("operationID", "UpdateClientInfo");
-                arrStrUpdate.put("name", clientNameField.getText());
-                arrStrUpdate.put("contacts", phoneField.getText());
-                arrStrUpdate.put("email", emailField.getText());
-                arrStrUpdate.put("address", adressField.getText());
-                arrStrUpdate.put("description", descriptionArea.getText());
-                arrStrUpdate.put("responsibleName", responsableComboBox.getSelectionModel().getSelectedItem());
-                arrStrUpdate.put("type", clientTypeComboBox.getSelectionModel().getSelectedItem());
-                arrStrUpdate.put("workType", workTypeComboBox.getSelectionModel().getSelectedItem());
-                arrStrUpdate.put("date", datePicker.getText());
-                arrStrUpdate.put("oldName", old_name);
-                arrStrUpdate.put("oldEmail", old_email);
-                JSONObject tempStringUpdate = Singleton.getInstance().getDataController().UpdateClientInfo(arrStrUpdate);
-                Label messageBox = new Label();
-                if (tempStringUpdate.getString("response").equals("null")) {
-                    messageBox.setText("Ошибка сохранения");
-                } else {
-                    messageBox.setText("Успешно сохранено");
+                ClientDTO arrStrUpdate = new ClientDTO();
+                if (emailField.getEmailAddress() != null && emailField.isValid() && !clientNameField.getText().isEmpty()
+                && clientNameField.getText() != null) {
+                    try {
+                        arrStrUpdate.setName(clientNameField.getText());
+                        if(phoneField.getPhoneNumber() == null) {
+                            arrStrUpdate.setPhone("");
+                        }
+                        else {
+                            arrStrUpdate.setPhone(phoneField.getPhoneNumber());
+                        }
+                        arrStrUpdate.setEmail(emailField.getEmailAddress());
+                        if(adressField.getText() == null) {
+                            arrStrUpdate.setAdress("");
+                        }
+                        else {
+                            arrStrUpdate.setAdress(adressField.getText());
+                        }
+                        arrStrUpdate.setDescription(descriptionArea.getText());
+                        arrStrUpdate.setResponsible_name(responsableComboBox.getSelectionModel().getSelectedItem());
+                        arrStrUpdate.setType(clientTypeComboBox.getSelectionModel().getSelectedItem());
+                        arrStrUpdate.setWork_type(workTypeComboBox.getSelectionModel().getSelectedItem());
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        arrStrUpdate.setReg_date(Date.valueOf(LocalDate.parse(datePicker.getText(), formatter)));
+                        arrStrUpdate.setOld_name(old_name);
+                        arrStrUpdate.setOld_email(old_email);
+                    } catch (Exception e) {
+                        Label messageBox = new Label("Ошибка ввода данных");
+                        Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                        return;
+                    }
+                    JSONObject tempStringUpdate = Singleton.getInstance().getDataController().UpdateClientInfo(arrStrUpdate);
+                    Label messageBox = new Label();
+                    if (tempStringUpdate.getString("response").equals("null")) {
+                        messageBox.setText("Ошибка сохранения");
+                    } else {
+                        messageBox.setText("Успешно сохранено");
+                    }
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
                 }
-                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                else {
+                    Label messageBox = new Label("Ошибка ввода данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                }
                 //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
                 onChange = false;
                 clientNameField.setEditable(false);
@@ -138,8 +167,8 @@ public class ClientInfoController implements Initializable {
                 clientTypeComboBox.setDisable(true);
                 workTypeComboBox.setDisable(true);
                 datePicker.setEditable(false);
-                phoneField.setEditable(false);
-                emailField.setEditable(false);
+                phoneField.setDisable(true);
+                emailField.setDisable(true);
                 descriptionArea.setEditable(false);
                 SaveButton.setDisable(true);
                 ChangeButton.setDisable(false);
@@ -166,8 +195,8 @@ public class ClientInfoController implements Initializable {
             clientTypeComboBox.setDisable(false);
             workTypeComboBox.setDisable(false);
             datePicker.setEditable(true);
-            phoneField.setEditable(true);
-            emailField.setEditable(true);
+            phoneField.setDisable(false);
+            emailField.setDisable(false);
             descriptionArea.setEditable(true);
             SaveButton.setDisable(false);
             ChangeButton.setDisable(true);
@@ -224,25 +253,38 @@ public class ClientInfoController implements Initializable {
         }
         responsableComboBox.setItems(comboList);
 
-        JSONObject arrStr = new JSONObject();
-        arrStr.put("operationID", "GetClientInfo");
-        arrStr.put("id", Singleton.getInstance().getClientsID());
+        ClientDTO arrStr = new ClientDTO();
+        try {
+            arrStr.setClientsId(Singleton.getInstance().getClientsID());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка передачи ИД клиента");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
         JSONObject tempString = Singleton.getInstance().getDataController().GetClientInfo(arrStr);
-        clientNameField.setText(tempString.getString("name"));
-        old_name = tempString.getString("name");
-        responsableComboBox.getSelectionModel().select(tempString.getString("responsibleName"));
-        phoneField.setText(tempString.getString("contacts"));
-        emailField.setText(tempString.getString("email"));
-        old_email = tempString.getString("email");
-        adressField.setText(tempString.getString("address"));
-        descriptionArea.setText(tempString.getString("description"));
-        clientTypeComboBox.getSelectionModel().select(tempString.getString("type"));
-        workTypeComboBox.getSelectionModel().select(tempString.getString("workType"));
-        datePicker.setText(tempString.getString("regDate"));
-        FillTaskBox(tempString.getJSONArray("taskList"));
-        FillBusinessBox(tempString.getJSONArray("businessList"));
-        FillCommentBox(tempString.getJSONArray("commentList"));
+        if (tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка получения данных о клиенте");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        else {
+            clientNameField.setText(tempString.getString("name"));
+            old_name = tempString.getString("name");
+            responsableComboBox.getSelectionModel().select(tempString.getString("responsibleName"));
+            phoneField.setPhoneNumber(tempString.getString("contacts"));
+            emailField.setEmailAddress(tempString.getString("email"));
+            old_email = tempString.getString("email");
+            adressField.setText(tempString.getString("address"));
+            descriptionArea.setText(tempString.getString("description"));
+            clientTypeComboBox.getSelectionModel().select(tempString.getString("type"));
+            workTypeComboBox.getSelectionModel().select(tempString.getString("workType"));
+            datePicker.setText(tempString.getString("regDate"));
+            FillTaskBox(tempString.getJSONArray("taskList"));
+            FillBusinessBox(tempString.getJSONArray("businessList"));
+            FillCommentBox(tempString.getJSONArray("commentList"));
+        }
         //FillProcessBox(tempString.getJSONArray("processList"));
     }
 
@@ -280,14 +322,24 @@ public class ClientInfoController implements Initializable {
 
     public void OnAddCommentButton() throws IOException, JSONException {
         if (!journalTextField1.getText().isEmpty()) {
-            String[] arrStr = {Singleton.getInstance().getFinal_NameSername(), journalTextField1.getText(),
-                    clientNameField.getText(), "Клиент"};
-            String tempString = (String) Singleton.getInstance().getDataController().AddComment(arrStr);
-            tempString = tempString.replaceAll("\r", "");
+            CommentDTO comment = new CommentDTO();
+            try {
+                comment.setSenderName(Singleton.getInstance().getFinal_NameSername());
+                comment.setText(journalTextField1.getText());
+                comment.setLinkedEntityName(clientNameField.getText());
+                comment.setType("Клиент");
+            }
+            catch (Exception e) {
+                Label messageBox = new Label("Ошибка ввода данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            JSONObject tempString = Singleton.getInstance().getDataController().AddComment(comment);
             Label MessageLabel = new Label();
-            if (tempString.equals("null")) {
+            if (tempString.getString("response").equals("null")) {
                 MessageLabel.setText("Ошибка добавления");
                 Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+                return;
             }
             OnReload();
         }
@@ -319,7 +371,7 @@ public class ClientInfoController implements Initializable {
             button.setOnMouseClicked(event -> {
                 try {
                     Singleton.getInstance().setTaskInfoValues(new String[]{task.getString("taskName"),
-                            responsableComboBox.getSelectionModel().getSelectedItem()});
+                            task.getString("taskResponsibleName")});
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -358,11 +410,11 @@ public class ClientInfoController implements Initializable {
             });
             button.setOnMouseExited(event -> {
                 try {
-                    button.setText(business.getString("businessName"));
+                    button.setText(business.getString("businessName"));;
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-                button.setStyle("-fx-text-fill: #2196f3; -fx-background-color: transparent");
+                button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
             });
             button.setOnMouseClicked(event -> {
                 FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/SubFXMLs/Business/BusinessInfo.fxml"));

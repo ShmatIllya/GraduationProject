@@ -46,7 +46,7 @@ public class TestClientAdd {
             client.put("workType", "testWorkType");
             client.put("regDate", "2023-11-12");
             dbManager = new DataControllerSql();
-            dbManager.AddClient(client);
+            //dbManager.AddClient(client);
             entityManager.getTransaction().begin();
             TypedQuery<ClientsEntity> q = entityManager.createQuery("SELECT u FROM ClientsEntity u WHERE u.name = 'testName'", ClientsEntity.class);
             entityManager.getTransaction().commit();

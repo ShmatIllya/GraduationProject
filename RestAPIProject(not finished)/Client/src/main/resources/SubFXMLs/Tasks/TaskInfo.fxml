@@ -95,9 +95,9 @@
                               </Pane>
                            </children>
                         </AnchorPane>
-                        <ScrollPane fx:id="businessScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="55.0">
+                        <ScrollPane fx:id="businessScrollPane" fitToHeight="true" fitToWidth="true">
                            <content>
-                              <VBox fx:id="businessVBox" prefHeight="44.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
+                              <VBox fx:id="businessVBox" maxHeight="-Infinity" prefHeight="160.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
                                  <children>
                                     <HBox fx:id="primaryBusinessHBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="336.0" VBox.vgrow="NEVER">
                                        <children>

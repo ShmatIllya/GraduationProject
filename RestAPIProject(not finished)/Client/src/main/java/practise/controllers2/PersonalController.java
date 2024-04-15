@@ -1,5 +1,6 @@
 package practise.controllers2;
 
+import DTO.PersonalDTO;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.animation.FadeTransition;
@@ -13,10 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -48,6 +46,7 @@ public class PersonalController implements Initializable {
     public JFXButton deleteButton;
     public JFXButton addButton;
     public JFXComboBox<String> searchComboBox;
+    public StackPane stackPane;
 
     //=========================Columns====================================
     JFXTreeTableColumn<PersonalItems, String> nameSername;
@@ -286,10 +285,27 @@ public class PersonalController implements Initializable {
         treeTable.setShowRoot(false);
     }
 
-    public void OnDeleteButton(ActionEvent event) {
-        String[] arrStr = {Singleton.getInstance().getFinal_NameSername()};
-        String tempString = (String) Singleton.getInstance().getDataController().DeletePersonal(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnDeleteButton(ActionEvent event) throws JSONException {
+        PersonalDTO arrStr = new PersonalDTO();
+        try {
+            arrStr.setNameSername(treeTable.getSelectionModel().getSelectedItem().getValue().nameSername.getValue());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().DeletePersonal(arrStr);
+        if(tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка удаления данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        else if (tempString.getString("response").equals("linkDetected")) {
+            Label messageBox = new Label("Этот сотрудник ответственен за одного или нескольких клиетов");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         OnReload();
     }
 

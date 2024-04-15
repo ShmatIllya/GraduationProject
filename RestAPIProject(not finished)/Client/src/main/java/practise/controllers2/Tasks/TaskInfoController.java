@@ -1,5 +1,7 @@
 package practise.controllers2.Tasks;
 
+import DTO.CommentDTO;
+import DTO.TaskDTO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -34,6 +36,7 @@ import practise.singleton.Singleton;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -95,8 +98,7 @@ public class TaskInfoController implements Initializable {
                 }
             }
             checkerComboBox.setItems(comboList);
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             throw new RuntimeException(e);
         }
         //================================DashBoard buttons================================
@@ -108,22 +110,38 @@ public class TaskInfoController implements Initializable {
         SaveButton.setStyle("-fx-pref-width: 458; -fx-pref-height: 38; -fx-text-fill: white; -fx-font-size: 16px");
         SaveButton.setOnMouseClicked(mouseEvent -> {
             try {
-                String[] arrStrUpdate = {"UpdateTaskInfo", nameField.getText(), responsableComboBox.getSelectionModel().getSelectedItem(),
-                        descriptionField.getText(), checkerComboBox.getSelectionModel().getSelectedItem(), datePicker.getText(),
-                        priorityComboBox.getSelectionModel().getSelectedItem(),
-                        old_name, old_responsable};
-                String tempStringUpdate = (String) Singleton.getInstance().getDataController().UpdateTaskInfo(arrStrUpdate);
-                tempStringUpdate = tempStringUpdate.replaceAll("\r", "");
-                Label messageBox = new Label();
-                if(tempStringUpdate.equals("null")) {
-                    messageBox.setText("Ошибка сохранения");
+                TaskDTO task = new TaskDTO();
+                if (task.getName() != null) {
+                    try {
+                        task.setName(nameField.getText());
+                        task.setResponsibleName(responsableComboBox.getSelectionModel().getSelectedItem());
+                        task.setDescription(descriptionField.getText());
+                        task.setCheckerName(checkerComboBox.getSelectionModel().getSelectedItem());
+                        task.setDeadline(Date.valueOf(datePicker.getText()));
+                        task.setPriority(priorityComboBox.getSelectionModel().getSelectedItem());
+                        task.setOldName(old_name);
+                        task.setOldResponsibleName(old_responsable);
+                    } catch (Exception e) {
+                        Label messageBox = new Label("Ошибка ввода данных");
+                        Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                        throw new RuntimeException(e);
+
+                    }
+
+                    JSONObject tempStringUpdate = Singleton.getInstance().getDataController().UpdateTaskInfo(task);
+                    Label messageBox = new Label();
+                    if (tempStringUpdate.getString("response").equals("null")) {
+                        messageBox.setText("Ошибка сохранения");
+                    } else {
+                        Singleton.getInstance().setTaskInfoValues(new String[]{nameField.getText(),
+                                responsableComboBox.getSelectionModel().getSelectedItem()});
+                        messageBox.setText("Успешно сохранено");
+                    }
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                } else {
+                    Label messageBox = new Label("Ошибка ввода данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
                 }
-                else {
-                    Singleton.getInstance().setTaskInfoValues(new String[]{nameField.getText(),
-                            responsableComboBox.getSelectionModel().getSelectedItem()});
-                    messageBox.setText("Успешно сохранено");
-                }
-                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
                 //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
                 onChange = false;
                 nameField.setEditable(false);
@@ -136,11 +154,9 @@ public class TaskInfoController implements Initializable {
                 ChangeButton.setDisable(false);
 
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
-            }
-            finally {
+            } finally {
                 try {
                     OnReload();
                 } catch (IOException e) {
@@ -161,7 +177,7 @@ public class TaskInfoController implements Initializable {
             SaveButton.setDisable(false);
             ChangeButton.setDisable(true);
         });
-        if(Singleton.getInstance().getFinal_Role().equals("obey")) {
+        if (Singleton.getInstance().getFinal_Role().equals("obey")) {
             ChangeButton.setDisable(true);
         }
 
@@ -178,7 +194,7 @@ public class TaskInfoController implements Initializable {
         try {
             OnReload();
             //=================================Role and Status Actions=======================================
-            if(Singleton.getInstance().getFinal_Role().equals("control")) {
+            if (Singleton.getInstance().getFinal_Role().equals("control")) {
                 double X1 = controlButtonsHBox.getLayoutX();
                 double Y1 = controlButtonsHBox.getLayoutY();
                 double X2 = obeyButtonsHBox.getLayoutX();
@@ -191,68 +207,72 @@ public class TaskInfoController implements Initializable {
                 controlButtonsHBox.setLayoutY(Y2);
                 controlButtonsHBox.setVisible(true);
 
-            }
-            else if (Singleton.getInstance().getFinal_Role().equals("obey") &&
+            } else if (Singleton.getInstance().getFinal_Role().equals("obey") &&
                     !Singleton.getInstance().getFinal_NameSername().equals(responsableComboBox.getSelectionModel().getSelectedItem())) {
                 obeyButtonsHBox.setVisible(false);
                 journalButton1.setDisable(true);
             }
-            if(Singleton.getInstance().getFinal_Role().equals("obey")) {
+            if (Singleton.getInstance().getFinal_Role().equals("obey")) {
                 addBusinessButton.setDisable(true);
             }
-            if(!statusField.getText().equals("Назначена")) {
+            if (!statusField.getText().equals("Назначена")) {
                 System.out.println("'" + statusField.getText() + "'");
                 controlButtonsHBox.setVisible(false);
                 obeyButtonsHBox.setVisible(false);
             }
             //=================================/Role ans Status Actions======================================
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
 
     public void OnReload() throws IOException {
-        journalVBox1.getChildren().clear();
-        businessVBox.getChildren().clear();
-        businessVBox.getChildren().add(primaryBusinessHBox);
-        String[] arrStr = {Singleton.getInstance().getTaskInfoValues()[0],
-                Singleton.getInstance().getTaskInfoValues()[1]};
-        //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
-        String tempString = (String) Singleton.getInstance().getDataController().GetTaskInfo(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        
-        String[] resultSet = tempString.split(">>");
-        int data_type = 0;
-        for(String i: resultSet) {
-            String subResSet[] = i.split("<<");
+        try {
+            journalVBox1.getChildren().clear();
+            businessVBox.getChildren().clear();
+            businessVBox.getChildren().add(primaryBusinessHBox);
+            TaskDTO task = new TaskDTO();
             try {
-                switch (data_type) {
-                    case 0: {
-                        nameField.setText(subResSet[0]);
-                        old_name = subResSet[0];
-                        responsableComboBox.getSelectionModel().select(subResSet[1]);
-                        old_responsable = subResSet[1];
-                        descriptionField.setText(subResSet[2]);
-                        checkerComboBox.getSelectionModel().select(subResSet[3]);
-                        datePicker.setText(subResSet[4]);
-                        statusField.setText(subResSet[5]);
-                        creationDateField.setText(subResSet[6]);
-                        priorityComboBox.getSelectionModel().select(subResSet[7]);
-                        break;
-                    }
-                    case 1: {
-                        if(!i.equals("")) {
-                            for (String business : subResSet) {
-                                String[] businessSplit = business.split("\\^\\^");
+                task.setName(Singleton.getInstance().getTaskInfoValues()[0]);
+                task.setResponsibleName(Singleton.getInstance().getTaskInfoValues()[1]);
+            } catch (Exception e) {
+                Label messageBox = new Label("Ошибка ввода данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                throw new RuntimeException(e);
+
+            }
+            //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
+            JSONObject tempString = Singleton.getInstance().getDataController().GetTaskInfo(task);
+
+            JSONArray businessList = tempString.getJSONArray("businessList");
+            JSONArray commentList = tempString.getJSONArray("commentList");
+            int data_type = 0;
+            for (data_type = 0; data_type <= 3; data_type++) {
+                try {
+                    switch (data_type) {
+                        case 0: {
+                            nameField.setText(tempString.getString("name"));
+                            old_name = tempString.getString("name");
+                            responsableComboBox.getSelectionModel().select(tempString.getString("responsibleName"));
+                            old_responsable = tempString.getString("responsibleName");
+                            descriptionField.setText(tempString.getString("description"));
+                            checkerComboBox.getSelectionModel().select(tempString.getString("checkerName"));
+                            datePicker.setText(tempString.getString("deadline"));
+                            statusField.setText(tempString.getString("status"));
+                            creationDateField.setText(tempString.getString("creationDate"));
+                            priorityComboBox.getSelectionModel().select(tempString.getString("priority"));
+                            break;
+                        }
+                        case 1: {
+                            for (int j = 0; j < businessList.length(); j++) {
                                 HBox businessBox = new HBox();
                                 businessBox.setStyle("-fx-background-color: #2196f3");
                                 //primaryBusinessHBox;
-                                MFXButton button = new MFXButton(businessSplit[1]);
+                                MFXButton button = new MFXButton(businessList.getJSONObject(j).getString("businessName"));
                                 button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
-                                if(businessSplit[2].equals("Завершено")) {
+                                if (businessList.getJSONObject(j).getString("businessStatus").equals("Завершено")) {
                                     businessBox.setStyle("-fx-background-color: green");
                                 }
                                 button.setAlignment(Pos.CENTER_LEFT);
@@ -260,10 +280,16 @@ public class TaskInfoController implements Initializable {
                                     button.setText("Перейти к делу");
                                     button.setStyle("-fx-text-fill: #2196f3; -fx-background-color: #151928");
                                 });
+                                int finalJ = j;
                                 button.setOnMouseExited(event -> {
-                                    button.setText(businessSplit[1]);
+                                    try {
+                                        button.setText(businessList.getJSONObject(finalJ).getString("businessName"));
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                     button.setStyle("-fx-text-fill: #151928; -fx-background-color: transparent");
                                 });
+                                int finalJ1 = j;
                                 button.setOnMouseClicked(event -> {
                                     FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/SubFXMLs/Business/BusinessInfo.fxml"));
                                     StackPane page = null;
@@ -279,7 +305,11 @@ public class TaskInfoController implements Initializable {
                                     stage.setScene(scene);
                                     stage.initStyle(StageStyle.TRANSPARENT);
                                     BusinessInfoController controller = fxmlLoader.getController();
-                                    controller.InitController(businessSplit[0], responsableComboBox.getSelectionModel().getSelectedItem());
+                                    try {
+                                        controller.InitController(businessList.getJSONObject(finalJ1).getString("businessID"), responsableComboBox.getSelectionModel().getSelectedItem());
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                     stage.showAndWait();
                                     try {
                                         OnReload();
@@ -290,26 +320,26 @@ public class TaskInfoController implements Initializable {
                                 businessBox.getChildren().add(button);
                                 businessVBox.getChildren().add(businessBox);
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case 2: {
-                        if (!i.equals("")) {
-                            for (String comment : subResSet) {
-                                String[] commentData = comment.split("\\^\\^");
-                                System.out.println(comment);
-                                HBox hBox = Singleton.getInstance().SetCommentBox(sampleHBox1, commentData[0], commentData[1], commentData[2], commentData[3]);
+                        case 2: {
+                            for (int i = 0; i < commentList.length(); i++) {
+                                HBox hBox = Singleton.getInstance().SetCommentBox(sampleHBox1,
+                                        commentList.getJSONObject(i).getString("commentText"),
+                                        commentList.getJSONObject(i).getString("commentSenderName"),
+                                        commentList.getJSONObject(i).getString("commentDate"),
+                                        commentList.getJSONObject(i).getString("commentSenderLogin"));
                                 journalVBox1.getChildren().add(hBox);
                             }
+                            break;
                         }
-                        break;
                     }
+                } catch (Exception e) {
+                    System.out.println(e);
                 }
-                data_type++;
             }
-            catch (Exception e) {
-                System.out.println(e);
-            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -330,89 +360,123 @@ public class TaskInfoController implements Initializable {
         OnReload();
     }
 
-    public void OnAddCommentButton() throws IOException {
-        if(!journalTextField1.getText().isEmpty()) {
-            String[] arrStr = {Singleton.getInstance().getFinal_NameSername(), journalTextField1.getText(),
-                    nameField.getText(), "Задача"};
-            String tempString = (String) Singleton.getInstance().getDataController().AddComment(arrStr);
-            tempString = tempString.replaceAll("\r", "");
+    public void OnAddCommentButton() throws IOException, JSONException {
+        if (!journalTextField1.getText().isEmpty()) {
+            CommentDTO comment = new CommentDTO();
+            try {
+                comment.setSenderName(Singleton.getInstance().getFinal_NameSername());
+                comment.setText(journalTextField1.getText());
+                comment.setLinkedEntityName(nameField.getText());
+                comment.setType("Задача");
+            } catch (Exception e) {
+                Label messageBox = new Label("Ошибка ввода данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            JSONObject tempString = Singleton.getInstance().getDataController().AddComment(comment);
             Label MessageLabel = new Label();
-            if (tempString.equals("null")) {
+            if (tempString.getString("response").equals("null")) {
                 MessageLabel.setText("Ошибка добавления");
                 Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+                return;
             }
             OnReload();
         }
     }
 
-    public void OnCompleteButton(ActionEvent event) throws IOException {
-        String[] arrStr = {Singleton.getInstance().getTaskInfoValues()[0],
-                Singleton.getInstance().getTaskInfoValues()[1], "Завершена"};
-        String tempString = (String) Singleton.getInstance().getDataController().ChangeTaskStatus(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnCompleteButton(ActionEvent event) throws IOException, JSONException {
+        TaskDTO task = new TaskDTO();
+        try {
+            task.setName(Singleton.getInstance().getTaskInfoValues()[0]);
+            task.setResponsibleName(Singleton.getInstance().getTaskInfoValues()[1]);
+            task.setStatus("Завершена");
+        } catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().ChangeTaskStatus(task);
         //String[] resultSet = tempString.split("<<");
         Label MessageLabel = new Label();
-        if(tempString.equals("null")) {
+        if (tempString.getString("response").equals("null")) {
             MessageLabel.setText("Ошибка изменения статуса");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
-        }
-        else {
+        } else {
             MessageLabel.setText("Статус успешно изменен");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
             OnReload();
         }
     }
 
-    public void OnFailButton(ActionEvent event) throws IOException {
-        String[] arrStr = {Singleton.getInstance().getTaskInfoValues()[0],
-                Singleton.getInstance().getTaskInfoValues()[1], "Провалена"};
-        String tempString = (String) Singleton.getInstance().getDataController().ChangeTaskStatus(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnFailButton(ActionEvent event) throws IOException, JSONException {
+        TaskDTO task = new TaskDTO();
+        try {
+            task.setName(Singleton.getInstance().getTaskInfoValues()[0]);
+            task.setResponsibleName(Singleton.getInstance().getTaskInfoValues()[1]);
+            task.setStatus("Провалена");
+        } catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().ChangeTaskStatus(task);
         //String[] resultSet = tempString.split("<<");
         Label MessageLabel = new Label();
-        if(tempString.equals("null")) {
+        if (tempString.getString("response").equals("null")) {
             MessageLabel.setText("Ошибка изменения статуса");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
-        }
-        else {
+        } else {
             MessageLabel.setText("Статус успешно изменен");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
             OnReload();
         }
     }
 
-    public void OnCheckButton(ActionEvent event) throws IOException {
-        String[] arrStr = {Singleton.getInstance().getTaskInfoValues()[0],
-                Singleton.getInstance().getTaskInfoValues()[1], "Завершена"};
-        String tempString = (String) Singleton.getInstance().getDataController().ChangeTaskStatus(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnCheckButton(ActionEvent event) throws IOException, JSONException {
+        TaskDTO task = new TaskDTO();
+        try {
+            task.setName(Singleton.getInstance().getTaskInfoValues()[0]);
+            task.setResponsibleName(Singleton.getInstance().getTaskInfoValues()[1]);
+            task.setStatus("Завершена");
+        } catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().ChangeTaskStatus(task);
         //String[] resultSet = tempString.split("<<");
         Label MessageLabel = new Label();
-        if(tempString.equals("null")) {
+        if (tempString.getString("response").equals("null")) {
             MessageLabel.setText("Ошибка изменения статуса");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
-        }
-        else {
+        } else {
             MessageLabel.setText("Статус успешно изменен");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
             OnReload();
         }
     }
 
-    public void OnUncheckButton(ActionEvent event) {
-        String[] arrStr = {Singleton.getInstance().getTaskInfoValues()[0],
-                Singleton.getInstance().getTaskInfoValues()[1]};
-        String tempString = (String) Singleton.getInstance().getDataController().DeleteTask(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnUncheckButton(ActionEvent event) throws JSONException, IOException {
+        TaskDTO task = new TaskDTO();
+        try {
+            task.setName(Singleton.getInstance().getTaskInfoValues()[0]);
+            task.setResponsibleName(Singleton.getInstance().getTaskInfoValues()[1]);
+        } catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().DeleteTask(task);
         //String[] resultSet = tempString.split("<<");
         Label MessageLabel = new Label();
-        if(tempString.equals("null")) {
+        if (tempString.getString("response").equals("null")) {
             MessageLabel.setText("Ошибка снятия задачи");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
-        }
-        else {
+        } else {
             MessageLabel.setText("Задача успешно снята");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel, (Stage) addBusinessButton.getScene().getWindow());
+            DashboardController c = new DashboardController();
+            c.SwitchMainPane("/SubFXMLs/Tasks/Tasks.fxml");
         }
     }
 }

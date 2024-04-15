@@ -3,6 +3,7 @@ package entity;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
@@ -41,7 +42,7 @@ public class TasksEntity {
     private Integer clientId;
     @Basic
     @Column(name = "creation_date")
-    private Date creationDate;
+    private LocalDateTime creationDate;
     @Basic
     @Column(name = "priority")
     private String priority;
@@ -145,11 +146,11 @@ public class TasksEntity {
         this.clientId = clientId;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 

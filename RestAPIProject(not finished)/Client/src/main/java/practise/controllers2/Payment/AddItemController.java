@@ -1,5 +1,6 @@
 package practise.controllers2.Payment;
 
+import DTO.ItemDTO;
 import com.jfoenix.controls.JFXComboBox;
 import com.mysql.cj.conf.StringProperty;
 import javafx.animation.FadeTransition;
@@ -13,6 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import practise.singleton.Singleton;
 
 import java.net.URL;
@@ -89,16 +92,24 @@ public class AddItemController implements Initializable {
         submitButton.disableProperty().bind(submitButtonBinding);
     }
 
-    public void OnSubmitButton() {
+    public void OnSubmitButton() throws JSONException {
         java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
-        String[] arrStr = {nameField.getText(), articulField.getText(), finalPriceField.getText(),
-        String.valueOf(Integer.parseInt(finalPriceField.getText()) - Integer.parseInt(priceField.getText())),
-        measurementComboBox.getSelectionModel().getSelectedItem()};
-        String tempString = (String) Singleton.getInstance().getDataController().AddItem(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        //String[] resultSet = tempString.split("<<");
+        ItemDTO item = new ItemDTO();
+        try {
+            item.setName(nameField.getText());
+            item.setArticul(articulField.getText());
+            item.setPrice(Integer.parseInt(finalPriceField.getText()));
+            item.setTaxes(Integer.parseInt(finalPriceField.getText()) - Integer.parseInt(priceField.getText()));
+            item.setMeasurement(measurementComboBox.getSelectionModel().getSelectedItem());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().AddItem(item);
         Label MessageLabel = new Label();
-        if(tempString.equals("null")) {
+        if(tempString.getString("response").equals("null")) {
             MessageLabel.setText("Ошибка добавления");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
         }

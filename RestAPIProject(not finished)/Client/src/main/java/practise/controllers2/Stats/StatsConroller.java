@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.json.JSONException;
 import practise.HelloApplication;
 import practise.singleton.Singleton;
 
@@ -62,7 +63,11 @@ public class StatsConroller {
         stage.setScene(scene);
         stage.initStyle(StageStyle.TRANSPARENT);
         StatInfoController statInfoController = fxmlLoader.getController();
-        statInfoController.InitController(dataType);
+        try {
+            statInfoController.InitController(dataType);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         stage.showAndWait();
 
         FadeTransition ft = Singleton.getInstance().PerformFadeTransition(Singleton.instance.getOpacityPane(), 0.5, 0, 0.5);

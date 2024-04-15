@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -25,6 +26,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import practise.HelloApplication;
 import practise.controllers2.DashboardController;
 import practise.items.ClientsItems;
@@ -43,6 +47,7 @@ public class PaymentController implements Initializable {
     public JFXButton addButton;
     public JFXComboBox<String> searchComboBox;
     public TextField searchField;
+    public StackPane stackPane;
     JFXTreeTableColumn<PaymentItems, Integer> idColumn;
     JFXTreeTableColumn<PaymentItems, String> dateColumn;
     JFXTreeTableColumn<PaymentItems, Integer> moneyColumn;
@@ -55,7 +60,7 @@ public class PaymentController implements Initializable {
         list.addAll("ИД", "Дата создания", "Сумма", "Плательщик", "Статус");
         searchComboBox.setItems(list);
         searchComboBox.getSelectionModel().select("ИД");
-        if(Singleton.getInstance().getFinal_Role().equals("obey")) {
+        if (Singleton.getInstance().getFinal_Role().equals("obey")) {
             addButton.setVisible(false);
         }
         idColumn = new JFXTreeTableColumn<>("ИД");
@@ -104,13 +109,12 @@ public class PaymentController implements Initializable {
         });
 
         tableView.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && (! tableView.getSelectionModel().getSelectedCells().isEmpty()) ) {
+            if (mouseEvent.getClickCount() == 2 && (!tableView.getSelectionModel().getSelectedCells().isEmpty())) {
                 Singleton.getInstance().setClientsID(tableView.getSelectionModel().getSelectedItem().getValue().id.get());
                 DashboardController d = new DashboardController();
                 try {
-                    d.SwitchMainPane( "/SubFXMLs/Payments/PaymentInfo.fxml");
-                }
-                catch (IOException e) {
+                    d.SwitchMainPane("/SubFXMLs/Payments/PaymentInfo.fxml");
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -149,36 +153,41 @@ public class PaymentController implements Initializable {
                 });
             }
         });
-        OnReload();
+        try {
+            OnReload();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void OnReload() {
+    public void OnReload() throws JSONException {
         ObservableList<PaymentItems> observableList = FXCollections.observableArrayList();
-        String[] arrStr = {};
-        String tempString = (String) Singleton.getInstance().getDataController().GetPaymentList(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        System.out.println(tempString);
-        if(!tempString.equals("")) {
-            String[] resultSet = tempString.split(">>");
-            for (String i : resultSet) {
-                String[] resultSubSet = i.split("<<");
+        JSONObject arrStr = new JSONObject();
+        JSONObject tempString = Singleton.getInstance().getDataController().GetPaymentList(arrStr);
+        if (!tempString.getString("response").equals("null")) {
+            JSONArray resultSet = tempString.getJSONArray("paymentList");
+            for (int i = 0; i < resultSet.length(); i++) {
                 try {
-                    observableList.add(new PaymentItems(Integer.valueOf(resultSubSet[0]), resultSubSet[1],
-                            Integer.valueOf(resultSubSet[2]), resultSubSet[3],
-                            resultSubSet[4]));
-                }
-                catch (Exception e) {
-                    System.out.println(e);
+                    observableList.add(new PaymentItems(Integer.valueOf(resultSet.getJSONObject(i).getString("id")),
+                            resultSet.getJSONObject(i).getString("deadline"),
+                            Integer.valueOf(resultSet.getJSONObject(i).getString("finalPrice")),
+                            resultSet.getJSONObject(i).getString("paymenterName"),
+                            resultSet.getJSONObject(i).getString("status")));
+                } catch (Exception e) {
+                    return;
                 }
             }
             final TreeItem<PaymentItems> root = new RecursiveTreeItem<PaymentItems>(observableList, RecursiveTreeObject::getChildren);
             tableView.getColumns().setAll(idColumn, dateColumn, moneyColumn, paymenterColumn, statusColumn);
             tableView.setRoot(root);
             tableView.setShowRoot(false);
+        } else {
+            Label MessageLabel = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
         }
     }
 
-    public void OnAddButton() throws IOException {
+    public void OnAddButton() throws IOException, JSONException {
         Singleton.getInstance().getOpacityPane().setVisible(true);
         Singleton.getInstance().PerformFadeTransition(Singleton.instance.getOpacityPane(), 0, 0.5, 0.5);
 

@@ -1,5 +1,6 @@
 package practise.controllers2.Payment;
 
+import DTO.PaymentDTO;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
 import com.jfoenix.controls.JFXButton;
@@ -35,6 +36,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.json.JSONException;
+import org.json.JSONObject;
 import practise.HelloApplication;
 import practise.controllers2.DashboardController;
 import practise.items.ClientsItems;
@@ -51,6 +54,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.ResourceBundle;
 
 public class PaymentInfoController implements Initializable {
@@ -93,9 +97,7 @@ public class PaymentInfoController implements Initializable {
         finalPriceColumn.setCellValueFactory(new PropertyValueFactory<PaymentInfoItems, Integer>("finalPrice"));
         try {
             OnReload();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -104,83 +106,103 @@ public class PaymentInfoController implements Initializable {
         responsableValue = true;
     }
 
-    public void OnReload() throws URISyntaxException, IOException {
+    public void OnReload() throws URISyntaxException, IOException, JSONException {
         idLabel.setText("Счет " + Singleton.getInstance().getClientsID());
         ObservableList<ClientsItems> observableList = FXCollections.observableArrayList();
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID())};
-        String tempString = (String) Singleton.getInstance().getDataController().GetPaymentInfo(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        String[] resultSet = tempString.split(">>");
-        dateField.setText(resultSet[0]);
-        paymentField.setText(resultSet[1]);
-        receiverField.setText(resultSet[2]);
-        ObservableList<PaymentInfoItems> list;
-        for(int i = 4; i < resultSet.length; i++) {
-            String[] resultSubSet = resultSet[i].split("<<");
-            list = FXCollections.observableArrayList(new PaymentInfoItems(Integer.parseInt(resultSubSet[0]),
-                    resultSubSet[1], resultSubSet[2], Integer.parseInt(resultSubSet[3]),
-                    Integer.parseInt(resultSubSet[4]), Integer.parseInt(resultSubSet[5]),
-                    Integer.parseInt(resultSubSet[6])));
+        PaymentDTO arrStr = new PaymentDTO();
+        arrStr.setPaymentId(Singleton.getInstance().getClientsID());
+        JSONObject tempString = Singleton.getInstance().getDataController().GetPaymentInfo(arrStr);
+        if(!tempString.getString("response").equals("null")) {
+            dateField.setText(tempString.getString("creationDate"));
+            paymentField.setText(tempString.getString("paymenterName"));
+            receiverField.setText(tempString.getString("receiverName"));
+            ObservableList<PaymentInfoItems> list;
+//        for(int i = 4; i < resultSet.length; i++) {
+//            String[] resultSubSet = resultSet[i].split("<<");
+//            list = FXCollections.observableArrayList(new PaymentInfoItems(Integer.parseInt(resultSubSet[0]),
+//                    resultSubSet[1], resultSubSet[2], Integer.parseInt(resultSubSet[3]),
+//                    Integer.parseInt(resultSubSet[4]), Integer.parseInt(resultSubSet[5]),
+//                    Integer.parseInt(resultSubSet[6])));
+//            tableView.setItems(list);
+//        }
+            list = FXCollections.observableArrayList(new PaymentInfoItems(Integer.parseInt(tempString.getString("itemID")),
+                    tempString.getString("itemName"), tempString.getString("measurement"),
+                    Integer.parseInt(tempString.getString("amount")),
+                    Integer.parseInt(tempString.getString("itemPrice")), Integer.parseInt(tempString.getString("taxes")),
+                    Integer.parseInt(tempString.getString("finalPrice"))));
             tableView.setItems(list);
-        }
 
-        if(resultSet[3].equals("Передан в оплату")) {
-            double posX = sendButton.getLayoutX();
-            double posY = sendButton.getLayoutY();
-            sendButton.setVisible(false);
-            sendButton.setLayoutX(ChoiceHBoxSample.getLayoutX());
-            sendButton.setLayoutY(ChoiceHBoxSample.getLayoutY());
-            ChoiceHBoxSample.setLayoutX(posX);
-            ChoiceHBoxSample.setLayoutY(posY);
-            ChoiceHBoxSample.setVisible(true);
-        }
-        else if(resultSet[3].equals("Отменен")) {
-            sendButton.setVisible(false);
-            ChoiceHBoxSample.setVisible(false);
-        }
-        else if (resultSet[3].equals("Оплачен")) {
-            double posX;
-            double posY;
-            if(ChoiceHBoxSample.isVisible()) {
-                posX = ChoiceHBoxSample.getLayoutX();
-                posY = ChoiceHBoxSample.getLayoutY();
-                ChoiceHBoxSample.setVisible(false);
-                ChoiceHBoxSample.setLayoutX(PDFHBox.getLayoutX());
-                ChoiceHBoxSample.setLayoutY(PDFHBox.getLayoutY());
-                PDFHBox.setLayoutX(posX);
-                PDFHBox.setLayoutY(posY);
-                PDFHBox.setVisible(true);
-            }
-            else {
-                posX = sendButton.getLayoutX();
-                posY = sendButton.getLayoutY();
+            if (tempString.getString("status").equals("Передан в оплату")) {
+                double posX = sendButton.getLayoutX();
+                double posY = sendButton.getLayoutY();
                 sendButton.setVisible(false);
-                sendButton.setLayoutX(PDFHBox.getLayoutX());
-                sendButton.setLayoutY(PDFHBox.getLayoutY());
-                PDFHBox.setLayoutX(posX);
-                PDFHBox.setLayoutY(posY);
-                PDFHBox.setVisible(true);
+                sendButton.setLayoutX(ChoiceHBoxSample.getLayoutX());
+                sendButton.setLayoutY(ChoiceHBoxSample.getLayoutY());
+                ChoiceHBoxSample.setLayoutX(posX);
+                ChoiceHBoxSample.setLayoutY(posY);
+                ChoiceHBoxSample.setVisible(true);
+            } else if (tempString.getString("status").equals("Отменен")) {
+                sendButton.setVisible(false);
+                ChoiceHBoxSample.setVisible(false);
+            } else if (tempString.getString("status").equals("Оплачен")) {
+                double posX;
+                double posY;
+                if(PDFHBox.isVisible()) {
+
+                }
+                else if (ChoiceHBoxSample.isVisible()) {
+                    posX = ChoiceHBoxSample.getLayoutX();
+                    posY = ChoiceHBoxSample.getLayoutY();
+                    ChoiceHBoxSample.setVisible(false);
+                    ChoiceHBoxSample.setLayoutX(PDFHBox.getLayoutX());
+                    ChoiceHBoxSample.setLayoutY(PDFHBox.getLayoutY());
+                    PDFHBox.setLayoutX(posX);
+                    PDFHBox.setLayoutY(posY);
+                    PDFHBox.setVisible(true);
+                } else {
+                    posX = sendButton.getLayoutX();
+                    posY = sendButton.getLayoutY();
+                    sendButton.setVisible(false);
+                    sendButton.setLayoutX(PDFHBox.getLayoutX());
+                    sendButton.setLayoutY(PDFHBox.getLayoutY());
+                    PDFHBox.setLayoutX(posX);
+                    PDFHBox.setLayoutY(posY);
+                    PDFHBox.setVisible(true);
+                }
+
+
+                //ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", new File("D:\\check.png"));
             }
-
-
-            //ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", new File("D:\\check.png"));
+            if (Singleton.getInstance().getFinal_Role().equals("obey") && responsableValue != true) {
+                sendButton.setVisible(false);
+                redactButton.setVisible(false);
+                copyButton.setVisible(false);
+                deleteButton.setVisible(false);
+                ChoiceHBoxSample.setVisible(false);
+            }
         }
-        if(Singleton.getInstance().getFinal_Role().equals("obey") && responsableValue != true) {
-            sendButton.setVisible(false);
-            redactButton.setVisible(false);
-            copyButton.setVisible(false);
-            deleteButton.setVisible(false);
-            ChoiceHBoxSample.setVisible(false);
+        else {
+            Label MessageLabel = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
         }
     }
 
-    public void OnSendButton(ActionEvent event) throws URISyntaxException, IOException {
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID()), "Передан в оплату"};
-        String tempString = (String) Singleton.getInstance().getDataController().ChangePaymentStatus(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnSendButton(ActionEvent event) throws URISyntaxException, IOException, JSONException {
+        PaymentDTO payment = new PaymentDTO();
+        try {
+            payment.setPaymentId(Singleton.getInstance().getClientsID());
+            payment.setStatus("Передан в оплату");
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().ChangePaymentStatus(payment);
         Label messageBox = new Label();
-        if(tempString.equals("null")) {
+        if(tempString.getString("response").equals("null")) {
             messageBox.setText("Ошибка изменения");
+            return;
         }
         else {
             messageBox.setText("Счет передан в оплату");
@@ -189,18 +211,12 @@ public class PaymentInfoController implements Initializable {
         OnReload();
     }
 
-    public void OnRedactButton(ActionEvent event) throws IOException, URISyntaxException {
+    public void OnRedactButton(ActionEvent event) throws IOException, URISyntaxException, JSONException {
 
-        ArrayList<String> list = new ArrayList<>();
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID())};
-        String tempString = (String) Singleton.getInstance().getDataController().GetFullPaymentInfo(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        String[] resultSet = tempString.split(">>");
-        for(int i = 0; i < resultSet.length; i++) {
-            list.add(resultSet[i]);
+        ArrayList<String> list = PerformFullInfoGet();
+        if (list.isEmpty()) {
+            return;
         }
-
-
         Singleton.getInstance().getOpacityPane().setVisible(true);
         Singleton.getInstance().PerformFadeTransition(Singleton.instance.getOpacityPane(), 0, 0.5, 0.5);
 
@@ -224,18 +240,12 @@ public class PaymentInfoController implements Initializable {
         OnReload();
     }
 
-    public void OnCopyButton(ActionEvent event) throws IOException, URISyntaxException {
+    public void OnCopyButton(ActionEvent event) throws IOException, URISyntaxException, JSONException {
 
-        ArrayList<String> list = new ArrayList<>();
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID())};
-        String tempString = (String) Singleton.getInstance().getDataController().GetFullPaymentInfo(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        String[] resultSet = tempString.split(">>");
-        for(int i = 0; i < resultSet.length; i++) {
-            list.add(resultSet[i]);
+        ArrayList<String> list = PerformFullInfoGet();
+        if (list.isEmpty()) {
+            return;
         }
-
-
         Singleton.getInstance().getOpacityPane().setVisible(true);
         Singleton.getInstance().PerformFadeTransition(Singleton.instance.getOpacityPane(), 0, 0.5, 0.5);
 
@@ -259,23 +269,36 @@ public class PaymentInfoController implements Initializable {
         OnReload();
     }
 
-    public void OnDeleteButton(ActionEvent event) throws IOException {
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID())};
-        String tempString = (String) Singleton.getInstance().getDataController().DeletePayment(arrStr);
+    public void OnDeleteButton(ActionEvent event) throws IOException, JSONException {
+        PaymentDTO payment = new PaymentDTO();
+        try {
+            payment.setPaymentId(Singleton.getInstance().getClientsID());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().DeletePayment(payment);
+        if(tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка удаления данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         DashboardController dashboardController = new DashboardController();
         dashboardController.SwitchMainPane("/SubFXMLs/Payments/Payment.fxml");
     }
 
-    public void OnConfirmButton(ActionEvent event) throws URISyntaxException, IOException {
+    public void OnConfirmButton(ActionEvent event) throws URISyntaxException, IOException, JSONException {
         FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg"));
         File file = chooser.showOpenDialog(null);
         BufferedImage image = SwingFXUtils.fromFXImage(new javafx.scene.image.Image(file.getPath()), null);
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID())};
-        String tempString = (String) Singleton.getInstance().getDataController().CompletePayment(arrStr, image);
-        tempString = tempString.replaceAll("\r", "");
+        JSONObject arrStr = new JSONObject();
+        arrStr.put("paymentID", Singleton.getInstance().getClientsID());
+        JSONObject tempString = Singleton.getInstance().getDataController().CompletePayment(arrStr, image);
         Label messageBox = new Label();
-        if(tempString.equals("null")) {
+        if(tempString.getString("response").equals("null")) {
             messageBox.setText("Ошибка изменения");
         }
         else {
@@ -285,13 +308,22 @@ public class PaymentInfoController implements Initializable {
         OnReload();
     }
 
-    public void OnRejectButton(ActionEvent event) throws URISyntaxException, IOException {
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID()), "Отменен"};
-        String tempString = (String) Singleton.getInstance().getDataController().ChangePaymentStatus(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnRejectButton(ActionEvent event) throws URISyntaxException, IOException, JSONException {
+        PaymentDTO payment = new PaymentDTO();
+        try {
+            payment.setPaymentId(Singleton.getInstance().getClientsID());
+            payment.setStatus("Отменен");
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().ChangePaymentStatus(payment);
         Label messageBox = new Label();
-        if(tempString.equals("null")) {
+        if(tempString.getString("response").equals("null")) {
             messageBox.setText("Ошибка изменения");
+            return;
         }
         else {
             messageBox.setText("Счет отменен");
@@ -346,7 +378,7 @@ public class PaymentInfoController implements Initializable {
         Files.delete(Paths.get(fname + ".png"));
     }
 
-    public void OnShowButton(ActionEvent event) throws DocumentException, IOException, URISyntaxException, InterruptedException {
+    public void OnShowButton(ActionEvent event) throws DocumentException, IOException, URISyntaxException, InterruptedException, JSONException {
         /*redactButton.setVisible(false);
         copyButton.setVisible(false);
         deleteButton.setVisible(false);
@@ -363,27 +395,59 @@ public class PaymentInfoController implements Initializable {
         deleteButton.setVisible(true);
         PDFHBox.setVisible(true);
         AnchorPane2.setStyle("-fx-background-color: #151928");*/
-        String[] arrStr = {String.valueOf(Singleton.getInstance().getClientsID())};
-        String tempString = (String) Singleton.getInstance().getDataController().GetPaymentCheck(arrStr);
+        JSONObject arrStr = new JSONObject();
+        arrStr.put("paymentID", Singleton.getInstance().getClientsID());
+        JSONObject tempString = Singleton.getInstance().getDataController().GetPaymentCheck(arrStr);
+        if(tempString.getString("response").equals("null"))
+        {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        else {
+            byte[] imageBytes = Base64.getDecoder().decode(tempString.getString("image"));
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+            String s = "target/classes/images/" + "tempCheck.png";
+            ImageIO.write(image, "PNG", new File(s));
 
-        byte[] sizeAr = new byte[4];
-        Singleton.getInstance().getSock().getInputStream().read(sizeAr);
-        int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
-        byte[] imageAr = new byte[size];
-        DataInputStream in = new DataInputStream(Singleton.getInstance().getSock().getInputStream());
-        in.readFully(imageAr);
-        //Singleton.getInstance().getIs().read(imageAr);
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+            HelloApplication h = new HelloApplication();
+            HostServices hostServices = h.getHostServices();
+            System.out.println(getClass().getResource("/images/tempCheck.png"));
+            hostServices.showDocument(getClass().getResource("/images/tempCheck.png").toString());
+            //Files.delete(Paths.get("src/main/resources/images/" + "tempCheck.png"));
+        }
+    }
 
-        String s = "src/main/resources/images/" + "tempCheck.png";
-        ImageIO.write(image, "PNG", new File(s));
-
-        HelloApplication h = new HelloApplication();
-        HostServices hostServices = h.getHostServices();
-        hostServices.showDocument(getClass().getResource("/images/tempCheck.png").toString());
-        //Files.delete(Paths.get("src/main/resources/images/" + "tempCheck.png"));
-
-        tempString = tempString.replaceAll("\r", "");
-        String[] resultSet = tempString.split(">>");
+    public ArrayList<String> PerformFullInfoGet() throws JSONException {
+        ArrayList<String> list = new ArrayList<>();
+        PaymentDTO arrStr = new PaymentDTO();
+        try {
+            arrStr.setPaymentId(Singleton.getInstance().getClientsID());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return null;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().GetFullPaymentInfo(arrStr);
+        try {
+            list.add(tempString.getString("creationDate"));
+            list.add(tempString.getString("paymenterName"));
+            list.add(tempString.getString("receiverName"));
+            list.add(tempString.getString("deadline"));
+            list.add(tempString.getString("subInfo"));
+            list.add(tempString.getString("itemName"));
+            list.add(tempString.getString("measurement"));
+            list.add(tempString.getString("amount"));
+            list.add(tempString.getString("taxes"));
+            list.add(tempString.getString("finalPrice"));
+            list.add(tempString.getString("id"));
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return null;
+        }
+        return list;
     }
 }

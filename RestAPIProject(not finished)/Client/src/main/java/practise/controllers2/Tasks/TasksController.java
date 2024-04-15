@@ -1,5 +1,6 @@
 package practise.controllers2.Tasks;
 
+import DTO.TaskDTO;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.animation.FadeTransition;
@@ -21,6 +22,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import practise.HelloApplication;
 import practise.controllers2.DashboardController;
 import practise.items.PaymentItems;
@@ -41,6 +45,7 @@ public class TasksController implements Initializable {
     public Label windowTypeLabel;
     public JFXButton deleteButton;
     public JFXComboBox<String> searchComboBox;
+    public StackPane stackPane;
 
     //=========================Columns====================================
     JFXTreeTableColumn<TasksItems, String> name;
@@ -134,11 +139,20 @@ public class TasksController implements Initializable {
         //===============================AddingElements===========================================
         //========================================================================================
 
-        OnReload();
+        try {
+            OnReload();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         //==========================================================================================
         //====================================DoubleClick===========================================
         //==========================================================================================
         treeTable.setOnMouseClicked(mouseEvent -> {
+            if(!treeTable.getSelectionModel().getSelectedCells().isEmpty()) {
+                if(Singleton.getInstance().getFinal_Role().equals("control")) {
+                    deleteButton.setDisable(false);
+                }
+            }
             if (mouseEvent.getClickCount() == 2 && (! treeTable.getSelectionModel().getSelectedCells().isEmpty()) ) {
                 //Singleton.getInstance().setPersonalName(String.valueOf(treeTable.getSelectionModel().getSelectedItem().getValue().name));
                 DashboardController d = new DashboardController();
@@ -209,27 +223,31 @@ public class TasksController implements Initializable {
         });
     }
 
-    public void OnReload() {
+    public void OnReload() throws JSONException {
         redactButton.setDisable(true);
+        deleteButton.setDisable(true);
         ObservableList<TasksItems> observableList = FXCollections.observableArrayList();
-        String[] arrStr;
-        String tempString;
+        JSONObject arrStr;
+        JSONObject tempString = new JSONObject();
         if(windowTypeLabel.getText().equals("Task")) {
-             arrStr = new String[]{"GetTasksList"};
-             tempString = (String) Singleton.getInstance().getDataController().GetTasksList(arrStr);
+             arrStr = new JSONObject();
+             tempString = Singleton.getInstance().getDataController().GetTasksList(arrStr);
         }
         else {
-            arrStr = new String[]{"GetProjectsList"};
-            tempString = (String) Singleton.getInstance().getDataController().GetProjectsList(arrStr);
+            arrStr = new JSONObject();
+            tempString = Singleton.getInstance().getDataController().GetProjectList(arrStr);
         }
-        tempString = tempString.replaceAll("\r", "");
-        System.out.println(tempString);
-        String[] resultSet = tempString.split(">>");
-        for(String i : resultSet) {
-            String[] resultSubSet = i.split("<<");
+        JSONArray resultSet = tempString.getJSONArray("taskList");
+        for(int i = 0; i < resultSet.length(); i++) {
             try {
-                observableList.add(new TasksItems(resultSubSet[0], resultSubSet[1], resultSubSet[2], resultSubSet[3],
-                        resultSubSet[4], resultSubSet[5], resultSubSet[6], Integer.parseInt(resultSubSet[7])));
+                observableList.add(new TasksItems(resultSet.getJSONObject(i).getString("name"),
+                        resultSet.getJSONObject(i).getString("completionInfo"),
+                        resultSet.getJSONObject(i).getString("creationDate"),
+                        resultSet.getJSONObject(i).getString("deadline"),
+                        resultSet.getJSONObject(i).getString("responsibleName"),
+                        resultSet.getJSONObject(i).getString("checkerName"),
+                        resultSet.getJSONObject(i).getString("status"),
+                        Integer.parseInt(resultSet.getJSONObject(i).getString("id"))));
             }
             catch (Exception e) {
                 System.out.println(e);
@@ -241,7 +259,7 @@ public class TasksController implements Initializable {
         treeTable.setShowRoot(false);
     }
 
-    public void OnAddTask() throws IOException {
+    public void OnAddTask() throws IOException, JSONException {
         Singleton.getInstance().getOpacityPane().setVisible(true);
         Singleton.getInstance().PerformFadeTransition(Singleton.instance.getOpacityPane(), 0, 0.5, 0.5);
         FXMLLoader fxmlLoader;
@@ -272,10 +290,23 @@ public class TasksController implements Initializable {
 
     }
 
-    public void OnDeleteButton(ActionEvent event) {
-        String[] arrStr = {treeTable.getSelectionModel().getSelectedItem().getValue().name.getValue(),
-                treeTable.getSelectionModel().getSelectedItem().getValue().responsable.getValue()};
-        String tempString = (String) Singleton.getInstance().getDataController().DeleteTask(arrStr);
-        tempString = tempString.replaceAll("\r", "");
+    public void OnDeleteButton(ActionEvent event) throws JSONException {
+        TaskDTO task = new TaskDTO();
+        try {
+            task.setName(treeTable.getSelectionModel().getSelectedItem().getValue().name.getValue());
+            task.setResponsibleName(treeTable.getSelectionModel().getSelectedItem().getValue().responsable.getValue());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().DeleteTask(task);
+        if(tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка удаления данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        OnReload();
     }
 }

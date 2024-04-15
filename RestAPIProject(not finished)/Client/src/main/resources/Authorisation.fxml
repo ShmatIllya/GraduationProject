@@ -27,7 +27,7 @@
                   <Font size="20.0" />
                </font>
             </Label>
-            <Label layoutX="759.0" layoutY="83.0" prefHeight="127.0" prefWidth="177.0" text="Ну так войди в него, блин" textFill="WHITE" wrapText="true">
+            <Label layoutX="759.0" layoutY="83.0" prefHeight="127.0" prefWidth="177.0" text="Ну так войди в него" textFill="WHITE" wrapText="true">
                <font>
                   <Font size="16.0" />
                </font>

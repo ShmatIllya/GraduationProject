@@ -1,23 +1,25 @@
 package practise.project;
 
+import DTO.*;
 import DataController.IDataController;
 import Network.HttpRestClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import practise.singleton.Singleton;
-import retrofit2.http.HTTP;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 public class DataControllerHttp implements IDataController {
@@ -27,115 +29,37 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public JSONObject Login(JSONObject arrStr) throws JSONException {
-
+    public JSONObject Login(PersonalDTO arrStr) throws JSONException {
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("login", arrStr.getLogin());
+        sendJSON.put("password", arrStr.getPassword());
+        sendJSON.put("operationID", "1");
         String url = "/login?";
-        String urlParams = "operationID=" + arrStr.getString("operationID") + "&login=" + arrStr.getString("login")
-                + "&password=" + arrStr.getString("password");
-        url= url + urlParams;
-        return SendData("GET", url, arrStr, true);
+        String urlParams = null;
+        try {
+            urlParams = "operationID=" + sendJSON.getString("operationID") + "&login=" +
+                    URLEncoder.encode(sendJSON.getString("login"), StandardCharsets.UTF_8.toString())
+                    + "&password=" +
+                    URLEncoder.encode(sendJSON.getString("password"), java.nio.charset.StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
     }
 
     @Override
-    public JSONObject Registration(JSONObject arrStr) throws JSONException {
+    public JSONObject Registration(PersonalDTO arrStr) throws JSONException {
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "0");
+        sendJSON.put("login", arrStr.getLogin());
+        sendJSON.put("password", arrStr.getPassword());
+        sendJSON.put("nameSername", arrStr.getNameSername());
+        sendJSON.put("contacts", arrStr.getContacts());
+        sendJSON.put("email", arrStr.getEmail());
+        sendJSON.put("date", arrStr.getRegDate());
         String url = "/registration";
-
-        return SendData("POST", url, arrStr, true);
-    }
-
-    @Override
-    public Object GetPaymentList(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetItemsList(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object AddPayment(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object AddItem(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetPaymentInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object UpdatePayment(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetFullPaymentInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetTasksList(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object AddTask(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetProjectList(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetProcessList(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetTaskInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object UpdateTaskInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetChatsList(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object AddChat(String[] arrStr, BufferedImage image) {
-        return null;
-    }
-
-    @Override
-    public Object GetChatMessages(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetChatMessagesNames(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object AddMessage(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object DeleteMessageStatus(String[] arrStr) {
-        return null;
+        return SendData("POST", url, sendJSON, true);
     }
 
     @Override
@@ -154,66 +78,6 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public Object DeletePersonal(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object AddBusiness(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetBusinessInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object UpdateBusiness(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object CompleteBusiness(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object DeleteBusiness(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object AddComment(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object DeleteClient(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object ChangePaymentStatus(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object DeletePayment(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object ChangeTaskStatus(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object DeleteTask(String[] arrStr) {
-        return null;
-    }
-
-    @Override
     public Object GetProjectInfo(String[] arrStr) {
         return null;
     }
@@ -224,77 +88,56 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public Object GetPersonalGeneralInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetClientGeneralInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetPaymentGeneralInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetTaskGeneralInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetProjectGeneralInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object GetBusinessGeneralInfo(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public Object CompletePayment(String[] arrStr, BufferedImage image) {
-        return null;
-    }
-
-    @Override
-    public Object GetPaymentCheck(String[] arrStr) {
-        return null;
-    }
-
-    @Override
-    public JSONObject GetPersonalList(JSONObject arrStr) throws JSONException{
-        String url = "/personal/getlist?";
+    public JSONObject GetPersonalList(JSONObject arrStr) throws JSONException {
+        String url = "/personal/getList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
-        url= url + urlParams;
+        url = url + urlParams;
         return SendData("GET", url, arrStr, true);
     }
 
     @Override
-    public JSONObject AddPersonal(JSONObject arrStr) throws JSONException {
+    public JSONObject AddPersonal(PersonalDTO arrStr) throws JSONException {
         String url = "/personal/add";
-
-        return SendData("POST", url, arrStr, true);
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddPersonal");
+        sendJSON.put("login", arrStr.getLogin());
+        sendJSON.put("password", arrStr.getPassword());
+        sendJSON.put("nameSername", arrStr.getNameSername());
+        sendJSON.put("contacts", arrStr.getContacts());
+        sendJSON.put("email", arrStr.getEmail());
+        sendJSON.put("role", arrStr.getRole());
+        sendJSON.put("subrole", arrStr.getSubrole());
+        sendJSON.put("status", arrStr.getStatus());
+        sendJSON.put("date", arrStr.getRegDate());
+        return SendData("POST", url, sendJSON, true);
     }
 
     @Override
-    public JSONObject GetPersonalInfo(JSONObject arrStr) throws JSONException{
-        String url = "/personal/viewinfo?";
+    public JSONObject GetPersonalInfo(PersonalDTO arrStr) throws JSONException {
+        String url = "/personal/viewInfo?";
         String urlParams = null;
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "GetPersonalInfo");
+        sendJSON.put("login", Singleton.getInstance().getLocalLogin());
         try {
-            urlParams = "operationID=" + arrStr.getString("operationID") + "&login="
-                    + URLEncoder.encode(arrStr.getString("login"), java.nio.charset.StandardCharsets.UTF_8.toString());
+            urlParams = "operationID=" + sendJSON.getString("operationID") + "&login="
+                    + URLEncoder.encode(sendJSON.getString("login"), java.nio.charset.StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        url= url + urlParams;
-        return SendData("GET", url, arrStr, true);
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
     }
 
     @Override
-    public JSONObject UpdatePersonalInfo(JSONObject arrStr, BufferedImage image) throws JSONException {
-        String url = "/personal/updateinfo";
+    public JSONObject UpdatePersonalInfo(PersonalDTO arrStr, BufferedImage image) throws JSONException {
+        String url = "/personal/updateInfo";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "UpdatePersonalInfo");
+        sendJSON.put("login", arrStr.getLogin());
+        sendJSON.put("contacts", arrStr.getContacts());
+        sendJSON.put("email", arrStr.getEmail());
+        sendJSON.put("description", arrStr.getDescription());
         byte[] imageBytes;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -302,95 +145,188 @@ public class DataControllerHttp implements IDataController {
             baos.flush();
             imageBytes = baos.toByteArray();
             baos.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        arrStr.put("image", Base64.getEncoder().encodeToString(imageBytes));
-        return SendData("POST", url, arrStr, true);
+        sendJSON.put("image", Base64.getEncoder().encodeToString(imageBytes));
+        return SendData("POST", url, sendJSON, true);
     }
 
     @Override
-    public JSONObject UpdatePersonalInfoAsManager(JSONObject arrStr) throws JSONException {
+    public JSONObject UpdatePersonalInfoAsManager(PersonalDTO arrStr) throws JSONException {
         String url = "/personal/updateInfoAsManager";
-        return SendData("POST", url, arrStr, true);
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("nameSername", Singleton.getInstance().getFinal_NameSername());
+        sendJSON.put("login", arrStr.getLogin());
+        sendJSON.put("contacts", arrStr.getContacts());
+        sendJSON.put("email", arrStr.getEmail());
+        sendJSON.put("role", arrStr.getRole());
+        sendJSON.put("subrole", arrStr.getSubrole());
+        sendJSON.put("status", arrStr.getStatus());
+        sendJSON.put("operationID", "UpdatePersonalInfoAsManager");
+        return SendData("POST", url, sendJSON, true);
     }
 
     @Override
     public JSONObject GetClientsList(JSONObject arrStr) throws JSONException {
-        String url = "/clients/getlist?";
+        String url = "/clients/getList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
-        url= url + urlParams;
+        url = url + urlParams;
         return SendData("GET", url, arrStr, true);
     }
 
     @Override
-    public JSONObject GetClientInfo(JSONObject arrStr) throws JSONException{
-        String url = "/clients/viewinfo?";
+    public JSONObject GetClientInfo(ClientDTO arrStr) throws JSONException {
+        String url = "/clients/viewInfo?";
         String urlParams = null;
-        urlParams = "operationID=" + arrStr.getString("operationID") + "&id="
-                    + arrStr.getString("id");
-        url= url + urlParams;
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "GetClientInfo");
+        sendJSON.put("id", arrStr.getClientsId());
+        urlParams = "operationID=" + sendJSON.getString("operationID") + "&id="
+                + sendJSON.getString("id");
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject AddClient(ClientDTO arrStr) throws JSONException {
+        String url = "/clients/add";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddClient");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("email", arrStr.getEmail());
+        sendJSON.put("contacts", arrStr.getPhone());
+        sendJSON.put("address", arrStr.getAdress());
+        sendJSON.put("description", arrStr.getDescription());
+        sendJSON.put("responsibleName", arrStr.getResponsible_name());
+        sendJSON.put("type", "Клиент");
+        sendJSON.put("workType", "Отсутствует");
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject UpdateClientInfo(ClientDTO arrStr) throws JSONException {
+        String url = "/clients/update";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "UpdateClientInfo");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("contacts", arrStr.getPhone());
+        sendJSON.put("email", arrStr.getEmail());
+        sendJSON.put("address", arrStr.getAdress());
+        sendJSON.put("description", arrStr.getDescription());
+        sendJSON.put("responsibleName", arrStr.getResponsible_name());
+        sendJSON.put("type", arrStr.getType());
+        sendJSON.put("workType", arrStr.getWork_type());
+        sendJSON.put("date", arrStr.getReg_date());
+        sendJSON.put("oldName", arrStr.getOld_name());
+        sendJSON.put("oldEmail", arrStr.getOld_email());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetPaymentList(JSONObject arrStr) throws JSONException {
+        arrStr.put("operationID", "GetPaymentList");
+        String url = "/payments/paymentList?";
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
         return SendData("GET", url, arrStr, true);
     }
 
     @Override
-    public JSONObject AddClient(JSONObject arrStr) throws JSONException {
-        String url = "/clients/add";
-        return SendData("POST", url, arrStr, true);
+    public JSONObject GetItemsList(JSONObject arrStr) throws JSONException {
+        arrStr.put("operationID", "GetItemsList");
+        String url = "/payments/itemList?";
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
     }
 
     @Override
-    public JSONObject UpdateClientInfo(JSONObject arrStr) throws JSONException {
-        String url = "/clients/update";
-        return SendData("POST", url, arrStr, true);
+    public JSONObject AddPayment(PaymentDTO arrStr) throws JSONException {
+        String url = "/payments/paymentAdd";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddPayment");
+        sendJSON.put("paymenterName", arrStr.getPaymenterName());
+        sendJSON.put("creationDate", arrStr.getCreationDate().toString());
+        sendJSON.put("deadline", arrStr.getDeadline().toString());
+        sendJSON.put("subInfo", arrStr.getSubInfo());
+        sendJSON.put("receiverName", arrStr.getReceiverName());
+        sendJSON.put("itemID", arrStr.getItemId());
+        sendJSON.put("amount", arrStr.getAmount());
+        sendJSON.put("finalPrice", arrStr.getFinalPrice());
+        return SendData("POST", url, sendJSON, true);
     }
 
-//    @Override
-//    public Object GetPaymentList(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetItemsList(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object AddPayment(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object AddItem(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetPaymentInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object UpdatePayment(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetFullPaymentInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetTasksList(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
+    @Override
+    public JSONObject AddItem(ItemDTO arrStr) throws JSONException {
+        String url = "/payments/itemAdd";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddItem");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("articulate", arrStr.getArticul());
+        sendJSON.put("price", arrStr.getPrice());
+        sendJSON.put("taxes", arrStr.getTaxes());
+        sendJSON.put("measurement", arrStr.getMeasurement());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetPaymentInfo(PaymentDTO arrStr) throws JSONException {
+        String url = "/payments/getInfo?";
+        String urlParams = null;
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "GetPaymentInfo");
+        sendJSON.put("id", arrStr.getPaymentId());
+        urlParams = "operationID=" + sendJSON.getString("operationID") + "&id="
+                + sendJSON.getString("id");
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject UpdatePayment(PaymentDTO arrStr) throws JSONException {
+        String url = "/payments/update";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "UpdatePayment");
+        sendJSON.put("paymenterName", arrStr.getPaymenterName());
+        sendJSON.put("id", arrStr.getPaymentId());
+        sendJSON.put("creationDate", arrStr.getCreationDate().toString());
+        sendJSON.put("deadline", arrStr.getDeadline().toString());
+        sendJSON.put("subInfo", arrStr.getSubInfo());
+        sendJSON.put("receiverName", arrStr.getReceiverName());
+        sendJSON.put("itemID", arrStr.getItemId());
+        sendJSON.put("amount", arrStr.getAmount());
+        sendJSON.put("finalPrice", arrStr.getFinalPrice());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetFullPaymentInfo(PaymentDTO arrStr) throws JSONException {
+        String url = "/payments/getFullInfo?";
+        String urlParams = null;
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "GetFullPaymentInfo");
+        sendJSON.put("id", arrStr.getPaymentId());
+        urlParams = "operationID=" + sendJSON.getString("operationID") + "&id="
+                + sendJSON.getString("id");
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetTasksList(JSONObject arrStr) throws JSONException {
+        arrStr.put("operationID", "GetTasksList");
+        String url = "/tasks/taskList?";
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
     @Override
     public JSONObject GetPersonalObeyList(JSONObject arrStr) throws JSONException {
         String url = "/personal/getObeyList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
-        url= url + urlParams;
+        url = url + urlParams;
         return SendData("GET", url, arrStr, true);
     }
 
@@ -398,66 +334,163 @@ public class DataControllerHttp implements IDataController {
     public JSONObject GetPersonalControlList(JSONObject arrStr) throws JSONException {
         String url = "/personal/getControlList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
-        url= url + urlParams;
+        url = url + urlParams;
         return SendData("GET", url, arrStr, true);
     }
 
-//    @Override
-//    public Object AddTask(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetProjectList(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetProcessList(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetTaskInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object UpdateTaskInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetChatsList(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object AddChat(String[] arrStr, BufferedImage image) {
-//        return SendDataWithImage(arrStr, true, image);
-//    }
-//
-//    @Override
-//    public Object GetChatMessages(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetChatMessagesNames(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object AddMessage(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object DeleteMessageStatus(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
+    @Override
+    public JSONObject AddTask(TaskDTO arrStr) throws JSONException {
+        String url = "/tasks/taskAdd";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddTask");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("responsibleName", arrStr.getResponsibleName());
+        sendJSON.put("checkerName", arrStr.getCheckerName());
+        sendJSON.put("projectName", arrStr.getProjectName());
+        sendJSON.put("processName", arrStr.getProcessName());
+        sendJSON.put("clientName", arrStr.getClientName());
+        sendJSON.put("description", arrStr.getDescription());
+        sendJSON.put("deadline", arrStr.getDeadline());
+        sendJSON.put("creationDate", arrStr.getCreationDate());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetProjectList(JSONObject arrStr) throws JSONException {
+        String url = "/projects/getList?";
+        arrStr.put("operationID", "GetProjectList");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetProcessList(JSONObject arrStr) throws JSONException {
+        String url = "/processes/getList?";
+        arrStr.put("operationID", "GetProcessList");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetTaskInfo(TaskDTO arrStr) throws JSONException {
+        String url = "/tasks/getInfo?";
+        String urlParams = null;
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "GetTaskInfo");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("responsibleName", arrStr.getResponsibleName());
+        try {
+            urlParams = "operationID=" + sendJSON.getString("operationID") + "&name="
+                    + URLEncoder.encode(sendJSON.getString("name"), java.nio.charset.StandardCharsets.UTF_8.toString())
+                    + "&responsibleName="
+                    + URLEncoder.encode(sendJSON.getString("responsibleName"), StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject UpdateTaskInfo(TaskDTO arrStr) throws JSONException {
+        String url = "/tasks/update";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "UpdateTaskInfo");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("responsibleName", arrStr.getResponsibleName());
+        sendJSON.put("description", arrStr.getDescription());
+        sendJSON.put("checkerName", arrStr.getCheckerName());
+        sendJSON.put("deadline", arrStr.getDeadline().toString());
+        sendJSON.put("priority", arrStr.getPriority());
+        sendJSON.put("oldName", arrStr.getOldName());
+        sendJSON.put("oldResponsibleName", arrStr.getOldResponsibleName());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetChatsList(JSONObject arrStr) throws JSONException {
+        String url = "/chats/getList?";
+        arrStr.put("operationID", "GetChatsList");
+        String urlParams = null;
+        try {
+            urlParams = "operationID=" + arrStr.getString("operationID") + "&nameSurname="
+                    + URLEncoder.encode(arrStr.getString("nameSurname"), StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject AddChat(ChatDTO arrStr, BufferedImage image) throws JSONException {
+        String url = "/chats/chatAdd";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddChat");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("description", arrStr.getDescription());
+        JSONArray membersArr = new JSONArray();
+        for (int i = 0; i < arrStr.getMembersList().size(); i++) {
+            membersArr.put(arrStr.getMembersList().get(i));
+        }
+        sendJSON.put("membersList", membersArr);
+        byte[] imageBytes;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            baos.flush();
+            imageBytes = baos.toByteArray();
+            baos.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        sendJSON.put("image", Base64.getEncoder().encodeToString(imageBytes));
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetChatMessages(ChatDTO arrStr) throws JSONException {
+        String url = "/chats/getMessages?";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "GetChatMessages");
+        sendJSON.put("name", arrStr.getName());
+        String urlParams;
+        try {
+            urlParams = "operationID=" + sendJSON.getString("operationID") + "&name="
+                    + URLEncoder.encode(sendJSON.getString("name"), StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject AddMessage(MessageDTO arrStr) throws JSONException {
+        String url = "/chats/addMessage";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddMessage");
+        sendJSON.put("chatName", arrStr.getChatName());
+        sendJSON.put("senderName", arrStr.getSenderName());
+        sendJSON.put("text", arrStr.getText());
+        sendJSON.put("date", arrStr.getDate().toString());
+        sendJSON.put("time", arrStr.getTime().toString());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject DeleteMessageStatus(MessageDTO arrStr) throws JSONException {
+        String url = "/chats/deleteMessageStatus";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "DeleteMessageStatus");
+        sendJSON.put("chatName", arrStr.getChatName());
+        sendJSON.put("senderName", arrStr.getSenderName());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    //    @Override
 //    public Object GetProjectsList(String[] arrStr) {
 //        return SendData(arrStr, true);
 //    }
@@ -472,67 +505,133 @@ public class DataControllerHttp implements IDataController {
 //        return SendData(arrStr, true);
 //    }
 //
-//    @Override
-//    public Object DeletePersonal(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object AddBusiness(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetBusinessInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object UpdateBusiness(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object CompleteBusiness(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object DeleteBusiness(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object AddComment(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object DeleteClient(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object ChangePaymentStatus(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object DeletePayment(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object ChangeTaskStatus(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object DeleteTask(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
+    @Override
+    public JSONObject DeletePersonal(PersonalDTO arrStr) throws JSONException {
+        String url = "/personal/delete";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "DeletePersonal");
+        sendJSON.put("nameSurname", arrStr.getNameSername());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject AddBusiness(BusinessDTO arrStr) throws JSONException {
+        String url = "/business/addBusiness";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddBusiness");
+        sendJSON.put("responsibleName", arrStr.getResponsibleName());
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("date", arrStr.getDate().toString());
+        sendJSON.put("type", arrStr.getType());
+        sendJSON.put("linkedEntityName", arrStr.getLinkedEntityName());
+        sendJSON.put("status", arrStr.getStatus());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject GetBusinessInfo(BusinessDTO arrStr) throws JSONException {
+        String url = "/business/getInfo?";
+        String urlParams;
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "GetBusinessInfo");
+        sendJSON.put("id", arrStr.getBusinessId());
+        urlParams = "operationID=" + sendJSON.getString("operationID") + "&id=" +
+                sendJSON.getString("id");
+        url = url + urlParams;
+        return SendData("GET", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject UpdateBusiness(BusinessDTO arrStr) throws JSONException {
+        String url = "/business/update";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "UpdateBusiness");
+        sendJSON.put("id", arrStr.getBusinessId());
+        sendJSON.put("description", arrStr.getDescription());
+        sendJSON.put("place", arrStr.getPlace());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject CompleteBusiness(BusinessDTO arrStr) throws JSONException {
+        String url = "/business/complete";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "CompleteBusiness");
+        sendJSON.put("id", arrStr.getBusinessId());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject DeleteBusiness(BusinessDTO arrStr) throws JSONException {
+        String url = "/business/delete";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "DeleteBusiness");
+        sendJSON.put("id", arrStr.getBusinessId());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject AddComment(CommentDTO arrStr) throws JSONException {
+        String url = "/comments/add";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "AddComment");
+        sendJSON.put("senderName", arrStr.getSenderName());
+        sendJSON.put("type", arrStr.getType());
+        sendJSON.put("linkedEntityName", arrStr.getLinkedEntityName());
+        sendJSON.put("text", arrStr.getText());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject DeleteClient(ClientDTO arrStr) throws JSONException {
+        String url = "/clients/delete";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "DeleteClient");
+        sendJSON.put("id", arrStr.getClientsId());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject ChangePaymentStatus(PaymentDTO arrStr) throws JSONException {
+        String url = "/payments/changeStatus";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "ChangePaymentStatus");
+        sendJSON.put("id", arrStr.getPaymentId());
+        sendJSON.put("status", arrStr.getStatus());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject DeletePayment(PaymentDTO arrStr) throws JSONException {
+        String url = "/payments/delete";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "DeletePayment");
+        sendJSON.put("id", arrStr.getPaymentId());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject ChangeTaskStatus(TaskDTO arrStr) throws JSONException {
+        String url = "/tasks/changeStatus";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "ChangeTaskStatus");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("responsibleName", arrStr.getResponsibleName());
+        sendJSON.put("status", arrStr.getStatus());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    @Override
+    public JSONObject DeleteTask(TaskDTO arrStr) throws JSONException {
+        String url = "/tasks/delete";
+        JSONObject sendJSON = new JSONObject();
+        sendJSON.put("operationID", "DeleteTask");
+        sendJSON.put("name", arrStr.getName());
+        sendJSON.put("responsibleName", arrStr.getResponsibleName());
+        return SendData("POST", url, sendJSON, true);
+    }
+
+    //    @Override
 //    public Object GetProjectInfo(String[] arrStr) {
 //        return SendData(arrStr, true);
 //    }
@@ -542,45 +641,88 @@ public class DataControllerHttp implements IDataController {
 //        return SendData(arrStr, true);
 //    }
 //
-//    @Override
-//    public Object GetPersonalGeneralInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetClientGeneralInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetPaymentGeneralInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetTaskGeneralInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetProjectGeneralInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object GetBusinessGeneralInfo(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
-//
-//    @Override
-//    public Object CompletePayment(String[] arrStr, BufferedImage image) {
-//        return SendDataWithImage(arrStr, true, image);
-//    }
-//
-//    @Override
-//    public Object GetPaymentCheck(String[] arrStr) {
-//        return SendData(arrStr, true);
-//    }
+    @Override
+    public JSONObject GetPersonalGeneralInfo(JSONObject arrStr) throws JSONException {
+        String url = "/statistic/getPersonal?";
+        arrStr.put("operationID", "GetPersonalGeneralInfo");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetClientGeneralInfo(JSONObject arrStr) throws JSONException {
+        String url = "/statistic/getClients?";
+        arrStr.put("operationID", "GetClientGeneralInfo");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetPaymentGeneralInfo(JSONObject arrStr) throws JSONException {
+        String url = "/statistic/getPayments?";
+        arrStr.put("operationID", "GetPaymentGeneralInfo");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetTaskGeneralInfo(JSONObject arrStr) throws JSONException {
+        String url = "/statistic/getTasks?";
+        arrStr.put("operationID", "GetTaskGeneralInfo");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetProjectGeneralInfo(JSONObject arrStr) throws JSONException {
+        String url = "/statistic/getProjects?";
+        arrStr.put("operationID", "GetProjectGeneralInfo");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetBusinessGeneralInfo(JSONObject arrStr) throws JSONException {
+        String url = "/statistic/getBusinesses?";
+        arrStr.put("operationID", "GetBusinessGeneralInfo");
+        String urlParams = "operationID=" + arrStr.getString("operationID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject CompletePayment(JSONObject arrStr, BufferedImage image) throws JSONException {
+        String url = "/payments/completePayment";
+        arrStr.put("operationID", "CompletePayment");
+        byte[] imageBytes;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            baos.flush();
+            imageBytes = baos.toByteArray();
+            baos.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        arrStr.put("image", Base64.getEncoder().encodeToString(imageBytes));
+        return SendData("POST", url, arrStr, true);
+    }
+
+    @Override
+    public JSONObject GetPaymentCheck(JSONObject arrStr) throws JSONException {
+        String url = "/payments/getCheck?";
+        String urlParams = null;
+        arrStr.put("operationID", "GetPaymentCheck");
+        urlParams = "operationID=" + arrStr.getString("operationID") + "&id="
+                + arrStr.getString("paymentID");
+        url = url + urlParams;
+        return SendData("GET", url, arrStr, true);
+    }
 
     //=============================================================================
     //=============================================================================
@@ -595,8 +737,7 @@ public class DataControllerHttp implements IDataController {
                     requestType);
             if (requestType.equals("POST")) {
                 res = HttpRestClient.Post(Singleton.getInstance().getSock(), object, need_answer);
-            }
-            else {
+            } else {
                 res = HttpRestClient.Get(Singleton.getInstance().getSock(), need_answer);
             }
         } catch (IOException e) {

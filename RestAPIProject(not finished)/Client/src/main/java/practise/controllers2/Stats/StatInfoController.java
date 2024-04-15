@@ -11,8 +11,12 @@ import javafx.event.ActionEvent;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import practise.controllers2.Stats.Representations.*;
 import practise.singleton.Singleton;
 
@@ -40,94 +44,133 @@ public class StatInfoController {
     ObservableList<ProjectRepresentation> projectsList = FXCollections.observableArrayList();
     ObservableList<BusinessRepresentation> businessList = FXCollections.observableArrayList();
 
-    public void InitController(String dataType) {
+    public void InitController(String dataType) throws JSONException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         this.dataType = dataType;
         ObservableList<String> comboBoxValues = FXCollections.observableArrayList();
         switch (dataType) {
             case "Персонал": {
-                String[] arrStr = {};
-                String tempString = (String) Singleton.getInstance().getDataController().GetPersonalGeneralInfo(arrStr);
-                tempString = tempString.replaceAll("\r", "");
-                String[] resultSet = tempString.split(">>");
-                for(String i: resultSet) {
-                    String[] resultSubSet = i.split("<<");
-                    personalList.add(new PersonalRepresentation(resultSubSet[0], resultSubSet[1], resultSubSet[2],
-                            resultSubSet[3], Integer.parseInt(resultSubSet[4]), Integer.parseInt(resultSubSet[5]),
-                            Integer.parseInt(resultSubSet[6]), Integer.parseInt(resultSubSet[7])));
+                JSONObject pers = new JSONObject();
+                JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalGeneralInfo(pers);
+                if (!tempString.getString("response").equals("null")) {
+                    JSONArray resultSet = tempString.getJSONArray("personalList");
+                    for (int i = 0; i < resultSet.length(); i++) {
+                        JSONObject personal = resultSet.getJSONObject(i);
+                        personalList.add(new PersonalRepresentation(personal.getString("nameSurname"),
+                                personal.getString("role"), personal.getString("subRole"),
+                                personal.getString("status"), Integer.parseInt(personal.getString("businessCount")),
+                                Integer.parseInt(personal.getString("clientCount")),
+                                Integer.parseInt(personal.getString("projectCount")),
+                                Integer.parseInt(personal.getString("taskCount"))));
+                    }
+                    comboBoxValues.setAll("Роль", "Должность", "Статус", "Кол-во задач", "Кол-во клиентов",
+                            "Кол-во проектов", "Кол-во дел");
+                    categoryComboBox.setItems(comboBoxValues);
+                } else {
+                    Label messageBox = new Label("Ошибка получения данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                    return;
                 }
-                comboBoxValues.setAll("Роль", "Должность", "Статус", "Кол-во задач", "Кол-во клиентов",
-                        "Кол-во проектов", "Кол-во дел");
-                categoryComboBox.setItems(comboBoxValues);
                 break;
             }
             case "Клиент": {
-                String[] arrStr = {};
-                String tempString = (String) Singleton.getInstance().getDataController().GetClientGeneralInfo(arrStr);
-                tempString = tempString.replaceAll("\r", "");
-                String[] resultSet = tempString.split(">>");
-                for(String i: resultSet) {
-                    String[] resultSubSet = i.split("<<");
-                    clientsList.add(new ClientRepresentation(resultSubSet[0], resultSubSet[1], resultSubSet[2],
-                            Integer.parseInt(resultSubSet[3]),
-                            Integer.parseInt(resultSubSet[4]), Integer.parseInt(resultSubSet[5])));
+                JSONObject arrStr = new JSONObject();
+                JSONObject tempString = Singleton.getInstance().getDataController().GetClientGeneralInfo(arrStr);
+                if (!tempString.getString("response").equals("null")) {
+                    JSONArray resultSet = tempString.getJSONArray("clientList");
+                    for (int i = 0; i < resultSet.length(); i++) {
+                        JSONObject client = resultSet.getJSONObject(i);
+                        clientsList.add(new ClientRepresentation(client.getString("name"), client.getString("type"),
+                                client.getString("workType"), Integer.parseInt(client.getString("businessCount")),
+                                Integer.parseInt(client.getString("paymentCount")),
+                                Integer.parseInt(client.getString("taskCount"))));
+                    }
+                    comboBoxValues.setAll("Вид клиента", "Тип производства", "Кол-во задач", "Кол-во счетов", "Кол-во дел");
+                    categoryComboBox.setItems(comboBoxValues);
+                } else {
+                    Label messageBox = new Label("Ошибка получения данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                    return;
                 }
-                comboBoxValues.setAll("Вид клиента", "Тип производства", "Кол-во задач", "Кол-во счетов", "Кол-во дел");
-                categoryComboBox.setItems(comboBoxValues);
                 break;
             }
             case "Счет": {
-                String[] arrStr = {};
-                String tempString = (String) Singleton.getInstance().getDataController().GetPaymentGeneralInfo(arrStr);
-                tempString = tempString.replaceAll("\r", "");
-                String[] resultSet = tempString.split(">>");
-                for(String i: resultSet) {
-                    String[] resultSubSet = i.split("<<");
-                    paymentsList.add(new PaymentRepresentation(Integer.parseInt(resultSubSet[0]),
-                            Integer.parseInt(resultSubSet[1]), resultSubSet[2], resultSubSet[3]));
+                JSONObject arrStr = new JSONObject();
+                JSONObject tempString = Singleton.getInstance().getDataController().GetPaymentGeneralInfo(arrStr);
+                if (!tempString.getString("response").equals("null")) {
+                    JSONArray resultSet = tempString.getJSONArray("paymentList");
+                    for (int i = 0; i < resultSet.length(); i++) {
+                        JSONObject payment = resultSet.getJSONObject(i);
+                        paymentsList.add(new PaymentRepresentation(Integer.parseInt(payment.getString("id")),
+                                Integer.parseInt(payment.getString("finalPrice")), payment.getString("status"),
+                                payment.getString("itemName")));
+                    }
+                    comboBoxValues.setAll("Цена", "Статус", "Товар");
+                    categoryComboBox.setItems(comboBoxValues);
+                } else {
+                    Label messageBox = new Label("Ошибка получения данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                    return;
                 }
-                comboBoxValues.setAll("Цена", "Статус", "Товар");
-                categoryComboBox.setItems(comboBoxValues);
                 break;
             }
             case "Задача": {
-                String[] arrStr = {};
-                String tempString = (String) Singleton.getInstance().getDataController().GetTaskGeneralInfo(arrStr);
-                tempString = tempString.replaceAll("\r", "");
-                String[] resultSet = tempString.split(">>");
-                for(String i: resultSet) {
-                    String[] resultSubSet = i.split("<<");
-                    tasksList.add(new TaskRepresentation(resultSubSet[0], resultSubSet[1], resultSubSet[2]));
+                JSONObject arrStr = new JSONObject();
+                JSONObject tempString = Singleton.getInstance().getDataController().GetTaskGeneralInfo(arrStr);
+                if (!tempString.getString("response").equals("null")) {
+                    JSONArray resultSet = tempString.getJSONArray("taskList");
+                    for (int i = 0; i < resultSet.length(); i++) {
+                        JSONObject task = resultSet.getJSONObject(i);
+                        tasksList.add(new TaskRepresentation(task.getString("name"), task.getString("status"),
+                                task.getString("priority")));
+                    }
+                    comboBoxValues.setAll("Статус", "Приоритет");
+                    categoryComboBox.setItems(comboBoxValues);
+                } else {
+                    Label messageBox = new Label("Ошибка получения данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                    return;
                 }
-                comboBoxValues.setAll("Статус", "Приоритет");
-                categoryComboBox.setItems(comboBoxValues);
                 break;
             }
             case "Проект": {
-                String[] arrStr = {};
-                String tempString = (String) Singleton.getInstance().getDataController().GetProjectGeneralInfo(arrStr);
-                tempString = tempString.replaceAll("\r", "");
-                String[] resultSet = tempString.split(">>");
-                for(String i: resultSet) {
-                    String[] resultSubSet = i.split("<<");
-                    projectsList.add(new ProjectRepresentation(resultSubSet[0], resultSubSet[1], resultSubSet[2],
-                            Integer.parseInt(resultSubSet[3]), Integer.parseInt(resultSubSet[4])));
+                JSONObject arrStr = new JSONObject();
+                JSONObject tempString = Singleton.getInstance().getDataController().GetProjectGeneralInfo(arrStr);
+                if (!tempString.getString("response").equals("null")) {
+                    JSONArray resultSet = tempString.getJSONArray("projectList");
+                    for (int i = 0; i < resultSet.length(); i++) {
+                        JSONObject project = resultSet.getJSONObject(i);
+                        projectsList.add(new ProjectRepresentation(project.getString("name"),
+                                project.getString("status"), project.getString("trudozatraty"),
+                                Integer.parseInt(project.getString("memberCount")),
+                                Integer.parseInt(project.getString("taskCount"))));
+                    }
+                    comboBoxValues.setAll("Статус", "Трудозатраты", "Число выполняющих", "Число задач");
+                    categoryComboBox.setItems(comboBoxValues);
+                } else {
+                    Label messageBox = new Label("Ошибка получения данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                    return;
                 }
-                comboBoxValues.setAll("Статус", "Трудозатраты", "Число выполняющих", "Число задач");
-                categoryComboBox.setItems(comboBoxValues);
                 break;
             }
             case "Дело": {
-                String[] arrStr = {};
-                String tempString = (String) Singleton.getInstance().getDataController().GetBusinessGeneralInfo(arrStr);
-                tempString = tempString.replaceAll("\r", "");
-                String[] resultSet = tempString.split(">>");
-                for(String i: resultSet) {
-                    String[] resultSubSet = i.split("<<");
-                    businessList.add(new BusinessRepresentation(resultSubSet[0], resultSubSet[1]));
+                JSONObject arrStr = new JSONObject();
+                JSONObject tempString = Singleton.getInstance().getDataController().GetBusinessGeneralInfo(arrStr);
+                if (!tempString.getString("response").equals("null")) {
+                    JSONArray resultSet = tempString.getJSONArray("taskList");
+                    for (int i = 0; i < resultSet.length(); i++) {
+                        JSONObject business = resultSet.getJSONObject(i);
+                        businessList.add(new BusinessRepresentation(business.getString("name"),
+                                business.getString("status")));
+                    }
+                    comboBoxValues.setAll("Статус");
+                    categoryComboBox.setItems(comboBoxValues);
+                } else {
+                    Label messageBox = new Label("Ошибка получения данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                    return;
                 }
-                comboBoxValues.setAll("Статус");
-                categoryComboBox.setItems(comboBoxValues);
                 break;
             }
         }

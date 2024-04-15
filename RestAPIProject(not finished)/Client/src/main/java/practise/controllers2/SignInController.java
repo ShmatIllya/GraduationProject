@@ -1,11 +1,13 @@
 package practise.controllers2;
 
+import DTO.PersonalDTO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -19,7 +21,7 @@ import java.io.IOException;
 public class SignInController {
     public StackPane stackPane;
     public TextField loginField;
-    public TextField passwordField;
+    public PasswordField passwordField;
     public Label ErrorLabel;
 
     @FXML
@@ -39,11 +41,16 @@ public class SignInController {
             }
         }
         else {
-            JSONObject arrStr = new JSONObject();
-            arrStr.put("operationID", "1");
-            arrStr.put("login", loginField.getText());
-            arrStr.put("password", passwordField.getText());
-
+            PersonalDTO arrStr = new PersonalDTO();
+            try {
+                arrStr.setLogin(loginField.getText());
+                arrStr.setPassword(passwordField.getText());
+            }
+            catch (Exception e) {
+                Label messageBox = new Label("Ошибка ввода данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
             JSONObject result = Singleton.getInstance().getDataController().Login(arrStr);
             Label MessageLabel = new Label();
             if(result.getString("response").equals("null"))

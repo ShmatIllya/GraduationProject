@@ -1,5 +1,6 @@
 package practise.controllers2.Payment;
 
+import DTO.PaymentDTO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
@@ -29,6 +30,7 @@ import practise.singleton.Singleton;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -73,19 +75,28 @@ public class PaymentCopyUpdateController implements Initializable{
         this.choice = choice;
     }
 
-    public void OnSubmitButton() {
+    public void OnSubmitButton() throws JSONException {
         if(choice == false) {
             java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
-            String[] arrStr = {sqlDate.toString(), datePicker.getText(), subInfoField.getText(),
-                    paymenterComboBox.getSelectionModel().getSelectedItem().toString(),
-                    recieverComboBox.getSelectionModel().getSelectedItem().toString(),
-                    String.valueOf(itemsDataList.get(itemsComboBox.getSelectionModel().getSelectedIndex()).getId()),
-                    amountField.getText(), finalPriceField.getText()};
-            String tempString = (String) Singleton.getInstance().getDataController().AddPayment(arrStr);
-            tempString = tempString.replaceAll("\r", "");
-            //String[] resultSet = tempString.split("<<");
+            PaymentDTO payment = new PaymentDTO();
+            try {
+                payment.setCreationDate(sqlDate);
+                payment.setDeadline(Date.valueOf(datePicker.getText()));
+                payment.setSubInfo(subInfoField.getText());
+                payment.setPaymenterName(paymenterComboBox.getSelectionModel().getSelectedItem().toString());
+                payment.setReceiverName(recieverComboBox.getSelectionModel().getSelectedItem().toString());
+                payment.setItemId(itemsDataList.get(itemsComboBox.getSelectionModel().getSelectedIndex()).getId());
+                payment.setAmount(Integer.parseInt(amountField.getText()));
+                payment.setFinalPrice(Integer.parseInt(finalPriceField.getText()));
+            }
+            catch (Exception e) {
+                Label messageBox = new Label("Ошибка ввода данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            JSONObject tempString = Singleton.getInstance().getDataController().AddPayment(payment);
             Label MessageLabel = new Label();
-            if (tempString.equals("null")) {
+            if (tempString.getString("response").equals("null")) {
                 MessageLabel.setText("Ошибка добавления");
                 Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
             } else {
@@ -96,16 +107,28 @@ public class PaymentCopyUpdateController implements Initializable{
         }
         else {
             java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
-            String[] arrStr = {sqlDate.toString(), datePicker.getText(), subInfoField.getText(),
-                    paymenterComboBox.getSelectionModel().getSelectedItem().toString(),
-                    recieverComboBox.getSelectionModel().getSelectedItem().toString(),
-                    String.valueOf(itemsDataList.get(itemsComboBox.getSelectionModel().getSelectedIndex()).getId()),
-                    amountField.getText(), finalPriceField.getText(), localId};
-            String tempString = (String) Singleton.getInstance().getDataController().UpdatePayment(arrStr);
-            tempString = tempString.replaceAll("\r", "");
+            PaymentDTO payment = new PaymentDTO();
+            try {
+                payment.setCreationDate(sqlDate);
+                payment.setDeadline(Date.valueOf(datePicker.getText()));
+                payment.setPaymentId(Singleton.getInstance().getClientsID());
+                payment.setSubInfo(subInfoField.getText());
+                payment.setPaymenterName(paymenterComboBox.getSelectionModel().getSelectedItem().toString());
+                payment.setReceiverName(recieverComboBox.getSelectionModel().getSelectedItem().toString());
+                payment.setItemId(itemsDataList.get(itemsComboBox.getSelectionModel().getSelectedIndex()).getId());
+                payment.setAmount(Integer.parseInt(amountField.getText()));
+                payment.setFinalPrice(Integer.parseInt(finalPriceField.getText()));
+                payment.setLocalID(localId);
+            }
+            catch (Exception e) {
+                Label messageBox = new Label("Ошибка ввода данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            JSONObject tempString = Singleton.getInstance().getDataController().UpdatePayment(payment);
             //String[] resultSet = tempString.split("<<");
             Label MessageLabel = new Label();
-            if (tempString.equals("null")) {
+            if (tempString.getString("response").equals("null")) {
                 MessageLabel.setText("Ошибка обновления");
                 Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
             } else {
@@ -117,20 +140,31 @@ public class PaymentCopyUpdateController implements Initializable{
     }
 
     public void PrepareItemBox() {
-        String [] arrStr = {"GetItemsList"};
-        String tempString = (String) Singleton.getInstance().getDataController().GetItemsList(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        if(!tempString.equals("")) {
-            String[] resultSet = tempString.split(">>");
-            ObservableList<String> itemNamesList = FXCollections.observableArrayList();
-            for (String i : resultSet) {
-                String[] resultSubSet = i.split("<<");
-                itemNamesList.add(resultSubSet[0]);
-                itemsDataList.add(new ItemsItems(resultSubSet[0], resultSubSet[4], resultSubSet[1],
-                        Integer.parseInt(resultSubSet[2]), Integer.parseInt(resultSubSet[3]),
-                        Integer.parseInt(resultSubSet[5])));
+        try {
+            JSONObject arrStr = new JSONObject();
+            JSONObject tempString = Singleton.getInstance().getDataController().GetItemsList(arrStr);
+            if (!tempString.getString("response").equals("null")) {
+                JSONArray resultSet = tempString.getJSONArray("itemList");
+                ObservableList<String> itemNamesList = FXCollections.observableArrayList();
+                for (int i = 0; i < resultSet.length(); i++) {
+                    itemNamesList.add(resultSet.getJSONObject(i).getString("name"));
+                    itemsDataList.add(new ItemsItems(resultSet.getJSONObject(i).getString("name"),
+                            resultSet.getJSONObject(i).getString("measurement"),
+                            resultSet.getJSONObject(i).getString("articulate"),
+                            Integer.parseInt(resultSet.getJSONObject(i).getString("price")),
+                            Integer.parseInt(resultSet.getJSONObject(i).getString("taxes")),
+                            Integer.parseInt(resultSet.getJSONObject(i).getString("id"))));
+                }
+                itemsComboBox.setItems(itemNamesList);
             }
-            itemsComboBox.setItems(itemNamesList);
+            else {
+                Label MessageLabel = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
+            }
+        }
+        catch (JSONException e) {
+            Label MessageLabel = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
         }
     }
 

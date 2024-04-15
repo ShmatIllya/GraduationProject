@@ -1,5 +1,7 @@
 package practise.controllers2.Messages;
 
+import DTO.ChatDTO;
+import DTO.MessageDTO;
 import com.dlsc.gemsfx.EnhancedLabel;
 import com.dlsc.gemsfx.PhotoView;
 import com.jfoenix.controls.JFXButton;
@@ -25,6 +27,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import netscape.javascript.JSObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import practise.HelloApplication;
 import practise.items.TasksItems;
 import practise.singleton.Singleton;
@@ -36,10 +42,13 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.sql.Date;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -74,8 +83,10 @@ public class MessagesController implements Initializable {
     public HBox inMessageHbox;
     public EnhancedLabel inMessageNameSername;
     public EnhancedLabel inMessageTime;
+    public StackPane stackPane;
     String CurrentChatName;
     CustomTextArea messageInputArea = new CustomTextArea();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         messageInputArea.setPrefWidth(messageInputTextField.getWidth());
@@ -85,52 +96,45 @@ public class MessagesController implements Initializable {
         //messageInputPane.getChildren().remove(0);
         messageInputPane.getChildren().add(0, messageInputArea);
 
-        if(Singleton.getInstance().getFinal_Role().equals("obey")) {
+        if (Singleton.getInstance().getFinal_Role().equals("obey")) {
             chatAddButton.setVisible(false);
         }
         opacityPane.setVisible(true);
         try {
             OnReload();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         chatsVBox.getChildren().remove(0);
     }
 
-    public void OnReload() throws IOException {
+    public void OnReload() throws IOException, JSONException {
         opacityPane.setVisible(true);
-        String[] arrStr = {"GetChatsList", Singleton.getInstance().getFinal_NameSername()};
-        String tempString = (String) Singleton.getInstance().getDataController().GetChatsList(arrStr);
+        JSONObject chat = new JSONObject();
+        chat.put("nameSurname", Singleton.getInstance().getFinal_NameSername());
+        JSONObject tempString = Singleton.getInstance().getDataController().GetChatsList(chat);
         System.out.println(tempString);
-        List<Image> recivedImages = new ArrayList<>();
-        for(int i = 0; i < tempString.split(">>").length; i++)
-        {
-            byte[] sizeAr = new byte[4];
-            Singleton.getInstance().getSock().getInputStream().read(sizeAr);
-            int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
-            byte[] imageAr = new byte[size];
-            DataInputStream in = new DataInputStream(Singleton.getInstance().getSock().getInputStream());
-            in.readFully(imageAr);
-            //Singleton.getInstance().getIs().read(imageAr);
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
-            Image image2 = SwingFXUtils.toFXImage(image, null);
-            //avatarImage.setImage(image2);
-            recivedImages.add(image2);
-        }
-
-
-        tempString = tempString.replaceAll("\r", "");
-        System.out.println(tempString);
-        String[] resultSet = tempString.split(">>");
-        for(int i = 0; i < resultSet.length; i++) {
-            String[] resultSubSet = resultSet[i].split("<<");
-            try {
-                CreateChatPane(resultSubSet[0], resultSubSet[1], resultSubSet[2], resultSubSet[3],
-                        resultSubSet[4], recivedImages.get(i));
+        try {
+            if (!tempString.getString("response").equals("null")) {
+                JSONArray chatList = tempString.getJSONArray("chatList");
+                for (int i = 0; i < chatList.length(); i++) {
+                    byte[] imageBytes = Base64.getDecoder().decode(chatList.getJSONObject(i).getString("image"));
+                    Image image2 = new Image(new ByteArrayInputStream(imageBytes));
+                    CreateChatPane(chatList.getJSONObject(i).getString("name"),
+                            chatList.getJSONObject(i).getString("senderName"),
+                            chatList.getJSONObject(i).getString("text"),
+                            chatList.getJSONObject(i).getString("sendTime"),
+                            chatList.getJSONObject(i).getString("unreadMesCount"), image2);
+                    //Singleton.getInstance().getIs().read(imageAr);
+                    //avatarImage.setImage(image2);
+                }
+            } else {
+                Label messageBox = new Label("Ошибка обработки данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
             }
-            catch (Exception e) {
-                System.out.println(e);
-            }
+        } catch (Exception e) {
+            Label messageBox = new Label("Ошибка обработки данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
         }
     }
 
@@ -209,7 +213,7 @@ public class MessagesController implements Initializable {
         unreadNumber.setPrefWidth(26);
         unreadNumber.setPrefHeight(17);
         unreadNumber.setText(unreadCount);
-        if(unreadNumber.getText().equals("0")) {
+        if (unreadNumber.getText().equals("0")) {
             unread.setVisible(false);
         }
 
@@ -219,9 +223,8 @@ public class MessagesController implements Initializable {
             CurrentChatName = nameOfChat;
             try {
                 OpenChat(nameOfChat);
-            }
-            catch (IOException e) {
-                throw  new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -229,7 +232,7 @@ public class MessagesController implements Initializable {
 
     }
 
-    public void OnChatAddButton(ActionEvent event) throws IOException {
+    public void OnChatAddButton(ActionEvent event) throws IOException, JSONException {
         Singleton.getInstance().getOpacityPane().setVisible(true);
         Singleton.getInstance().PerformFadeTransition(Singleton.instance.getOpacityPane(), 0, 0.5, 0.5);
 
@@ -254,58 +257,56 @@ public class MessagesController implements Initializable {
         OnReload();
     }
 
-    public void OpenChat(String chatName) throws IOException {
-
-        String[] arrStrDelete = {chatName, Singleton.getInstance().getFinal_NameSername()};
-        String tempStringDelete = (String) Singleton.getInstance().getDataController().DeleteMessageStatus(arrStrDelete);
+    public void OpenChat(String chatName) throws IOException, JSONException {
+        MessageDTO arrStrDelete = new MessageDTO();
+        try {
+            arrStrDelete.setChatName(chatName);
+            arrStrDelete.setSenderName(Singleton.getInstance().getFinal_NameSername());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempStringDelete = Singleton.getInstance().getDataController().DeleteMessageStatus(arrStrDelete);
+        if(tempStringDelete.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка обновления статусов");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
 
         CurrentChatName = chatName;
         opacityPane.setVisible(false);
         List<Image> recivedImages = new ArrayList<>();
         List<String> imagesNames = new ArrayList<>();
-        String[] arrStr = {chatName};
-        String tempString = (String) Singleton.getInstance().getDataController().GetChatMessages(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        System.out.println(tempString);
-        String[] resultSet = tempString.split("\\^\\^");
-        System.out.println(tempString);
-
-        for(int i = 0; i < Integer.parseInt(resultSet[0]); i++)
-        {
-            byte[] sizeAr = new byte[4];
-            Singleton.getInstance().getSock().getInputStream().read(sizeAr);
-            int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
-            byte[] imageAr = new byte[size];
-            DataInputStream in = new DataInputStream(Singleton.getInstance().getSock().getInputStream());
-            in.readFully(imageAr);
-            //Singleton.getInstance().getIs().read(imageAr);
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
-            //BufferedReader brinp = new BufferedReader(new InputStreamReader(Singleton.getInstance().getIs(), "UTF-8"));
-            //imageName = brinp.readLine();
-
-            //brinp.close();
-            Image image2 = SwingFXUtils.toFXImage(image, null);
-            //avatarImage.setImage(image2);
-            recivedImages.add(image2);
+        ChatDTO arrStr = new ChatDTO();
+        try {
+            arrStr.setName(chatName);
+        } catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
         }
+        JSONObject tempString = Singleton.getInstance().getDataController().GetChatMessages(arrStr);
+        JSONArray resultSet = tempString.getJSONArray("imagesList");
 
-        String[] arrStr2 = {"GetChatMessagesNames"};
-        String tempString2 = (String) Singleton.getInstance().getDataController().GetChatMessagesNames(arrStr2);
-        tempString2 = tempString2.replaceAll("\r", "");
-        String[] tempString2Arr = tempString2.split(">>");
-        for(String k: tempString2Arr) {
-            imagesNames.add(k);
+        for (int i = 0; i < resultSet.length(); i++) {
+            byte[] imageBytes = Base64.getDecoder().decode(resultSet.getJSONObject(i).getString("image"));
+            Image image = new Image(new ByteArrayInputStream(imageBytes));
+            recivedImages.add(image);
+            imagesNames.add(resultSet.getJSONObject(i).getString("nameSurname"));
         }
-
 
         messagesVBox.getChildren().clear();
-        for(int i = 1; i < resultSet.length; i++) {
-            String[] resultSubSet = resultSet[i].split(">>");
-            CreateHeaderDate(resultSubSet[0]);
-            for(int j = 1; j < resultSubSet.length; j++) {
-                String[] resultSubSubSet = resultSubSet[j].split("<<");
+        resultSet = tempString.getJSONArray("messageByDateList");
+        for (int i = 0; i < resultSet.length(); i++) {
+            CreateHeaderDate(resultSet.getJSONObject(i).getString("date"));
+            JSONArray messageList = resultSet.getJSONObject(i).getJSONArray("messageList");
+            for (int j = 0; j < messageList.length(); j++) {
                 try {
-                    CreateMessageBox(resultSubSubSet[0], resultSubSubSet[1], resultSubSubSet[2], recivedImages, imagesNames);
+                    CreateMessageBox(messageList.getJSONObject(j).getString("text"),
+                            messageList.getJSONObject(j).getString("time"),
+                            messageList.getJSONObject(j).getString("senderName"), recivedImages, imagesNames);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -333,7 +334,7 @@ public class MessagesController implements Initializable {
         hbox.setPrefWidth(userMessageHBox.getWidth());
         hbox.setPrefHeight(userMessageHBox.getHeight());
         hbox.setSpacing(10);
-        if(nameSername.equals(Singleton.getInstance().getFinal_NameSername())) {
+        if (nameSername.equals(Singleton.getInstance().getFinal_NameSername())) {
             hbox.setAlignment(Pos.TOP_RIGHT);
         }
         messagesVBox.getChildren().add(hbox);
@@ -349,8 +350,8 @@ public class MessagesController implements Initializable {
         photoView2.setPrefWidth(photoView.getWidth());
         photoView2.setPrefHeight(photoView.getHeight());
         photoView2.setEditable(false);
-        for(int i = 0; i < imagesNames.size(); i++) {
-            if(imagesNames.get(i).equals(nameSername)) {
+        for (int i = 0; i < imagesNames.size(); i++) {
+            if (imagesNames.get(i).equals(nameSername)) {
                 photoView2.setPhoto(recievedImages.get(i));
                 break;
             }
@@ -360,10 +361,9 @@ public class MessagesController implements Initializable {
         VBox bodyVBox = new VBox();
         bodyVBox.setPrefWidth(messageHBox.getWidth());
         bodyVBox.setPrefHeight(messageHBox.getHeight());
-        if(nameSername.equals(Singleton.getInstance().getFinal_NameSername())) {
+        if (nameSername.equals(Singleton.getInstance().getFinal_NameSername())) {
             bodyVBox.setStyle("-fx-background-color:  #70c945; -fx-background-radius: 30");
-        }
-        else {
+        } else {
             bodyVBox.setStyle("-fx-background-color:  #2196f3; -fx-background-radius: 30");
         }
         hbox.getChildren().add(bodyVBox);
@@ -372,7 +372,7 @@ public class MessagesController implements Initializable {
         headerHbox.setPrefWidth(inMessageHbox.getWidth());
         headerHbox.setPrefHeight(inMessageHbox.getHeight());
         bodyVBox.getChildren().add(headerHbox);
-        bodyVBox.setMargin(headerHbox, new Insets(0,0,0,15));
+        bodyVBox.setMargin(headerHbox, new Insets(0, 0, 0, 15));
 
         Label nameSernameLabel = new Label();
         nameSernameLabel.setPrefWidth(inMessageNameSername.getWidth());
@@ -385,31 +385,41 @@ public class MessagesController implements Initializable {
         timeLabel.setPrefHeight(inMessageTime.getHeight());
         timeLabel.setText(time);
         headerHbox.getChildren().add(timeLabel);
-        headerHbox.setMargin(timeLabel, new Insets(2,0,0,20));
+        headerHbox.setMargin(timeLabel, new Insets(2, 0, 0, 20));
 
         CustomTextArea messageArea2 = new CustomTextArea();
         messageArea2.setStyle("-fx-border-color: transparent");
         bodyVBox.setPrefHeight(messageArea2.getPrefHeight());
         bodyVBox.getChildren().add(messageArea2);
-        bodyVBox.setMargin(messageArea2, new Insets(0,15,0,15));
+        bodyVBox.setMargin(messageArea2, new Insets(0, 15, 0, 15));
         messageArea2.setEditable(true);
         hbox.setPrefHeight(bodyVBox.getPrefHeight());
         messageArea2.setText(text);
     }
 
-    public void OnSendMessageButton(ActionEvent event) throws IOException {
+    public void OnSendMessageButton(ActionEvent event) throws IOException, JSONException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         java.util.Date date = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-
-        String[] arrStr = {messageInputTextField.getText(), formatter.format(LocalDateTime.now()),
-                Singleton.getInstance().getFinal_NameSername(),
-                CurrentChatName, sdf.format(date)
-        };
-        String tempString = (String) Singleton.getInstance().getDataController().AddMessage(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        //String[] resultSet = tempString.split("<<");
-        Label MessageLabel = new Label();
+        MessageDTO message = new MessageDTO();
+        try {
+            message.setText(messageInputTextField.getText());
+            message.setDate(Date.valueOf(formatter.format(LocalDateTime.now())));
+            message.setSenderName(Singleton.getInstance().getFinal_NameSername());
+            message.setChatName(CurrentChatName);
+            message.setTime(Time.valueOf(sdf.format(date)));
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().AddMessage(message);
+        if(tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка отправки данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         OpenChat(CurrentChatName);
     }
 }

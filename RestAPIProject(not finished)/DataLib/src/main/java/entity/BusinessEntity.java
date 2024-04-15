@@ -23,7 +23,7 @@ public class BusinessEntity {
     private Integer clientId;
     @Basic
     @Column(name = "date")
-    private LocalDateTime date;
+    private String date;
     @Basic
     @Column(name = "place")
     private String place;
@@ -90,11 +90,11 @@ public class BusinessEntity {
         this.clientId = clientId;
     }
 
-    public LocalDateTime getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

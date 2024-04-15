@@ -1,5 +1,6 @@
 package practise.controllers2;
 
+import DTO.ClientDTO;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.animation.FadeTransition;
@@ -13,10 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -45,6 +43,7 @@ public class ClientController implements Initializable {
     public JFXButton deleteButton;
     public JFXButton addButton;
     public JFXComboBox<String> searchComboBox;
+    public StackPane stackPane;
 
     //=========================Columns====================================
     JFXTreeTableColumn<ClientsItems, String> name;
@@ -207,8 +206,21 @@ public class ClientController implements Initializable {
     }
 
     public void OnDeleteButton(ActionEvent event) throws JSONException {
-        String[] arrStr = {String.valueOf(treeTable.getSelectionModel().getSelectedItem().getValue().id.get())};
-        String tempString = (String) Singleton.getInstance().getDataController().DeleteClient(arrStr);
+        ClientDTO client = new ClientDTO();
+        try {
+            client.setClientsId(treeTable.getSelectionModel().getSelectedItem().getValue().id.get());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().DeleteClient(client);
+        if(tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка удаления данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         OnReload();
     }
 }

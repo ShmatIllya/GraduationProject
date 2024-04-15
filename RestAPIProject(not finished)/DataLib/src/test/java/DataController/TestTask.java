@@ -59,7 +59,7 @@ public class TestTask {
         System.out.println("Commencing TestAddTask");
         if (entityManager != null && entityManager.getTransaction() != null) {
             dbManager = new DataControllerSql();
-            dbManager.AddTask(task);
+            //dbManager.AddTask(task);
             JSONObject taskList = dbManager.GetTasksList(task);
             dbManager.entityManager.getTransaction().begin();
             TypedQuery<TasksEntity> q = dbManager.entityManager.createQuery("SELECT u FROM TasksEntity u order by u.tasksId asc", TasksEntity.class);

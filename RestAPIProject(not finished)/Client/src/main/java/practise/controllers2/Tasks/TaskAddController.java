@@ -1,5 +1,6 @@
 package practise.controllers2.Tasks;
 
+import DTO.TaskDTO;
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
@@ -23,6 +24,7 @@ import org.json.JSONObject;
 import practise.singleton.Singleton;
 
 import java.net.URL;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -82,14 +84,12 @@ public class TaskAddController implements Initializable {
             checkerHBox.getChildren().add(checkerChips);
 
             ObservableList<String> values = FXCollections.observableArrayList();
-            String[] arrStr3 = {"GetProjectList"};
-            String projectList = (String) Singleton.getInstance().getDataController().GetProjectList(arrStr3);
-            projectList = projectList.replaceAll("\r", "");
-            String[] projectResSet = projectList.split("<<");
-            for (String i : projectResSet) {
-                String[] resultSubSet = i.split(">>");
+            JSONObject arrStr3 = new JSONObject();
+            JSONObject projectList = Singleton.getInstance().getDataController().GetProjectList(arrStr3);
+            JSONArray projectResSet = projectList.getJSONArray("projectList");
+            for (int i = 0; i < projectResSet.length(); i++) {
                 try {
-                    values.add(resultSubSet[0]);
+                    values.add(projectResSet.getJSONObject(i).getString("name"));
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -98,14 +98,12 @@ public class TaskAddController implements Initializable {
             projectComboBox.setItems(values);
 
             values = FXCollections.observableArrayList();
-            String[] arrStr4 = {"GetProcessList"};
-            projectList = (String) Singleton.getInstance().getDataController().GetProcessList(arrStr4);
-            projectList = projectList.replaceAll("\r", "");
-            projectResSet = projectList.split("<<");
-            for (String i : projectResSet) {
-                String[] resultSubSet = i.split(">>");
+            JSONObject arrStr4 = new JSONObject();
+            projectList = Singleton.getInstance().getDataController().GetProcessList(arrStr4);
+            projectResSet = projectList.getJSONArray("processList");
+            for (int i = 0; i < projectResSet.length(); i++) {
                 try {
-                    values.add("Процесс " + resultSubSet[0]);
+                    values.add("Процесс " + projectResSet.getJSONObject(i).getString("id"));
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -171,19 +169,35 @@ public class TaskAddController implements Initializable {
         });
     }
 
-    public void OnSubmitButton(ActionEvent event) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    public void OnSubmitButton(ActionEvent event) throws JSONException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String[] splitProcess = processComboBox.getSelectionModel().getSelectedItem().toString().split(" ");
-        String[] arrStr = {nameField.getText(), responsableChips.getChips().get(0), descriptionField.getText(),
-                checkerChips.getChips().get(0), datePicker.getText(),
-                projectComboBox.getSelectionModel().getSelectedItem().toString(),
-                splitProcess[1], OuterValue, formatter.format(LocalDateTime.now())
-        };
-        String tempString = (String) Singleton.getInstance().getDataController().AddTask(arrStr);
-        tempString = tempString.replaceAll("\r", "");
-        //String[] resultSet = tempString.split("<<");
+        TaskDTO arrStr = new TaskDTO();
+        try {
+            arrStr.setName(nameField.getText());
+            arrStr.setResponsibleName(responsableChips.getChips().get(0));
+            arrStr.setDescription(descriptionField.getText());
+            arrStr.setCheckerName(checkerChips.getChips().get(0));
+            arrStr.setDeadline(Date.valueOf(datePicker.getText()));
+            arrStr.setProjectName(projectComboBox.getSelectionModel().getSelectedItem().toString());
+            if(!splitProcess[1].equals("выбран")) {
+                arrStr.setProcessName(splitProcess[1]);
+            }
+            else {
+                arrStr.setProcessName(splitProcess[0] + " " + splitProcess[1]);
+            }
+            arrStr.setClientName(OuterValue);
+            arrStr.setCreationDate(LocalDateTime.now());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            throw new RuntimeException(e);
+
+        }
+        JSONObject tempString = Singleton.getInstance().getDataController().AddTask(arrStr);
         Label MessageLabel = new Label();
-        if (tempString.equals("null")) {
+        if (tempString.getString("response").equals("null")) {
             MessageLabel.setText("Ошибка добавления");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, MessageLabel);
         } else {

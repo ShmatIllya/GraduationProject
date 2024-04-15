@@ -1,11 +1,13 @@
 package practise.controllers2.Business;
 
+import DTO.BusinessDTO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXChipView;
 import javafx.animation.FadeTransition;
 import javafx.collections.WeakListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -23,6 +25,7 @@ import javax.swing.event.ChangeListener;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -39,7 +42,7 @@ public class BusinessController {
 
 
     public void InitController(String fromCall, String value) throws JSONException {
-
+        addButton.setDisable(true);
         AnchorPane.getChildren().add(promptChips);
         promptChips.setPrefHeight(38.4);
         promptChips.setLayoutX(68);
@@ -92,6 +95,7 @@ public class BusinessController {
                     break;
                 }
                 case 4: {
+                    addButton.setDisable(false);
                     promptChips.getSuggestions().clear();
                     promptChips.getSuggestions().addAll(personal);
                     break;
@@ -102,7 +106,7 @@ public class BusinessController {
         this.fromCall = fromCall;
         this.value = value;
     }
-    public void OnAddButton() {
+    public void OnAddButton() throws JSONException {
         LocalDate date = LocalDate.now();
         switch (promptChips.getChips().get(1)) {
             case "Завтра": {
@@ -124,9 +128,35 @@ public class BusinessController {
         }
         String dateString = date + " " + promptChips.getChips().get(2).replaceAll("в ", "")
                 + promptChips.getChips().get(3) + ":00";
-        String[] arrStr = {promptChips.getChips().get(0), dateString, "Активно", fromCall, value,
-                promptChips.getChips().get(4)};
-        String tempString = (String) Singleton.getInstance().getDataController().AddBusiness(arrStr);
+        BusinessDTO business = new BusinessDTO();
+        try {
+            System.out.println(promptChips.getChips().get(0));
+            System.out.println(promptChips.getChips().get(4));
+            System.out.println(value);
+            System.out.println(fromCall);
+            System.out.println(dateString);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            business.setName(promptChips.getChips().get(0));
+            business.setResponsibleName(promptChips.getChips().get(4));
+            business.setLinkedEntityName(value);
+            business.setType(fromCall);
+            business.setDate(LocalDateTime.parse(dateString, formatter));
+            System.out.println(business.getDate());
+            business.setStatus("Активно");
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+//        String[] arrStr = {promptChips.getChips().get(0), dateString, "Активно", fromCall, value,
+//                promptChips.getChips().get(4)};
+        JSONObject tempString = Singleton.getInstance().getDataController().AddBusiness(business);
+        if (tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка добавления данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         OnClose();
     }
 

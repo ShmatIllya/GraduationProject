@@ -1,0 +1,43 @@
+.email-field {
+}
+
+.email-field:valid {
+}
+
+.email-field:invalid {
+}
+
+.email-field > .custom-text-field > .left-pane > .mail-icon-wrapper {
+}
+
+.email-field > .custom-text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: #DEDDE4;
+    -fx-border-width: 0px 0px 1px 0px;
+}
+
+.email-field > .custom-text-field > .left-pane > .mail-icon-wrapper > .mail-icon {
+}
+
+.email-field > .custom-text-field > .right-pane > .validation-icon-wrapper {
+    -fx-padding: 2px 5px 2px 0;
+}
+
+.email-field > .custom-text-field > .right-pane > .validation-icon-wrapper > .validation-icon {
+    -fx-min-width: 12px;
+    -fx-max-height: 12px;
+    -fx-background-color: red;
+    /* SVG Source: MaterialDesign/svg/alert.svg [Apache 2.0] */
+    -fx-shape: "M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z";
+}
+
+
+
+.email-field > .custom-text-field > .right-pane > .validation-icon-wrapper > .validation-icon:disabled {
+    -fx-opacity: 1;
+}
+
+.email-field > .custom-text-field:disabled {
+    -fx-opacity: 1;
+}

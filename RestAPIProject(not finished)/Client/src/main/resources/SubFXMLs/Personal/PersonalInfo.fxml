@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.dlsc.gemsfx.EmailField?>
+<?import com.dlsc.gemsfx.PhoneNumberField?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXMasonryPane?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
@@ -11,7 +13,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -19,7 +20,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.PersonalInfoController">
+<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.PersonalInfoController">
    <children>
       <AnchorPane fx:id="AnchorPane" prefHeight="536.0" prefWidth="900.0" styleClass="blue-panel" stylesheets="@../../css/styles.css">
          <children>
@@ -72,12 +73,8 @@
                                     </Label>
                                     <FontAwesomeIcon glyphName="PHONE" layoutX="15.0" layoutY="75.0" size="2em" wrappingWidth="26.228620529174805" />
                                     <FontAwesomeIcon glyphName="ENVELOPE" layoutX="16.0" layoutY="112.0" size="2em" />
-                                    <TextField fx:id="phoneField" editable="false" layoutX="47.0" layoutY="54.0" prefHeight="25.0" prefWidth="256.0" styleClass="tf_box">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </TextField>
-                                    <TextField fx:id="emailField" editable="false" layoutX="47.0" layoutY="91.0" prefHeight="25.0" prefWidth="256.0" styleClass="tf_box" />
+                                    <EmailField fx:id="emailField" disable="true" layoutX="48.0" layoutY="84.0" prefHeight="40.0" prefWidth="255.0" promptText="" styleClass="email-field" stylesheets="@../../css/emailField.css" />
+                                    <PhoneNumberField fx:id="phoneField" disable="true" layoutX="47.0" layoutY="46.0" prefHeight="40.0" prefWidth="257.0" strictMode="true" styleClass="phone-field" stylesheets="@../../css/phoneField.css" />
                                  </children>
                               </Pane>
                            </content>

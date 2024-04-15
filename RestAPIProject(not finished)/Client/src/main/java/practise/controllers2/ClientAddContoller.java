@@ -1,5 +1,8 @@
 package practise.controllers2;
 
+import DTO.ClientDTO;
+import com.dlsc.gemsfx.EmailField;
+import com.dlsc.gemsfx.PhoneNumberField;
 import com.jfoenix.controls.JFXChipView;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.BooleanBinding;
@@ -34,8 +37,8 @@ public class ClientAddContoller implements Initializable  {
     public TextField descriptionField;
     public HBox PlaceChipViewHere;
     public TextField adressField;
-    public TextField phoneField;
-    public TextField emailField;
+    public PhoneNumberField phoneField;
+    public EmailField emailField;
     public TextField nameField;
     public StackPane stackPane;
     JFXChipView<String> chipView = new JFXChipView<String>();
@@ -47,8 +50,8 @@ public class ClientAddContoller implements Initializable  {
         chipView.getStylesheets().add("/css/jfxChipsView.css");
         JSONObject arrStr = new JSONObject();
         try {
-            arrStr.put("operationID", "GetPersonalList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalList(arrStr);
+            arrStr.put("operationID", "GetPersonalObeyList");
+            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
             JSONArray resultSet = tempString.getJSONArray("personalList");
             for (int j = 0; j < resultSet.length(); j++) {
                 personal.add(resultSet.getJSONObject(j).getString("nameSername"));
@@ -71,29 +74,52 @@ public class ClientAddContoller implements Initializable  {
         BooleanBinding submitButtonBinding = new BooleanBinding() {
             {
                 super.bind(nameField.textProperty(),
-                        emailField.textProperty(),
+                        emailField.emailAddressProperty(),
                         chipView.getChips());
             }
 
             @Override
             protected boolean computeValue() {
                 return (nameField.getText().isEmpty()
-                        || emailField.getText().isEmpty()
+                        || emailField.getEmailAddress().isEmpty()
+                        || !emailField.isValid()
                         || chipView.getChips().isEmpty());
             }
         };
+        emailField.setEmailAddress("");
         submitButton.disableProperty().bind(submitButtonBinding);
     }
 
     public void OnSubmitButton() throws IOException, JSONException {
-        JSONObject arrStr = new JSONObject();
-        arrStr.put("operationID", "AddClient");
-        arrStr.put("name", nameField.getText());
-        arrStr.put("email", emailField.getText());
-        arrStr.put("contacts", phoneField.getText());
-        arrStr.put("address", adressField.getText());
-        arrStr.put("description", descriptionField.getText());
-        arrStr.put("responsibleName", chipView.getChips().get(0));
+        ClientDTO arrStr = new ClientDTO();
+        try {
+            arrStr.setName(nameField.getText());
+            arrStr.setEmail(emailField.getEmailAddress());
+            if(phoneField.getPhoneNumber() == null || phoneField.getPhoneNumber().isEmpty()) {
+                arrStr.setPhone("");
+            }
+            else {
+                arrStr.setPhone(phoneField.getPhoneNumber());
+            }
+            if (adressField.getText() == null || adressField.getText().isEmpty()) {
+                arrStr.setAdress("");
+            }
+            else {
+                arrStr.setAdress(adressField.getText());
+            }
+            if (descriptionField.getText() == null || descriptionField.getText().isEmpty()) {
+                arrStr.setDescription("");
+            }
+            else {
+                arrStr.setDescription(descriptionField.getText());
+            }
+            arrStr.setResponsible_name(chipView.getChips().get(0));
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         JSONObject tempString = Singleton.getInstance().getDataController().AddClient(arrStr);
         //String[] resultSet = tempString.split("<<");
         Label MessageLabel = new Label();

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.dlsc.gemsfx.EmailField?>
+<?import com.dlsc.gemsfx.PhoneNumberField?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXMasonryPane?>
@@ -77,17 +79,7 @@
                                           <Font size="20.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="phoneField" editable="false" layoutX="52.0" layoutY="66.0" prefHeight="29.0" prefWidth="243.0" promptText="Отсутствует" styleClass="tf_box">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </TextField>
                                     <FontAwesomeIcon glyphName="PHONE" layoutX="14.0" layoutY="88.0" size="2em" wrappingWidth="19.20001220703125" />
-                                    <TextField fx:id="emailField" editable="false" layoutX="52.0" layoutY="114.0" prefHeight="29.0" prefWidth="243.0" promptText="Отсутствует" styleClass="tf_box">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </TextField>
                                     <FontAwesomeIcon glyphName="ENVELOPE" layoutX="14.0" layoutY="136.0" size="2em" wrappingWidth="19.20001220703125" />
                                     <TextField fx:id="adressField" editable="false" layoutX="52.0" layoutY="170.0" prefHeight="29.0" prefWidth="243.0" promptText="Отсутствует" styleClass="tf_box">
                                        <font>
@@ -95,13 +87,15 @@
                                        </font>
                                     </TextField>
                                     <FontAwesomeIcon glyphName="BUILDING" layoutX="14.0" layoutY="192.0" size="2em" wrappingWidth="19.20001220703125" />
+                                    <EmailField fx:id="emailField" disable="true" layoutX="52.0" layoutY="107.0" prefHeight="40.0" prefWidth="244.0" promptText="Отсутствует" styleClass="email-field" stylesheets="@../../css/emailField.css" />
+                                    <PhoneNumberField fx:id="phoneField" disable="true" layoutX="51.0" layoutY="59.0" prefHeight="40.0" prefWidth="246.0" strictMode="true" styleClass="phone-field" stylesheets="@../../css/phoneField.css" />
                                  </children>
                               </Pane>
                            </content>
                         </ScrollPane>
                         <ScrollPane fitToHeight="true" fitToWidth="true">
                            <content>
-                              <VBox fx:id="taskVBox" prefHeight="44.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
+                              <VBox fx:id="taskVBox" prefHeight="60.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
                                  <children>
                                     <HBox fx:id="primaryTaskHBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="336.0" VBox.vgrow="NEVER">
                                        <children>
@@ -123,9 +117,9 @@
                               </VBox>
                            </content>
                         </ScrollPane>
-                        <ScrollPane fx:id="businessScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="55.0">
+                        <ScrollPane fx:id="businessScrollPane" fitToHeight="true" fitToWidth="true">
                            <content>
-                              <VBox fx:id="businessVBox" prefHeight="44.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
+                              <VBox fx:id="businessVBox" prefHeight="60.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
                                  <children>
                                     <HBox fx:id="primaryBusinessHBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="336.0" VBox.vgrow="NEVER">
                                        <children>
@@ -149,7 +143,7 @@
                         </ScrollPane>
                         <ScrollPane fitToHeight="true" fitToWidth="true">
                            <content>
-                              <VBox fx:id="processVBox" prefHeight="44.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
+                              <VBox fx:id="processVBox" prefHeight="60.0" prefWidth="336.0" styleClass="pane" stylesheets="@../../css/styles.css">
                                  <children>
                                     <HBox fx:id="primaryProcessHBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="336.0" VBox.vgrow="NEVER">
                                        <children>

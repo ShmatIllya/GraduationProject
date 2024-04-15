@@ -1,6 +1,9 @@
 package practise.controllers2;
 
+import DTO.PersonalDTO;
 import Subs.PersonalInfoClass;
+import com.dlsc.gemsfx.EmailField;
+import com.dlsc.gemsfx.PhoneNumberField;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -46,8 +49,8 @@ public class PersonalInfoController implements Initializable {
     public Pane changeAvatarPane;
     public ImageView changeAvatarImage;
     public Label changeAvatarLabel;
-    public TextField phoneField;
-    public TextField emailField;
+    public PhoneNumberField phoneField;
+    public EmailField emailField;
     public TextArea descriptionArea;
     public Pane mouseEventPane;
     boolean onChange = false;
@@ -98,35 +101,42 @@ public class PersonalInfoController implements Initializable {
             //========================================================
             Label messageBox = new Label();
             try {
-
-                JSONObject arrStr = new JSONObject();
-                arrStr.put("operationID", "UpdatePersonalInfo");
-                arrStr.put("login", Singleton.getInstance().getLocalLogin());
-                arrStr.put("contacts", phoneField.getText());
-                arrStr.put("email", emailField.getText());
-                arrStr.put("description", descriptionArea.getText());
-                JSONObject responseJSON = Singleton.getInstance().getDataController().UpdatePersonalInfo(arrStr, sendImage);
-                if (responseJSON.getString("response").equals("null")) {
-                    messageBox.setText("Ошибка сохранения");
+                if (phoneField.getPhoneNumber() != null && !emailField.getEmailAddress().isEmpty() && emailField.isValid()) {
+                    PersonalDTO arrStr = new PersonalDTO();
+                    try {
+                        arrStr.setLogin(Singleton.getInstance().getLocalLogin());
+                        arrStr.setContacts(phoneField.getPhoneNumber());
+                        arrStr.setEmail(emailField.getEmailAddress());
+                        arrStr.setDescription(descriptionArea.getText());
+                    } catch (Exception e) {
+                        messageBox = new Label("Ошибка ввода данных");
+                        Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                        return;
+                    }
+                    JSONObject responseJSON = Singleton.getInstance().getDataController().UpdatePersonalInfo(arrStr, sendImage);
+                    if (responseJSON.getString("response").equals("null")) {
+                        messageBox.setText("Ошибка сохранения");
+                    } else {
+                        messageBox.setText("Успешно сохранено");
+                    }
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
                 } else {
-                    messageBox.setText("Успешно сохранено");
+                    messageBox = new Label("Ошибка ввода данных");
+                    Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
                 }
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
             //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
             onChange = false;
-            phoneField.setEditable(false);
-            emailField.setEditable(false);
+            phoneField.setDisable(true);
+            emailField.setDisable(true);
             descriptionArea.setEditable(false);
             SaveButton.setDisable(true);
             ChangeButton.setDisable(false);
             try {
                 OnReload();
-            }
-            catch (IOException | JSONException e) {
+            } catch (IOException | JSONException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -135,8 +145,8 @@ public class PersonalInfoController implements Initializable {
         ChangeButton.setStyle("-fx-pref-width: 458; -fx-pref-height: 38; -fx-text-fill: white; -fx-font-size: 16px");
         ChangeButton.setOnMouseClicked(mouseEvent -> {
             onChange = true;
-            phoneField.setEditable(true);
-            emailField.setEditable(true);
+            phoneField.setDisable(false);
+            emailField.setDisable(false);
             descriptionArea.setEditable(true);
             SaveButton.setDisable(false);
             ChangeButton.setDisable(true);
@@ -148,7 +158,7 @@ public class PersonalInfoController implements Initializable {
 
         try {
             String nameSername = OnReload();
-            if(Singleton.getInstance().getFinal_NameSername().equals(nameSername)) {
+            if (Singleton.getInstance().getFinal_NameSername().equals(nameSername)) {
                 DashboardController temp = new DashboardController();
                 temp.SetVBoxButtons(buttons);
             }
@@ -160,20 +170,30 @@ public class PersonalInfoController implements Initializable {
     }
 
     public String OnReload() throws IOException, JSONException {
-        JSONObject arrStr = new JSONObject();
-        arrStr.put("operationID", "GetPersonalInfo");
-        arrStr.put("login", Singleton.getInstance().getLocalLogin());
+        PersonalDTO arrStr = new PersonalDTO();
+        try {
+            arrStr.setLogin(Singleton.getInstance().getLocalLogin());
+        } catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return null;
+        }
         //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
         JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
-
-        subroleLabel.setText(tempString.getString("subrole"));
-        phoneField.setText(tempString.getString("contacts"));
-        emailField.setText(tempString.getString("email"));
-        descriptionArea.setText(tempString.getString("description"));
-        workperiodLabel.setText("Работает с " + tempString.getString("regDate"));
-        byte[] imageBytes = Base64.getDecoder().decode(tempString.getString("image"));
-        Image image2 = new Image(new ByteArrayInputStream(imageBytes));
-        avatarImage.setImage(image2);
-        return tempString.getString("nameSername");
+        if (tempString.getString("response").equals("null")) {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return null;
+        } else {
+            subroleLabel.setText(tempString.getString("subrole"));
+            phoneField.setPhoneNumber(tempString.getString("contacts"));
+            emailField.setEmailAddress(tempString.getString("email"));
+            descriptionArea.setText(tempString.getString("description"));
+            workperiodLabel.setText("Работает с " + tempString.getString("regDate"));
+            byte[] imageBytes = Base64.getDecoder().decode(tempString.getString("image"));
+            Image image2 = new Image(new ByteArrayInputStream(imageBytes));
+            avatarImage.setImage(image2);
+            return tempString.getString("nameSername");
+        }
     }
 }

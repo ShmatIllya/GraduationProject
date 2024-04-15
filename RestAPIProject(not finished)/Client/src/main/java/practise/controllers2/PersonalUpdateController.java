@@ -1,5 +1,8 @@
 package practise.controllers2;
 
+import DTO.PersonalDTO;
+import com.dlsc.gemsfx.EmailField;
+import com.dlsc.gemsfx.PhoneNumberField;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.BooleanBinding;
@@ -19,8 +22,8 @@ public class PersonalUpdateController {
     public TextField sernameField;
     public TextField nameField;
     public TextField otchestvoField;
-    public TextField emailField;
-    public TextField phoneField;
+    public EmailField emailField;
+    public PhoneNumberField phoneField;
     public TextField subroleField;
     public ToggleGroup role;
     public JFXComboBox statusComboBox;
@@ -33,8 +36,8 @@ public class PersonalUpdateController {
         sernameField.setText(sername);
         nameField.setText(name);
         otchestvoField.setText(otchestvo);
-        emailField.setText(email);
-        phoneField.setText(phone);
+        emailField.setEmailAddress(email);
+        phoneField.setPhoneNumber(phone);
         subroleField.setText(subrole);
         ObservableList<String> list = FXCollections.observableArrayList("Активен", "Отпуск", "Уволен", "Приостановлен");
         statusComboBox.setItems(list);
@@ -45,13 +48,14 @@ public class PersonalUpdateController {
         BooleanBinding submitButtonBinding = new BooleanBinding() {
             {
                 super.bind(subroleField.textProperty(),
-                        emailField.textProperty());
+                        emailField.emailAddressProperty());
             }
 
             @Override
             protected boolean computeValue() {
                 return (subroleField.getText().isEmpty()
-                        || emailField.getText().isEmpty());
+                        || emailField.getEmailAddress().isEmpty())
+                        || !emailField.isValid();
             }
         };
         submitButton.disableProperty().bind(submitButtonBinding);
@@ -71,15 +75,26 @@ public class PersonalUpdateController {
                 break;
             }
         }
-        JSONObject arrStr = new JSONObject();
-        arrStr.put("nameSername", Singleton.getInstance().getFinal_NameSername());
-        arrStr.put("login", loginField.getText());
-        arrStr.put("contacts", phoneField.getText());
-        arrStr.put("email", emailField.getText());
-        arrStr.put("role", roleS);
-        arrStr.put("subrole", subroleField.getText());
-        arrStr.put("status", statusComboBox.getSelectionModel().getSelectedItem().toString());
-        arrStr.put("operationID", "UpdatePersonalInfoAsManager");
+        PersonalDTO arrStr = new PersonalDTO();
+        try {
+            arrStr.setNameSername(Singleton.getInstance().getFinal_NameSername());
+            arrStr.setLogin(loginField.getText());
+            if(phoneField.getPhoneNumber() == null) {
+                arrStr.setContacts("");
+            }
+            else {
+                arrStr.setContacts(phoneField.getPhoneNumber());
+            }
+            arrStr.setEmail(emailField.getEmailAddress());
+            arrStr.setRole(roleS);
+            arrStr.setSubrole(subroleField.getText());
+            arrStr.setStatus(statusComboBox.getSelectionModel().getSelectedItem().toString());
+        }
+        catch (Exception e) {
+            Label messageBox = new Label("Ошибка ввода данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
         JSONObject tempString = Singleton.getInstance().getDataController().UpdatePersonalInfoAsManager(arrStr);
         Label MessageLabel = new Label();
         if(tempString.getString("response").equals("null")) {

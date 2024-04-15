@@ -12,7 +12,7 @@
 
 <AnchorPane fx:id="AnchorPane" prefHeight="536.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practise.controllers2.Tasks.TasksController">
    <children>
-      <StackPane prefHeight="536.0" prefWidth="900.0" style="-fx-background-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StackPane fx:id="stackPane" prefHeight="536.0" prefWidth="900.0" style="-fx-background-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <AnchorPane styleClass="blue-panel" stylesheets="@../../css/styles.css">
                <children>
