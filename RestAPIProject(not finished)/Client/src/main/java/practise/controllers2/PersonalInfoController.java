@@ -179,21 +179,19 @@ public class PersonalInfoController implements Initializable {
             return null;
         }
         //PersonalInfoClass tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
-        JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
-        if (tempString.getString("response").equals("null")) {
+        PersonalDTO tempString = Singleton.getInstance().getDataController().GetPersonalInfo(arrStr);
+        if (tempString == null) {
             Label messageBox = new Label("Ошибка получения данных");
             Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
             return null;
         } else {
-            subroleLabel.setText(tempString.getString("subrole"));
-            phoneField.setPhoneNumber(tempString.getString("contacts"));
-            emailField.setEmailAddress(tempString.getString("email"));
-            descriptionArea.setText(tempString.getString("description"));
-            workperiodLabel.setText("Работает с " + tempString.getString("regDate"));
-            byte[] imageBytes = Base64.getDecoder().decode(tempString.getString("image"));
-            Image image2 = new Image(new ByteArrayInputStream(imageBytes));
-            avatarImage.setImage(image2);
-            return tempString.getString("nameSername");
+            subroleLabel.setText(tempString.getSubrole());
+            phoneField.setPhoneNumber(tempString.getContacts());
+            emailField.setEmailAddress(tempString.getEmail());
+            descriptionArea.setText(tempString.getDescription());
+            workperiodLabel.setText("Работает с " + tempString.getRegDate());
+            avatarImage.setImage(new Image(tempString.getAvatarImage()));
+            return tempString.getNameSername();
         }
     }
 }

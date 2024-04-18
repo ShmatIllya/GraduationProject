@@ -1,5 +1,6 @@
 package practise.controllers2.Tasks;
 
+import DTO.PersonalDTO;
 import DTO.TaskDTO;
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXComboBox;
@@ -54,11 +55,15 @@ public class TaskAddController implements Initializable {
             List<String> personal = new ArrayList<>();
             JSONObject arrStr = new JSONObject();
             arrStr.put("operationID", "GetPersonalObeyList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("personalList");
-            for (int i = 0; i < resultSet.length(); i++) {
+            ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO personalDTO: tempString) {
                 try {
-                    personal.add(resultSet.getJSONObject(i).getString("nameSername"));
+                    personal.add(personalDTO.getNameSername());
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -71,10 +76,14 @@ public class TaskAddController implements Initializable {
             JSONObject arrStr2 = new JSONObject();
             arrStr2.put("operationID", "GetPersonalControlList");
             tempString = Singleton.getInstance().getDataController().GetPersonalControlList(arrStr2);
-            resultSet = tempString.getJSONArray("personalList");
-            for (int i = 0; i < resultSet.length(); i++) {
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO personalDTO: tempString) {
                 try {
-                    personal.add(resultSet.getJSONObject(i).getString("nameSername"));
+                    personal.add(personalDTO.getNameSername());
                 } catch (Exception e) {
                     System.out.println(e);
                 }

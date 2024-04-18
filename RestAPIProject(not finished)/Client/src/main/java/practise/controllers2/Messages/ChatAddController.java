@@ -1,6 +1,7 @@
 package practise.controllers2.Messages;
 
 import DTO.ChatDTO;
+import DTO.PersonalDTO;
 import com.dlsc.gemsfx.PhotoView;
 import com.jfoenix.controls.JFXChipView;
 import javafx.animation.FadeTransition;
@@ -44,10 +45,14 @@ public class ChatAddController implements Initializable {
 
             JSONObject arrStr = new JSONObject();
             arrStr.put("operationID", "GetPersonalList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("personalList");
-            for (int j = 0; j < resultSet.length(); j++) {
-                resultSubSet.add(resultSet.getJSONObject(j).getString("nameSername"));
+            ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalList(arrStr);
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO pers: tempString) {
+                resultSubSet.add(pers.getNameSername());
             }
         }
         catch (JSONException e) {

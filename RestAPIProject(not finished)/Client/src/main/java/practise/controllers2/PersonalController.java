@@ -258,18 +258,22 @@ public class PersonalController implements Initializable {
         try {
             JSONObject arrStr = new JSONObject();
             arrStr.put("operationID", "GetPersonalList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("personalList");
-            for (int j = 0; j < resultSet.length(); j++) {
+            ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalList(arrStr);
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO pers: tempString) {
                 try {
                     observableList.add(new PersonalItems(
-                            resultSet.getJSONObject(j).getString("nameSername"),
-                            resultSet.getJSONObject(j).getString("contacts"),
-                            resultSet.getJSONObject(j).getString("email"),
-                            resultSet.getJSONObject(j).getString("subrole"),
-                            resultSet.getJSONObject(j).getString("status"),
-                            resultSet.getJSONObject(j).getString("login"),
-                            resultSet.getJSONObject(j).getString("password")
+                            pers.getNameSername(),
+                            pers.getContacts(),
+                            pers.getEmail(),
+                            pers.getSubrole(),
+                            pers.getStatus(),
+                            pers.getLogin(),
+                            pers.getPassword()
                     ));
                 } catch (Exception e) {
                     throw new RuntimeException(e);

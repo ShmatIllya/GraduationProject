@@ -1,5 +1,6 @@
 package practise.controllers2.Projects;
 
+import DTO.PersonalDTO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
@@ -178,11 +179,15 @@ public class ProjectInfoController implements Initializable {
             ObservableList<String> comboList = FXCollections.observableArrayList();
             JSONObject arrStr = new JSONObject();
             arrStr.put("operationID", "GetPersonalControlList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalControlList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("personalList");
-            for (int i = 0; i < resultSet.length(); i++) {
+            ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalControlList(arrStr);
+            if (tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO personalDTO: tempString) {
                 try {
-                    comboList.add(resultSet.getJSONObject(i).getString("nameSername"));
+                    comboList.add(personalDTO.getNameSername());
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -206,11 +211,15 @@ public class ProjectInfoController implements Initializable {
             ObservableList<String> comboList = FXCollections.observableArrayList();
             JSONObject arrStrControl = new JSONObject();
             arrStrControl.put("operationID", "GetPersonalControlList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalControlList(arrStrControl);
-            JSONArray resultSet = tempString.getJSONArray("personalList");
-            for (int i = 0; i < resultSet.length(); i++) {
+            ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalControlList(arrStrControl);
+            if (tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO personalDTO: tempString) {
                 try {
-                    comboList.add(resultSet.getJSONObject(i).getString("nameSername"));
+                    comboList.add(personalDTO.getNameSername());
                 } catch (Exception e) {
                     System.out.println(e);
                 }

@@ -3,6 +3,8 @@ package DTO;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 
+import java.awt.*;
+import java.io.ByteArrayInputStream;
 import java.sql.Date;
 
 public class PersonalDTO {
@@ -30,6 +32,16 @@ public class PersonalDTO {
     public Date regDate;
 
     public String imageName;
+
+    public ByteArrayInputStream avatarImage;
+
+    public ByteArrayInputStream getAvatarImage() {
+        return avatarImage;
+    }
+
+    public void setAvatarImage(ByteArrayInputStream avatarImage) {
+        this.avatarImage = avatarImage;
+    }
 
     public int getPersonalId() {
         return personalId;

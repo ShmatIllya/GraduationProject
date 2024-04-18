@@ -30,6 +30,7 @@ import practise.singleton.Singleton;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
@@ -183,16 +184,20 @@ public class ClientController implements Initializable {
         ObservableList<ClientsItems> observableList = FXCollections.observableArrayList();
         JSONObject arrStr = new JSONObject();
         arrStr.put("operationID", "GetClientsList");
-        JSONObject tempString = Singleton.getInstance().getDataController().GetClientsList(arrStr);
-        JSONArray resultSet = tempString.getJSONArray("clientList");
-        for(int i = 0; i < resultSet.length(); i++) {
+        ArrayList<ClientDTO> tempString = Singleton.getInstance().getDataController().GetClientsList(arrStr);
+        if(tempString == null) {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        for(ClientDTO client: tempString) {
 
             try {
                 observableList.add(new ClientsItems(
-                        resultSet.getJSONObject(i).getString("name"),
-                        resultSet.getJSONObject(i).getString("type"),
-                        resultSet.getJSONObject(i).getString("responsibleName"),
-                        resultSet.getJSONObject(i).getInt("id")));
+                        client.getName(),
+                        client.getType(),
+                        client.getResponsible_name(),
+                        client.getClientsId()));
             }
             catch (Exception e) {
                 System.out.println(e);

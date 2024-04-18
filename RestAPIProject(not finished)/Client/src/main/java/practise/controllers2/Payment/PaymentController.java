@@ -1,5 +1,6 @@
 package practise.controllers2.Payment;
 
+import DTO.PaymentDTO;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
@@ -38,6 +39,7 @@ import practise.singleton.Singleton;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
@@ -163,16 +165,15 @@ public class PaymentController implements Initializable {
     public void OnReload() throws JSONException {
         ObservableList<PaymentItems> observableList = FXCollections.observableArrayList();
         JSONObject arrStr = new JSONObject();
-        JSONObject tempString = Singleton.getInstance().getDataController().GetPaymentList(arrStr);
-        if (!tempString.getString("response").equals("null")) {
-            JSONArray resultSet = tempString.getJSONArray("paymentList");
-            for (int i = 0; i < resultSet.length(); i++) {
+        ArrayList<PaymentDTO> tempString = Singleton.getInstance().getDataController().GetPaymentList(arrStr);
+        if (tempString != null) {
+            for (PaymentDTO paymentDTO: tempString) {
                 try {
-                    observableList.add(new PaymentItems(Integer.valueOf(resultSet.getJSONObject(i).getString("id")),
-                            resultSet.getJSONObject(i).getString("deadline"),
-                            Integer.valueOf(resultSet.getJSONObject(i).getString("finalPrice")),
-                            resultSet.getJSONObject(i).getString("paymenterName"),
-                            resultSet.getJSONObject(i).getString("status")));
+                    observableList.add(new PaymentItems(Integer.valueOf(paymentDTO.getPaymentId()),
+                            paymentDTO.getDeadline().toString(),
+                            paymentDTO.getFinalPrice(),
+                            paymentDTO.getPaymenterName(),
+                            paymentDTO.getStatus()));
                 } catch (Exception e) {
                     return;
                 }

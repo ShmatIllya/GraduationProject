@@ -1,6 +1,7 @@
 package practise.controllers2;
 
 import DTO.ClientDTO;
+import DTO.PersonalDTO;
 import com.dlsc.gemsfx.EmailField;
 import com.dlsc.gemsfx.PhoneNumberField;
 import com.jfoenix.controls.JFXChipView;
@@ -51,10 +52,14 @@ public class ClientAddContoller implements Initializable  {
         JSONObject arrStr = new JSONObject();
         try {
             arrStr.put("operationID", "GetPersonalObeyList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("personalList");
-            for (int j = 0; j < resultSet.length(); j++) {
-                personal.add(resultSet.getJSONObject(j).getString("nameSername"));
+            ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO personalDTO: tempString) {
+                personal.add(personalDTO.getNameSername());
             }
         }
         catch (JSONException e) {

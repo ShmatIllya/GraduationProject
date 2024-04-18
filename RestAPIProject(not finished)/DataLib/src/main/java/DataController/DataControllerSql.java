@@ -158,32 +158,29 @@ public class DataControllerSql implements IDataController {
         return s_res;
     }
 
-    public JSONObject GetPersonalList(JSONObject arrStr) throws JSONException {
-        s_res = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
+    public ArrayList<PersonalDTO> GetPersonalList(JSONObject arrStr) throws JSONException {
+        ArrayList<PersonalDTO> personalArray = new ArrayList<>();
         transaction.begin();
         TypedQuery<PersonalEntity> q = entityManager.createQuery("SELECT e from PersonalEntity e", PersonalEntity.class);
         try {
             List<PersonalEntity> list = q.getResultList();
             for (PersonalEntity personal : list) {
-                s_res.put("nameSername", personal.getNameSername());
-                s_res.put("contacts", personal.getContacts());
-                s_res.put("email", personal.getEmail());
-                s_res.put("subrole", personal.getSubrole());
-                s_res.put("status", personal.getStatus());
-                s_res.put("login", personal.getLogin());
-                s_res.put("password", personal.getPassword());
-                jsonArray.put(s_res);
-                s_res = new JSONObject();
+                PersonalDTO pers = new PersonalDTO();
+                pers.setNameSername(personal.getNameSername());
+                pers.setContacts(personal.getContacts());
+                pers.setEmail(personal.getEmail());
+                pers.setSubrole(personal.getSubrole());
+                pers.setStatus(personal.getStatus());
+                pers.setLogin(personal.getLogin());
+                pers.setPassword(personal.getPassword());
+                personalArray.add(pers);
             }
-            s_res.put("response", "okay");
-            s_res.put("personalList", jsonArray);
         } catch (Exception e) {
-            s_res.put("response", "null");
+            return null;
         }
         transaction.commit();
         entityManager.clear();
-        return s_res;
+        return personalArray;
     }
 
     public JSONObject AddPersonal(PersonalDTO arrStr) throws JSONException{
@@ -222,39 +219,36 @@ public class DataControllerSql implements IDataController {
         return s_res;
     }
 
-    public JSONObject GetPersonalInfo(PersonalDTO arrStr) throws JSONException{
+    public PersonalDTO GetPersonalInfo(PersonalDTO arrStr) throws JSONException{
         transaction.begin();
         s_res = new JSONObject();
-        PersonalInfoClass personalInfo = null;
+        PersonalDTO personalInfo = new PersonalDTO();
         try {
             TypedQuery<PersonalEntity> query = entityManager.createQuery("SELECT e FROM PersonalEntity e where e.login =:login", PersonalEntity.class);
             query.setParameter("login", arrStr.getLogin());
             PersonalEntity resultPersonal = null;
             resultPersonal = query.getSingleResult();
-            JSONObject infoS = new JSONObject();
-            infoS.put("login", resultPersonal.getLogin());
-            infoS.put("password", resultPersonal.getPassword());
-            infoS.put("nameSername", resultPersonal.getNameSername());
-            infoS.put("contacts", resultPersonal.getContacts());
-            infoS.put("email", resultPersonal.getEmail());
-            infoS.put("role", resultPersonal.getRole());
-            infoS.put("subrole", resultPersonal.getSubrole());
-            infoS.put("status", resultPersonal.getStatus());
-            infoS.put("description", resultPersonal.getDescription());
-            infoS.put("regDate", resultPersonal.getRegDate());
+            personalInfo.setLogin(resultPersonal.getLogin());
+            personalInfo.setPassword(resultPersonal.getPassword());
+            personalInfo.setNameSername(resultPersonal.getNameSername());
+            personalInfo.setContacts(resultPersonal.getContacts());
+            personalInfo.setEmail(resultPersonal.getEmail());
+            personalInfo.setRole(resultPersonal.getRole());
+            personalInfo.setSubrole(resultPersonal.getSubrole());
+            personalInfo.setStatus(resultPersonal.getStatus());
+            personalInfo.setDescription(resultPersonal.getDescription());
+            personalInfo.setRegDate(resultPersonal.getRegDate());
             File image = new File(getClass().getResource("/images/" + resultPersonal.getImageName()).getFile());
             //File image = new File("D:\\FCP\\SEM7\\CURS\\Project\\DataLib\\src\\main\\resources\\images\\1.png");
-            s_res = infoS;
-            s_res.put("response", "okay");
             globalImage = image;
         }
         catch (Exception e) {
-            s_res.put("response", "null");
             System.out.println(e);
+            return null;
         }
         transaction.commit();
         entityManager.clear();
-        return s_res;
+        return personalInfo;
     }
 
     public JSONObject UpdatePersonalInfo(PersonalDTO arrStr, BufferedImage image) throws JSONException{
@@ -347,32 +341,29 @@ public class DataControllerSql implements IDataController {
         return s_res;
     }
 
-    public JSONObject GetClientsList(JSONObject arrStr) throws JSONException {
+    public ArrayList<ClientDTO> GetClientsList(JSONObject arrStr) throws JSONException {
+        ArrayList<ClientDTO> clientArray = new ArrayList<>();
         try {
-            s_res = new JSONObject();
-            JSONArray jsonArray = new JSONArray();
             transaction.begin();
             //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             TypedQuery<ClientsEntity> query = entityManager.createQuery("SELECT e FROM ClientsEntity e", ClientsEntity.class);
             List<ClientsEntity> clientsList = new ArrayList<ClientsEntity>();
             clientsList = query.getResultList();
             for (ClientsEntity client : clientsList) {
-                JSONObject singleClient = new JSONObject();
-                singleClient.put("name", client.getName());
-                singleClient.put("type", client.getType());
-                singleClient.put("id", client.getClientsId());
-                singleClient.put("responsibleName", client.getPersonalByResponsableId().getNameSername());
-                jsonArray.put(singleClient);
+                ClientDTO singleClient = new ClientDTO();
+                singleClient.setName(client.getName());
+                singleClient.setType(client.getType());
+                singleClient.setClientsId(client.getClientsId());
+                singleClient.setResponsible_name(client.getPersonalByResponsableId().getNameSername());
+                clientArray.add(singleClient);
             }
-            s_res.put("clientList", jsonArray);
-            s_res.put("response", "okay");
         } catch (Exception e) {
-            s_res.put("response", "null");
-            throw new RuntimeException(e);
+            System.out.println(e);
+            return null;
         }
         transaction.commit();
         entityManager.clear();
-        return s_res;
+        return clientArray;
     }
 
     public JSONObject GetClientInfo(ClientDTO arrStr) throws JSONException {
@@ -383,6 +374,16 @@ public class DataControllerSql implements IDataController {
             query.setParameter("id", arrStr.getClientsId());
             ClientsEntity client = new ClientsEntity();
             client = query.getSingleResult();
+//            ClientDTO clientDTO = new ClientDTO();
+//            clientDTO.setName(client.getName());
+//            clientDTO.setResponsible_name(client.getPersonalByResponsableId().getNameSername());
+//            clientDTO.setPhone(client.getPhone());
+//            clientDTO.setEmail(client.getEmail());
+//            clientDTO.setAdress(client.getAdress());
+//            clientDTO.setDescription(client.getDescription());
+//            clientDTO.setType(client.getType());
+//            clientDTO.setWork_type(client.getWork_type());
+//            clientDTO.setReg_date(client.getReg_date());
             s_res.put("name", client.getName());
             s_res.put("responsibleName", client.getPersonalByResponsableId().getNameSername());
             s_res.put("contacts", client.getPhone());
@@ -536,34 +537,31 @@ public class DataControllerSql implements IDataController {
         return s_res;
     }
 
-    public JSONObject GetPaymentList(JSONObject arrStr) throws JSONException {
+    public ArrayList<PaymentDTO> GetPaymentList(JSONObject arrStr) throws JSONException {
+        ArrayList<PaymentDTO> paymentArray = new ArrayList<>();
         try {
-            s_res = new JSONObject();
             transaction.begin();
             //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             TypedQuery<PaymentsEntity> query = entityManager.createQuery("SELECT e FROM PaymentsEntity e", PaymentsEntity.class);
             List<PaymentsEntity> paymentsList = new ArrayList<PaymentsEntity>();
             paymentsList = query.getResultList();
-            JSONArray paymentArray = new JSONArray();
             for (PaymentsEntity payment : paymentsList) {
-                JSONObject paymentJSON = new JSONObject();
-                paymentJSON.put("id", payment.getPaymentId());
-                paymentJSON.put("deadline", payment.getDeadline());
-                paymentJSON.put("finalPrice", payment.getFinalPrice());
-                paymentJSON.put("paymenterName", payment.getClientsByPaymenterId().getName());
-                paymentJSON.put("status", payment.getStatus());
-                paymentJSON.put("paymenterID", payment.getPaymenterId());
-                paymentArray.put(paymentJSON);
+                PaymentDTO paymentDTO = new PaymentDTO();
+                paymentDTO.setPaymentId(payment.getPaymentId());
+                paymentDTO.setDeadline(payment.getDeadline());
+                paymentDTO.setFinalPrice(payment.getFinalPrice());
+                paymentDTO.setPaymenterName(payment.getClientsByPaymenterId().getName());
+                paymentDTO.setStatus(payment.getStatus());
+                paymentDTO.setPaymenterId(payment.getPaymenterId());
+                paymentArray.add(paymentDTO);
             }
-            s_res.put("paymentList", paymentArray);
-            s_res.put("response", "okay");
         } catch (Exception e) {
-            s_res.put("response", "null");
-            throw new RuntimeException(e);
+            System.out.println(e);
+            return null;
         }
         transaction.commit();
         entityManager.clear();
-        return s_res;
+        return paymentArray;
     }
 
     public JSONObject AddPayment(PaymentDTO arrStr) throws JSONException{
@@ -792,61 +790,57 @@ public class DataControllerSql implements IDataController {
         return s_res;
     }
 
-    public JSONObject GetPersonalObeyList(JSONObject arrStr) throws JSONException{
-        s_res = new JSONObject();
+    public ArrayList<PersonalDTO> GetPersonalObeyList(JSONObject arrStr) throws JSONException{
         transaction.begin();
         TypedQuery<PersonalEntity> q = entityManager.createQuery("SELECT e from PersonalEntity e where e.role = 'obey'", PersonalEntity.class);
+        ArrayList<PersonalDTO> personalArray = new ArrayList<>();
         try {
-            JSONArray personalArray = new JSONArray();
             List<PersonalEntity> list = q.getResultList();
             for (PersonalEntity personal : list) {
-                JSONObject personalJSON = new JSONObject();
-                personalJSON.put("nameSername", personal.getNameSername());
-                personalJSON.put("contacts", personal.getContacts());
-                personalJSON.put("email", personal.getEmail());
-                personalJSON.put("subrole", personal.getSubrole());
-                personalJSON.put("status", personal.getStatus());
-                personalJSON.put("login", personal.getLogin());
-                personalJSON.put("password", personal.getPassword());
-                personalArray.put(personalJSON);
+                PersonalDTO personalDTO = new PersonalDTO();
+                personalDTO.setNameSername(personal.getNameSername());
+                personalDTO.setContacts(personal.getContacts());
+                personalDTO.setEmail(personal.getEmail());
+                personalDTO.setSubrole(personal.getSubrole());
+                personalDTO.setStatus(personal.getStatus());
+                personalDTO.setLogin(personal.getLogin());
+                personalDTO.setPassword(personal.getPassword());
+                personalArray.add(personalDTO);
             }
-            s_res.put("personalList", personalArray);
-            s_res.put("response", "okay");
         } catch (Exception e) {
-            s_res.put("response", "null");
+            System.out.println(e);
+            return null;
         }
         transaction.commit();
         entityManager.clear();
-        return s_res;
+        return personalArray;
     }
 
-    public JSONObject GetPersonalControlList(JSONObject arrStr) throws JSONException {
-        s_res = new JSONObject();
+    public ArrayList<PersonalDTO> GetPersonalControlList(JSONObject arrStr) throws JSONException {
         transaction.begin();
+        ArrayList<PersonalDTO> personalArray = new ArrayList<>();
         TypedQuery<PersonalEntity> q = entityManager.createQuery("SELECT e from PersonalEntity e where e.role = 'control'", PersonalEntity.class);
         try {
-            JSONArray personalArray = new JSONArray();
             List<PersonalEntity> list = q.getResultList();
             for (PersonalEntity personal : list) {
-                JSONObject personalJSON = new JSONObject();
-                personalJSON.put("nameSername", personal.getNameSername());
-                personalJSON.put("contacts", personal.getContacts());
-                personalJSON.put("email", personal.getEmail());
-                personalJSON.put("subrole", personal.getSubrole());
-                personalJSON.put("status", personal.getStatus());
-                personalJSON.put("login", personal.getLogin());
-                personalJSON.put("password", personal.getPassword());
-                personalArray.put(personalJSON);
+                PersonalDTO personalDTO = new PersonalDTO();
+                personalDTO.setNameSername(personal.getNameSername());
+                personalDTO.setContacts(personal.getContacts());
+                personalDTO.setEmail(personal.getEmail());
+                personalDTO.setSubrole(personal.getSubrole());
+                personalDTO.setStatus(personal.getStatus());
+                personalDTO.setLogin(personal.getLogin());
+                personalDTO.setPassword(personal.getPassword());
+                personalArray.add(personalDTO);
             }
-            s_res.put("personalList", personalArray);
-            s_res.put("response", "okay");
         } catch (Exception e) {
-            s_res.put("response", "null");
+            System.out.println(e);
+            return null;
         }
 
         transaction.commit();
         entityManager.clear();
-        return s_res;
+        return personalArray;
     }
 
     public JSONObject AddTask(TaskDTO arrStr) throws JSONException {

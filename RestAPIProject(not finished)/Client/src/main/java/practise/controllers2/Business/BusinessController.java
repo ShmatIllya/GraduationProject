@@ -1,6 +1,7 @@
 package practise.controllers2.Business;
 
 import DTO.BusinessDTO;
+import DTO.PersonalDTO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXChipView;
 import javafx.animation.FadeTransition;
@@ -61,11 +62,15 @@ public class BusinessController {
         List<String> personal = new ArrayList<>();
         JSONObject arrStr = new JSONObject();
         arrStr.put("operationID", "GetPersonalList");
-        JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalList(arrStr);
-        JSONArray resultSet = tempString.getJSONArray("personalList");
-        for (int j = 0; j < resultSet.length(); j++) {
+        ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalList(arrStr);
+        if(tempString == null) {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        for (PersonalDTO pers: tempString) {
             try {
-                personal.add(resultSet.getJSONObject(j).getString("nameSername"));
+                personal.add(pers.getNameSername());
             }
             catch (Exception e) {
                 System.out.println(e);

@@ -887,7 +887,24 @@ public class WebHandl implements HttpHandler {
     public JSONObject GetPersonalInfo(JSONObject arrStr) throws JSONException {
         PersonalDTO personal = new PersonalDTO();
         personal.setLogin(arrStr.getString("login"));
-        return DataController.GetPersonalInfo(personal);
+        personal = DataController.GetPersonalInfo(personal);
+        JSONObject personalJSON = new JSONObject();
+        if(personal == null) {
+            personalJSON.put("response", "null");
+            return personalJSON;
+        }
+        personalJSON.put("login", personal.getLogin());
+        personalJSON.put("password", personal.getPassword());
+        personalJSON.put("nameSername", personal.getNameSername());
+        personalJSON.put("contacts", personal.getContacts());
+        personalJSON.put("email", personal.getEmail());
+        personalJSON.put("role", personal.getRole());
+        personalJSON.put("subrole", personal.getSubrole());
+        personalJSON.put("status", personal.getStatus());
+        personalJSON.put("description", personal.getDescription());
+        personalJSON.put("regDate", personal.getRegDate());
+        personalJSON.put("response", "okay");
+        return personalJSON;
     }
 
     public File GetPersonalImage() {
@@ -901,7 +918,27 @@ public class WebHandl implements HttpHandler {
     public List<String> GetNameSernameList() { return DataController.GetNameSernameList();}
 
     public JSONObject GetPersonalList(JSONObject arrStr) throws JSONException {
-        return DataController.GetPersonalList(arrStr);
+        ArrayList<PersonalDTO> resList =  DataController.GetPersonalList(arrStr);
+        JSONObject resJSON = new JSONObject();
+        if(resList == null) {
+            resJSON.put("response", "null");
+            return  resJSON;
+        }
+        JSONArray resJSONArray = new JSONArray();
+        for (PersonalDTO personal: resList) {
+            resJSON.put("nameSername", personal.getNameSername());
+            resJSON.put("contacts", personal.getContacts());
+            resJSON.put("email", personal.getEmail());
+            resJSON.put("subrole", personal.getSubrole());
+            resJSON.put("status", personal.getStatus());
+            resJSON.put("login", personal.getLogin());
+            resJSON.put("password", personal.getPassword());
+            resJSONArray.put(resJSON);
+            resJSON = new JSONObject();
+        }
+        resJSON.put("personalList", resJSONArray);
+        resJSON.put("response", "okay");
+        return resJSON;
     }
 
     public JSONObject UpdatePersonalInfoAsManager(JSONObject arrStr) throws JSONException {
@@ -916,7 +953,24 @@ public class WebHandl implements HttpHandler {
     }
 
     public JSONObject GetClientsList(JSONObject arrStr) throws JSONException {
-        return DataController.GetClientsList(arrStr);
+        ArrayList<ClientDTO> clientArray = DataController.GetClientsList(arrStr);
+        JSONObject resClient = new JSONObject();
+        if(clientArray == null) {
+            resClient.put("response", "null");
+            return resClient;
+        }
+        JSONArray clientJSONArray = new JSONArray();
+        for(ClientDTO client: clientArray) {
+            resClient.put("name", client.getName());
+            resClient.put("type", client.getType());
+            resClient.put("id", client.getClientsId());
+            resClient.put("responsibleName", client.getResponsible_name());
+            clientJSONArray.put(resClient);
+            resClient = new JSONObject();
+        }
+        resClient.put("clientList", clientJSONArray);
+        resClient.put("response", "okay");
+        return resClient;
     }
 
     public JSONObject GetClientInfo(JSONObject arrStr) throws JSONException {
@@ -956,7 +1010,26 @@ public class WebHandl implements HttpHandler {
     }
 
     public JSONObject GetPaymentList(JSONObject arrStr) throws JSONException {
-        return DataController.GetPaymentList(arrStr);
+        ArrayList<PaymentDTO> paymentArray = DataController.GetPaymentList(arrStr);
+        JSONObject resJSON = new JSONObject();
+        if(paymentArray == null) {
+            resJSON.put("response", "null");
+            return resJSON;
+        }
+        JSONArray paymentJSONArray = new JSONArray();
+        for (PaymentDTO payment: paymentArray) {
+            resJSON.put("id", payment.getPaymentId());
+            resJSON.put("deadline", payment.getDeadline());
+            resJSON.put("finalPrice", payment.getFinalPrice());
+            resJSON.put("paymenterName", payment.getPaymenterName());
+            resJSON.put("status", payment.getStatus());
+            resJSON.put("paymenterID", payment.getPaymenterId());
+            paymentJSONArray.put(resJSON);
+            resJSON = new JSONObject();
+        }
+        resJSON.put("paymentList", paymentJSONArray);
+        resJSON.put("response", "okay");
+        return resJSON;
     }
 
     public JSONObject GetItemsList(JSONObject arrStr) throws JSONException {
@@ -1019,11 +1092,51 @@ public class WebHandl implements HttpHandler {
     }
 
     public JSONObject GetPersonalObeyList(JSONObject arrStr) throws JSONException {
-        return DataController.GetPersonalObeyList(arrStr);
+        ArrayList<PersonalDTO> personalList = DataController.GetPersonalObeyList(arrStr);
+        JSONObject resJSON = new JSONObject();
+        if(personalList == null) {
+            resJSON.put("response", "null");
+            return resJSON;
+        }
+        JSONArray personalJSONArray = new JSONArray();
+        for (PersonalDTO personal: personalList) {
+            resJSON.put("nameSername", personal.getNameSername());
+            resJSON.put("contacts", personal.getContacts());
+            resJSON.put("email", personal.getEmail());
+            resJSON.put("subrole", personal.getSubrole());
+            resJSON.put("status", personal.getStatus());
+            resJSON.put("login", personal.getLogin());
+            resJSON.put("password", personal.getPassword());
+            personalJSONArray.put(resJSON);
+            resJSON = new JSONObject();
+        }
+        resJSON.put("personalList", personalJSONArray);
+        resJSON.put("response", "okay");
+        return resJSON;
     }
 
     public JSONObject GetPersonalControlList(JSONObject arrStr) throws JSONException {
-        return DataController.GetPersonalControlList(arrStr);
+        ArrayList<PersonalDTO> personalList = DataController.GetPersonalControlList(arrStr);
+        JSONObject resJSON = new JSONObject();
+        if(personalList == null) {
+            resJSON.put("response", "null");
+            return resJSON;
+        }
+        JSONArray personalJSONArray = new JSONArray();
+        for (PersonalDTO personal: personalList) {
+            resJSON.put("nameSername", personal.getNameSername());
+            resJSON.put("contacts", personal.getContacts());
+            resJSON.put("email", personal.getEmail());
+            resJSON.put("subrole", personal.getSubrole());
+            resJSON.put("status", personal.getStatus());
+            resJSON.put("login", personal.getLogin());
+            resJSON.put("password", personal.getPassword());
+            personalJSONArray.put(resJSON);
+            resJSON = new JSONObject();
+        }
+        resJSON.put("personalList", personalJSONArray);
+        resJSON.put("response", "okay");
+        return resJSON;
     }
 
     public JSONObject AddTasks(JSONObject arrStr) throws JSONException {

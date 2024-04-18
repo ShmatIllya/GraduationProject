@@ -1,6 +1,7 @@
 package practise.controllers2.Tasks;
 
 import DTO.CommentDTO;
+import DTO.PersonalDTO;
 import DTO.TaskDTO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -31,6 +32,7 @@ import practise.HelloApplication;
 import practise.controllers2.Business.BusinessController;
 import practise.controllers2.Business.BusinessInfoController;
 import practise.controllers2.DashboardController;
+import practise.controllers2.PersonalController;
 import practise.singleton.Singleton;
 
 import java.awt.*;
@@ -74,11 +76,15 @@ public class TaskInfoController implements Initializable {
             ObservableList<String> comboList = FXCollections.observableArrayList();
             JSONObject arrStr = new JSONObject();
             arrStr.put("operationID", "GetPersonalObeyList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("personalList");
-            for (int i = 0; i < resultSet.length(); i++) {
+            ArrayList<PersonalDTO> tempString = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStr);
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO personalDTO: tempString) {
                 try {
-                    comboList.add(resultSet.getJSONObject(i).getString("nameSername"));
+                    comboList.add(personalDTO.getNameSername());
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -89,10 +95,14 @@ public class TaskInfoController implements Initializable {
             JSONObject arrStr2 = new JSONObject();
             arrStr2.put("operationID", "GetPersonalControlList");
             tempString = Singleton.getInstance().getDataController().GetPersonalControlList(arrStr2);
-            resultSet = tempString.getJSONArray("personalList");
-            for (int i = 0; i < resultSet.length(); i++) {
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
+            for (PersonalDTO personalDTO: tempString) {
                 try {
-                    comboList.add(resultSet.getJSONObject(i).getString("nameSername"));
+                    comboList.add(personalDTO.getNameSername());
                 } catch (Exception e) {
                     System.out.println(e);
                 }

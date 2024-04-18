@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public interface IDataController {
     public Object GetSomething();
@@ -13,29 +14,29 @@ public interface IDataController {
 
     public JSONObject Registration(PersonalDTO arrStr) throws JSONException;
 
-    public JSONObject GetPersonalList(JSONObject arrStr) throws JSONException;
+    public ArrayList<PersonalDTO> GetPersonalList(JSONObject arrStr) throws JSONException;
 
     public JSONObject AddPersonal(PersonalDTO arrStr) throws JSONException;
 
-    public JSONObject GetPersonalInfo(PersonalDTO arrStr) throws JSONException;
+    public PersonalDTO GetPersonalInfo(PersonalDTO arrStr) throws JSONException;
 
     public JSONObject UpdatePersonalInfo(PersonalDTO arrStr, BufferedImage image) throws JSONException;
 
     public JSONObject UpdatePersonalInfoAsManager(PersonalDTO arrStr) throws JSONException;
 
-    public JSONObject GetClientsList(JSONObject arrStr) throws JSONException;
+    public ArrayList<ClientDTO> GetClientsList(JSONObject arrStr) throws JSONException;
 
     public JSONObject GetClientInfo(ClientDTO arrStr) throws JSONException;
 
-    public JSONObject GetPersonalObeyList(JSONObject arrStr) throws JSONException;
+    public ArrayList<PersonalDTO> GetPersonalObeyList(JSONObject arrStr) throws JSONException;
 
-    public JSONObject GetPersonalControlList(JSONObject arrStr) throws JSONException;
+    public ArrayList<PersonalDTO> GetPersonalControlList(JSONObject arrStr) throws JSONException;
 
     public JSONObject AddClient(ClientDTO arrStr) throws JSONException;
 
     public JSONObject UpdateClientInfo(ClientDTO arrStr) throws JSONException;
 
-    public JSONObject GetPaymentList(JSONObject arrStr) throws JSONException;
+    public ArrayList<PaymentDTO> GetPaymentList(JSONObject arrStr) throws JSONException;
 
     public JSONObject GetItemsList(JSONObject arrStr) throws JSONException;
 

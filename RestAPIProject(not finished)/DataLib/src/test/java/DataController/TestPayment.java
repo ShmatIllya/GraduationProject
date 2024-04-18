@@ -65,12 +65,12 @@ public class TestPayment {
         if (entityManager != null && entityManager.getTransaction() != null) {
             dbManager = new DataControllerSql();
             //dbManager.AddPayment(payment);
-            JSONObject paymentList = dbManager.GetPaymentList(payment);
+            //JSONObject paymentList = dbManager.GetPaymentList(payment);
             dbManager.entityManager.getTransaction().begin();
             TypedQuery<PaymentsEntity> q = dbManager.entityManager.createQuery("SELECT u FROM PaymentsEntity u order by u.paymentId asc", PaymentsEntity.class);
             List<PaymentsEntity> paymentsEntities = new ArrayList<PaymentsEntity>();
             paymentsEntities = q.getResultList();
-            paymentEntity = paymentsEntities.get(paymentList.length() + 1);
+            //paymentEntity = paymentsEntities.get(paymentList.length() + 1);
             dbManager.entityManager.getTransaction().commit();
             assertNotNull(entityManager.find(PaymentsEntity.class, paymentEntity.getPaymentId()));
         } else {

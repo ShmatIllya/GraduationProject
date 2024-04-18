@@ -2,6 +2,7 @@ package practise.controllers2;
 
 import DTO.ClientDTO;
 import DTO.CommentDTO;
+import DTO.PersonalDTO;
 import com.dlsc.gemsfx.EmailField;
 import com.dlsc.gemsfx.PhoneNumberField;
 import com.jfoenix.controls.JFXButton;
@@ -242,11 +243,15 @@ public class ClientInfoController implements Initializable {
         ObservableList<String> comboList = FXCollections.observableArrayList();
         JSONObject arrStrPersonal = new JSONObject();
         arrStrPersonal.put("operationID", "GetPersonalObeyList");
-        JSONObject tempStringPersonal = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStrPersonal);
-        JSONArray resultSetPersonal = tempStringPersonal.getJSONArray("personalList");
-        for (int i = 0; i < resultSetPersonal.length(); i++) {
+        ArrayList<PersonalDTO> tempStringPersonal = Singleton.getInstance().getDataController().GetPersonalObeyList(arrStrPersonal);
+        if(tempStringPersonal == null) {
+            Label messageBox = new Label("Ошибка получения данных");
+            Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+            return;
+        }
+        for (PersonalDTO personalDTO: tempStringPersonal) {
             try {
-                comboList.add(resultSetPersonal.getJSONObject(i).getString("nameSername"));
+                comboList.add(personalDTO.getNameSername());
             } catch (Exception e) {
                 System.out.println(e);
             }

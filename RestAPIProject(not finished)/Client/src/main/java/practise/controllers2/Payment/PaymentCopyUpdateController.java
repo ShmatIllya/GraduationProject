@@ -1,5 +1,6 @@
 package practise.controllers2.Payment;
 
+import DTO.ClientDTO;
 import DTO.PaymentDTO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -202,11 +203,15 @@ public class PaymentCopyUpdateController implements Initializable{
 
             JSONObject arrStr = new JSONObject();
             arrStr.put("operationID", "GetClientsList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetClientsList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("clientList");
+            ArrayList<ClientDTO> tempString = Singleton.getInstance().getDataController().GetClientsList(arrStr);
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
             ObservableList<String> clientNamesList = FXCollections.observableArrayList();
-            for (int i = 0; i < resultSet.length(); i++) {
-                clientNamesList.add(resultSet.getJSONObject(i).getString("name"));
+            for (ClientDTO client: tempString) {
+                clientNamesList.add(client.getName());
             }
             paymenterComboBox.setItems(clientNamesList);
             recieverComboBox.setItems(clientNamesList);

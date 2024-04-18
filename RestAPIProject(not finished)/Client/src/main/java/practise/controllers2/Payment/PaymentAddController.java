@@ -1,5 +1,6 @@
 package practise.controllers2.Payment;
 
+import DTO.ClientDTO;
 import DTO.ItemDTO;
 import DTO.PaymentDTO;
 import com.jfoenix.controls.JFXButton;
@@ -36,6 +37,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -66,11 +68,15 @@ public class PaymentAddController implements Initializable {
         try {
             JSONObject arrStr = new JSONObject();
             arrStr.put("operationID", "GetClientsList");
-            JSONObject tempString = Singleton.getInstance().getDataController().GetClientsList(arrStr);
-            JSONArray resultSet = tempString.getJSONArray("clientList");
+            ArrayList<ClientDTO> tempString = Singleton.getInstance().getDataController().GetClientsList(arrStr);
+            if(tempString == null) {
+                Label messageBox = new Label("Ошибка получения данных");
+                Singleton.getInstance().ShowJFXDialogStandart(stackPane, messageBox);
+                return;
+            }
             ObservableList<String> clientNamesList = FXCollections.observableArrayList();
-            for (int i = 0; i < resultSet.length(); i++) {
-                clientNamesList.add(resultSet.getJSONObject(i).getString("name"));
+            for (ClientDTO client: tempString) {
+                clientNamesList.add(client.getName());
             }
             paymenterComboBox.setItems(clientNamesList);
             recieverComboBox.setItems(clientNamesList);

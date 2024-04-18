@@ -3,6 +3,7 @@ package practise.project;
 import DTO.*;
 import DataController.IDataController;
 import Network.HttpRestClient;
+import javafx.scene.image.Image;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +11,7 @@ import practise.singleton.Singleton;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -20,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
 
 public class DataControllerHttp implements IDataController {
@@ -88,11 +91,30 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public JSONObject GetPersonalList(JSONObject arrStr) throws JSONException {
+    public ArrayList<PersonalDTO> GetPersonalList(JSONObject arrStr) throws JSONException {
         String url = "/personal/getList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
         url = url + urlParams;
-        return SendData("GET", url, arrStr, true);
+        JSONObject resJSON = SendData("GET", url, arrStr, true);
+        ArrayList<PersonalDTO> personalArray = new ArrayList<PersonalDTO>();
+        if(resJSON.getString("response").equals("null")) {
+            personalArray = null;
+            return personalArray;
+        }
+        JSONArray personalJSONArray = resJSON.getJSONArray("personalList");
+        for(int i = 0; i < personalJSONArray.length(); i++) {
+            JSONObject personalJSON = personalJSONArray.getJSONObject(i);
+            PersonalDTO pers = new PersonalDTO();
+            pers.setNameSername(personalJSON.getString("nameSername"));
+            pers.setContacts(personalJSON.getString("contacts"));
+            pers.setEmail(personalJSON.getString("email"));
+            pers.setSubrole(personalJSON.getString("subrole"));
+            pers.setStatus(personalJSON.getString("status"));
+            pers.setLogin(personalJSON.getString("login"));
+            pers.setPassword(personalJSON.getString("password"));
+            personalArray.add(pers);
+        }
+        return personalArray;
     }
 
     @Override
@@ -113,7 +135,7 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public JSONObject GetPersonalInfo(PersonalDTO arrStr) throws JSONException {
+    public PersonalDTO GetPersonalInfo(PersonalDTO arrStr) throws JSONException {
         String url = "/personal/viewInfo?";
         String urlParams = null;
         JSONObject sendJSON = new JSONObject();
@@ -126,7 +148,24 @@ public class DataControllerHttp implements IDataController {
             throw new RuntimeException(e);
         }
         url = url + urlParams;
-        return SendData("GET", url, sendJSON, true);
+        JSONObject personalJSON = SendData("GET", url, sendJSON, true);
+        if(personalJSON.getString("response").equals("null")) {
+            return null;
+        }
+        PersonalDTO personal = new PersonalDTO();
+        personal.setLogin(personalJSON.getString("login"));
+        personal.setPassword(personalJSON.getString("password"));
+        personal.setNameSername(personalJSON.getString("nameSername"));
+        personal.setContacts(personalJSON.getString("contacts"));
+        personal.setEmail(personalJSON.getString("email"));
+        personal.setRole(personalJSON.getString("role"));
+        personal.setSubrole(personalJSON.getString("subrole"));
+        personal.setStatus(personalJSON.getString("status"));
+        personal.setDescription(personalJSON.getString("description"));
+        personal.setRegDate(Date.valueOf(personalJSON.getString("regDate")));
+        byte[] imageBytes = Base64.getDecoder().decode(personalJSON.getString("image"));
+        personal.setAvatarImage(new ByteArrayInputStream(imageBytes));
+        return personal;
     }
 
     @Override
@@ -168,11 +207,25 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public JSONObject GetClientsList(JSONObject arrStr) throws JSONException {
+    public ArrayList<ClientDTO> GetClientsList(JSONObject arrStr) throws JSONException {
         String url = "/clients/getList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
         url = url + urlParams;
-        return SendData("GET", url, arrStr, true);
+        JSONObject result = SendData("GET", url, arrStr, true);
+        if(result.getString("response").equals("null")) {
+            return null;
+        }
+        ArrayList<ClientDTO> clientArray = new ArrayList<>();
+        for(int i = 0; i < result.getJSONArray("clientList").length(); i++) {
+            JSONObject clientJSON = result.getJSONArray("clientList").getJSONObject(i);
+            ClientDTO client = new ClientDTO();
+            client.setName(clientJSON.getString("name"));
+            client.setType(clientJSON.getString("type"));
+            client.setClientsId(Integer.parseInt(clientJSON.getString("id")));
+            client.setResponsible_name(clientJSON.getString("responsibleName"));
+            clientArray.add(client);
+        }
+        return clientArray;
     }
 
     @Override
@@ -224,12 +277,28 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public JSONObject GetPaymentList(JSONObject arrStr) throws JSONException {
+    public ArrayList<PaymentDTO> GetPaymentList(JSONObject arrStr) throws JSONException {
         arrStr.put("operationID", "GetPaymentList");
         String url = "/payments/paymentList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
         url = url + urlParams;
-        return SendData("GET", url, arrStr, true);
+        JSONObject resJSON = SendData("GET", url, arrStr, true);
+        if(resJSON.getString("response").equals("null")) {
+            return null;
+        }
+        ArrayList<PaymentDTO> paymentArray = new ArrayList<>();
+        for(int i = 0; i < resJSON.getJSONArray("paymentList").length(); i++) {
+            JSONObject paymentJSON = resJSON.getJSONArray("paymentList").getJSONObject(i);
+            PaymentDTO paymentDTO = new PaymentDTO();
+            paymentDTO.setPaymentId(Integer.parseInt(paymentJSON.getString("id")));
+            paymentDTO.setDeadline(Date.valueOf(paymentJSON.getString("deadline")));
+            paymentDTO.setFinalPrice(paymentJSON.getInt("finalPrice"));
+            paymentDTO.setPaymenterName(paymentJSON.getString("paymenterName"));
+            paymentDTO.setStatus(paymentJSON.getString("status"));
+            paymentDTO.setPaymenterId(paymentJSON.getInt("paymenterID"));
+            paymentArray.add(paymentDTO);
+        }
+        return paymentArray;
     }
 
     @Override
@@ -323,19 +392,53 @@ public class DataControllerHttp implements IDataController {
     }
 
     @Override
-    public JSONObject GetPersonalObeyList(JSONObject arrStr) throws JSONException {
+    public ArrayList<PersonalDTO> GetPersonalObeyList(JSONObject arrStr) throws JSONException {
         String url = "/personal/getObeyList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
         url = url + urlParams;
-        return SendData("GET", url, arrStr, true);
+        JSONObject resJSON = SendData("GET", url, arrStr, true);
+        if(resJSON.getString("response").equals("null")) {
+            return null;
+        }
+        ArrayList<PersonalDTO> personalList = new ArrayList<>();
+        for(int i = 0; i < resJSON.getJSONArray("personalList").length(); i++) {
+            JSONObject personalJSON = resJSON.getJSONArray("personalList").getJSONObject(i);
+            PersonalDTO personal = new PersonalDTO();
+            personal.setNameSername(personalJSON.getString("nameSername"));
+            personal.setContacts(personalJSON.getString("contacts"));
+            personal.setEmail(personalJSON.getString("email"));
+            personal.setSubrole(personalJSON.getString("subrole"));
+            personal.setStatus(personalJSON.getString("status"));
+            personal.setLogin(personalJSON.getString("login"));
+            personal.setPassword(personalJSON.getString("password"));
+            personalList.add(personal);
+        }
+        return personalList;
     }
 
     @Override
-    public JSONObject GetPersonalControlList(JSONObject arrStr) throws JSONException {
+    public ArrayList<PersonalDTO> GetPersonalControlList(JSONObject arrStr) throws JSONException {
         String url = "/personal/getControlList?";
         String urlParams = "operationID=" + arrStr.getString("operationID");
         url = url + urlParams;
-        return SendData("GET", url, arrStr, true);
+        JSONObject resJSON = SendData("GET", url, arrStr, true);
+        if(resJSON.getString("response").equals("null")) {
+            return null;
+        }
+        ArrayList<PersonalDTO> personalList = new ArrayList<>();
+        for(int i = 0; i < resJSON.getJSONArray("personalList").length(); i++) {
+            JSONObject personalJSON = resJSON.getJSONArray("personalList").getJSONObject(i);
+            PersonalDTO personal = new PersonalDTO();
+            personal.setNameSername(personalJSON.getString("nameSername"));
+            personal.setContacts(personalJSON.getString("contacts"));
+            personal.setEmail(personalJSON.getString("email"));
+            personal.setSubrole(personalJSON.getString("subrole"));
+            personal.setStatus(personalJSON.getString("status"));
+            personal.setLogin(personalJSON.getString("login"));
+            personal.setPassword(personalJSON.getString("password"));
+            personalList.add(personal);
+        }
+        return personalList;
     }
 
     @Override
